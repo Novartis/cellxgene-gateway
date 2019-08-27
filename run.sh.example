@@ -1,0 +1,9 @@
+export CELLXGENE_LOCATION=/path/to/cellxgene
+export CELLXGENE_DATA=/path/to/datasets
+export DEPLOYMENT_ENV=dev
+export GATEWAY_HOST=localhost:5005
+export GATEWAY_PROTOCOL=http
+export GATEWAY_IP=127.0.0.1
+
+#Once these are set, you run like a normal Flask app
+python gateway.py
