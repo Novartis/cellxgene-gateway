@@ -1,5 +1,5 @@
-export CELLXGENE_LOCATION=/path/to/cellxgene
-export CELLXGENE_DATA=/path/to/datasets
+export CELLXGENE_LOCATION=$(pwd)/.cellxgene-gateway/bin/cellxgene
+export CELLXGENE_DATA=../cellxgene_data
 export DEPLOYMENT_ENV=dev
 export GATEWAY_HOST=localhost:5005
 export GATEWAY_PROTOCOL=http

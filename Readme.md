@@ -4,22 +4,27 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
 
 # Running locally #
 
-Before running the gateway, make sure you can run the Cellxgene Server from CZI, and that you have a folder with h5ad files ready to view.
+1. Set up a venv with
 
-The first step is to set up an environment and install requirements:
-```
-# create an environment for packages
-python -m venv .cellxgene-gateway
-source .cellxgene-gateway/bin/activate
-# install requirements
-pip install -r requirements.txt
-```
-Then copy run.sh.example to run.sh and edit
+    python -m venv .cellxgene-gateway
+    source .cellxgene-gateway/bin/activate
+
+2. Install requirements with
+
+    pip install -r requirements.txt
+
+3. Prepare a folder with .h5ad files, for example
+
+    mkdir cellxgene_data
+    wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
+
+4. Copy run.sh.example to run.sh and edit if you want to change venv or .h5ad folder position:
+
 ```
 cp run.sh.example run.sh
 ```
 
-`run.sh` defines various environment variables, you probably only need to edit CELLXGENE_LOCATION and CELLXGENE_DATA:
+`run.sh` defines various environment variables:
 
 * DEPLOYMENT_ENV - expects 'dev', 'tst' or 'prd'
 * CELLXGENE_LOCATION - the location of the cellxgene executable, e.g. ~/anaconda2/envs/cellxgene/bin/cellxgene
@@ -27,7 +32,9 @@ cp run.sh.example run.sh
 * GATEWAY_HOST - the hostname and port that the gateway will run on, typically localhost:5005 if running locally
 * GATEWAY_PROTOCOL - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
 
-Finally, execute run.sh:
+The defaults should be fine if you set up  a venv and cellxgene_data folder as above.
+
+5. Finally, execute run.sh:
 ```
 source run.sh
 ```
