@@ -143,7 +143,7 @@ def filecrawl():
     )
 
 
-@app.route("/view/<path:path>")
+@app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
 def do_GET(path):
 
     dataset = get_dataset(path)

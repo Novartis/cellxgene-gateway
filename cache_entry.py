@@ -6,11 +6,11 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
-
-from flask import Response, request
-from requests import get
+from flask import make_response, request
+from requests import get, post, put
 
 import env
+from cellxgene_exception import CellxgeneException
 from util import current_time_stamp
 
 
@@ -76,21 +76,31 @@ class CacheEntry:
         subpath = path[len(dataset) :]  # noqa: E203
 
         if len(subpath) == 0:
-            r = Response(f"Redirect to {gateway_basepath}\n", status=301)
+            r = make_response(f"Redirect to {gateway_basepath}\n", 301)
             r.headers["location"] = gateway_basepath
             return r
 
         port = self.port
         cellxgene_basepath = f"http://127.0.0.1:{port}"
 
-        headers = (
-            {"accept": request.headers["accept"]} if "accept" in request.headers else {}
-        )
+        headers = {}
 
-        cellxgene_response = get(cellxgene_basepath + subpath, headers=headers)
+        if "accept" in request.headers:
+            headers["accept"] = request.headers["accept"]
+        if "user-agent" in request.headers:
+            headers["user-agent"] = request.headers["user-agent"]
+        if "content-type" in request.headers:
+            headers["content-type"] = request.headers["content-type"]
 
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            cellxgene_response = get(cellxgene_basepath + subpath, headers=headers)
+        elif request.method == 'PUT':
+            cellxgene_response = put(cellxgene_basepath + subpath, headers=headers, data=request.data.decode())
+        elif request.method == 'POST':
+            cellxgene_response = post(cellxgene_basepath + subpath, headers=headers, data=request.data.decode())
+        else:
+            raise CellxgeneException(f"Unexpected method {request.method}", 400)
         content_type = cellxgene_response.headers["content-type"]
-
         if "text" in content_type:
             cellxgene_content = cellxgene_response.content.decode()
             gateway_content = cellxgene_content.replace(
@@ -98,11 +108,11 @@ class CacheEntry:
             ).replace(cellxgene_basepath, gateway_basepath)
         else:
             gateway_content = cellxgene_response.content
-
-        gateway_response = Response(
-            gateway_content, status=cellxgene_response.status_code
+        
+        gateway_response = make_response(
+            gateway_content, 
+            cellxgene_response.status_code,
+            {"Content-Type": content_type }
         )
-
-        gateway_response.headers["content-type"] = content_type
 
         return gateway_response
