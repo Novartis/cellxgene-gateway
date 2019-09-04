@@ -4,6 +4,10 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
 
 # Running locally #
 
+0. This project requires python 3.6 or higher. Please check your version with
+
+    python --version
+
 1. Set up a venv with
 
     python -m venv .cellxgene-gateway
@@ -18,11 +22,9 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
     mkdir cellxgene_data
     wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 
-4. Copy run.sh.example to run.sh and edit if you want to change venv or .h5ad folder position:
+4. Copy run.sh.example to run.sh:
 
-```
-cp run.sh.example run.sh
-```
+     cp run.sh.example run.sh
 
 `run.sh` defines various environment variables:
 
