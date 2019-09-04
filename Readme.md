@@ -10,24 +10,24 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
 
 1. Set up a venv with
 ```
-    python -m venv .cellxgene-gateway
-    source .cellxgene-gateway/bin/activate
+python -m venv .cellxgene-gateway
+source .cellxgene-gateway/bin/activate
 ```
 
 2. Install requirements with
 ```
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 3. Prepare a folder with .h5ad files, for example
 
 ```
-    mkdir cellxgene_data
-    wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
+mkdir cellxgene_data
+wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 ```
 
 4. Copy run.sh.example to run.sh:
 ```
-     cp run.sh.example run.sh
+cp run.sh.example run.sh
 ```
 `run.sh` defines various environment variables:
 
