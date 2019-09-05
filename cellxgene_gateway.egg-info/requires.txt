@@ -1,5 +1,0 @@
-cellxgene
-flask
-flask_api
-psutil
-requests
