@@ -12,7 +12,7 @@ import subprocess
 
 from flask_api import status
 
-from process_exception import ProcessException
+from cellxgene_gateway.process_exception import ProcessException
 
 
 class SubprocessBackend:

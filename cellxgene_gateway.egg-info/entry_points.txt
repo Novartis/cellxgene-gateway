@@ -1,0 +1,3 @@
+[console_scripts]
+cellxgene-gateway = cellxgene_gateway.gateway:main
+

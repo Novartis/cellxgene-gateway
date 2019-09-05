@@ -9,9 +9,9 @@
 from flask import make_response, request
 from requests import get, post, put
 
-import env
-from cellxgene_exception import CellxgeneException
-from util import current_time_stamp
+from cellxgene_gateway import env
+from cellxgene_gateway.cellxgene_exception import CellxgeneException
+from cellxgene_gateway.util import current_time_stamp
 
 
 class CacheEntry:
@@ -92,14 +92,26 @@ class CacheEntry:
         if "content-type" in request.headers:
             headers["content-type"] = request.headers["content-type"]
 
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
-            cellxgene_response = get(cellxgene_basepath + subpath, headers=headers)
-        elif request.method == 'PUT':
-            cellxgene_response = put(cellxgene_basepath + subpath, headers=headers, data=request.data.decode())
-        elif request.method == 'POST':
-            cellxgene_response = post(cellxgene_basepath + subpath, headers=headers, data=request.data.decode())
+        if request.method in ["GET", "HEAD", "OPTIONS"]:
+            cellxgene_response = get(
+                cellxgene_basepath + subpath, headers=headers
+            )
+        elif request.method == "PUT":
+            cellxgene_response = put(
+                cellxgene_basepath + subpath,
+                headers=headers,
+                data=request.data.decode(),
+            )
+        elif request.method == "POST":
+            cellxgene_response = post(
+                cellxgene_basepath + subpath,
+                headers=headers,
+                data=request.data.decode(),
+            )
         else:
-            raise CellxgeneException(f"Unexpected method {request.method}", 400)
+            raise CellxgeneException(
+                f"Unexpected method {request.method}", 400
+            )
         content_type = cellxgene_response.headers["content-type"]
         if "text" in content_type:
             cellxgene_content = cellxgene_response.content.decode()
@@ -108,11 +120,11 @@ class CacheEntry:
             ).replace(cellxgene_basepath, gateway_basepath)
         else:
             gateway_content = cellxgene_response.content
-        
+
         gateway_response = make_response(
-            gateway_content, 
+            gateway_content,
             cellxgene_response.status_code,
-            {"Content-Type": content_type }
+            {"Content-Type": content_type},
         )
 
         return gateway_response

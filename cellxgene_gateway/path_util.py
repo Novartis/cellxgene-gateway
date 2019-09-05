@@ -11,8 +11,8 @@ import os
 
 from flask_api import status
 
-import env
-from cellxgene_exception import CellxgeneException
+from cellxgene_gateway import env
+from cellxgene_gateway.cellxgene_exception import CellxgeneException
 
 
 def get_dataset(path):

@@ -11,7 +11,7 @@ import time
 
 import psutil
 
-from util import current_time_stamp
+from cellxgene_gateway.util import current_time_stamp
 
 
 class PruneProcessCache:

@@ -12,19 +12,25 @@ import datetime
 import os
 from threading import Thread
 
-from flask import Flask, redirect, render_template, request, send_from_directory
+from flask import (
+    Flask,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+)
 from flask_api import status
 from werkzeug import secure_filename
 
-import env
-from backend_cache import BackendCache
-from cellxgene_exception import CellxgeneException
-from dir_util import create_dir, recurse_dir, render_entries
-from extra_scripts import get_extra_scripts
-from path_util import get_dataset, get_file_path
-from process_exception import ProcessException
-from prune_process_cache import PruneProcessCache
-from util import current_time_stamp
+from cellxgene_gateway import env
+from cellxgene_gateway.backend_cache import BackendCache
+from cellxgene_gateway.cellxgene_exception import CellxgeneException
+from cellxgene_gateway.dir_util import create_dir, recurse_dir, render_entries
+from cellxgene_gateway.extra_scripts import get_extra_scripts
+from cellxgene_gateway.path_util import get_dataset, get_file_path
+from cellxgene_gateway.process_exception import ProcessException
+from cellxgene_gateway.prune_process_cache import PruneProcessCache
+from cellxgene_gateway.util import current_time_stamp
 
 app = Flask(__name__)
 cache = BackendCache()
@@ -38,7 +44,9 @@ def handle_invalid_usage(error):
 
     return (
         render_template(
-            "cellxgene_error.html", extra_scripts=get_extra_scripts(), message=message
+            "cellxgene_error.html",
+            extra_scripts=get_extra_scripts(),
+            message=message,
         ),
         error.http_status,
     )
@@ -56,7 +64,9 @@ def handle_invalid_process(error):
 
     return (
         render_template(
-            "process_error.html", extra_scripts=get_extra_scripts(), message=message
+            "process_error.html",
+            extra_scripts=get_extra_scripts(),
+            message=message,
         ),
         error.http_status,
     )
@@ -116,7 +126,9 @@ def upload_file():
             if "file" in request.files:
                 f = request.files["file"]
                 if f and f.filename.endswith(".h5ad"):
-                    f.save(full_upload_path + "/" + secure_filename(f.filename))
+                    f.save(
+                        full_upload_path + "/" + secure_filename(f.filename)
+                    )
                     return redirect("/filecrawl.html", code=302)
                 else:
                     raise CellxgeneException(
@@ -125,10 +137,13 @@ def upload_file():
                     )
             else:
                 raise CellxgeneException(
-                    "A file must be chosen to upload.", status.HTTP_400_BAD_REQUEST
+                    "A file must be chosen to upload.",
+                    status.HTTP_400_BAD_REQUEST,
                 )
     else:
-        raise CellxgeneException("Invalid directory.", status.HTTP_400_BAD_REQUEST)
+        raise CellxgeneException(
+            "Invalid directory.", status.HTTP_400_BAD_REQUEST
+        )
 
     return redirect(env.location, code=302)
 
@@ -139,7 +154,9 @@ def filecrawl():
     entries = recurse_dir(env.cellxgene_data)
     rendered_html = render_entries(entries)
     return render_template(
-        "filecrawl.html", extra_scripts=get_extra_scripts(), rendered_html=rendered_html
+        "filecrawl.html",
+        extra_scripts=get_extra_scripts(),
+        rendered_html=rendered_html,
     )
 
 
@@ -166,8 +183,12 @@ def do_GET(path):
         raise ProcessException.from_pid_object(match)
 
 
-if __name__ == "__main__":
+def main():
     background_thread = Thread(target=PruneProcessCache(cache))
     background_thread.start()
 
     app.run(host="0.0.0.0", port=5005, debug=False)
+
+
+if __name__ == "__main__":
+    main()
