@@ -19,13 +19,13 @@ python -m venv .cellxgene-gateway
 source .cellxgene-gateway/bin/activate
 ```
 
-1. Install requirements with
+2. Install requirements with
 
 ```bash
 pip install -r requirements.txt
 ```
 
-1. Install the gateway:
+3. Install the gateway:
 
 _To install in development mode:_
 
@@ -45,14 +45,14 @@ _To install from PyPI:_
 # NOT YET DONE, COMING! STAY TUNED
 ```
 
-1. Prepare a folder with .h5ad files, for example
+4. Prepare a folder with .h5ad files, for example
 
 ```bash
 mkdir ../cellxgene_data
 wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 ```
 
-1. Set your environment variables correctly:
+5. Set your environment variables correctly:
 
 ```bash
 export CELLXGENE_LOCATION=`which cellxgene`
@@ -62,7 +62,7 @@ export GATEWAY_PROTOCOL=http
 export GATEWAY_IP=127.0.0.1
 ```
 
-1. Now, execute the cellxgene gateway:
+6. Now, execute the cellxgene gateway:
 
 ```bash
 cellxgene-gateway
@@ -78,7 +78,6 @@ Here's what the environment variables mean:
 * `GATEWAY_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
 
 The defaults should be fine if you set up a venv and cellxgene_data folder as above.
-
 
 # Customization
 
