@@ -11,8 +11,8 @@ import os
 
 from flask_api import status
 
-import env
-from cellxgene_exception import CellxgeneException
+from cellxgene_gateway import env
+from cellxgene_gateway.cellxgene_exception import CellxgeneException
 
 
 def is_subdir(full_path, parent_path):
@@ -31,7 +31,8 @@ def create_dir(parent_path, dir_name):
         )
     elif not os.path.exists(parent_path):
         raise CellxgeneException(
-            "The selected User directory does not exist.", status.HTTP_400_BAD_REQUEST
+            "The selected User directory does not exist.",
+            status.HTTP_400_BAD_REQUEST,
         )
     elif os.path.exists(full_path):
         raise CellxgeneException(
@@ -74,7 +75,8 @@ def recurse_dir(path):
             }
         else:
             raise CellxgeneException(
-                "Given path is neither file nor directory.", status.HTTP_400_BAD_REQUEST
+                "Given path is neither file nor directory.",
+                status.HTTP_400_BAD_REQUEST,
             )
 
     return [make_entry(x) for x in os.listdir(path)]

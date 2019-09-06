@@ -1,0 +1,11 @@
+name: cellxgene-dev
+channels:
+- conda-forge
+dependencies:
+- python=3.7
+- requests
+- flask
+- psutil
+- pip:
+  - flask-api
+  - cellxgene

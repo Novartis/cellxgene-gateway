@@ -1,50 +1,85 @@
-# Overview #
+# Overview
 
 Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zuckerberg Institute (https://github.com/chanzuckerberg/cellxgene) with multiple datasets. It displays an index of available h5ad (anndata) files. When a user clicks on a file name, it launches a Cellxgene Server instance that loads that particular data file and once it is available  proxies requests to that server.
 
-# Running locally #
+## Running locally
+
+We assume your current working directory is the directory into which you've cloned this repository.
 
 0. This project requires python 3.6 or higher. Please check your version with
 
-    python --version
+```bash
+$ python --version
+```
 
 1. Set up a venv with
-```
+
+```bash
 python -m venv .cellxgene-gateway
 source .cellxgene-gateway/bin/activate
 ```
 
 2. Install requirements with
-```
+
+```bash
 pip install -r requirements.txt
 ```
-3. Prepare a folder with .h5ad files, for example
 
+3. Install the gateway:
+
+_To install in development mode:_
+
+```bash
+python setup.py develop
 ```
-mkdir cellxgene_data
+
+_To install from GitHub:_
+
+```bash
+pip install git+https://github.com/Novartis/cellxgene-gateway
+```
+
+_To install from PyPI:_
+
+```bash
+# NOT YET DONE, COMING! STAY TUNED
+```
+
+4. Prepare a folder with .h5ad files, for example
+
+```bash
+mkdir ../cellxgene_data
 wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 ```
 
-4. Copy run.sh.example to run.sh:
-```
-cp run.sh.example run.sh
-```
-`run.sh` defines various environment variables:
+5. Set your environment variables correctly:
 
-* DEPLOYMENT_ENV - expects 'dev', 'tst' or 'prd'
-* CELLXGENE_LOCATION - the location of the cellxgene executable, e.g. ~/anaconda2/envs/cellxgene/bin/cellxgene
-* CELLXGENE_DATA - a directory that can contain subdirectories with .h5ad data files, *without* trailing slash, e.g. /mnt/cellxgene_data
-* GATEWAY_HOST - the hostname and port that the gateway will run on, typically localhost:5005 if running locally
-* GATEWAY_PROTOCOL - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
-
-The defaults should be fine if you set up  a venv and cellxgene_data folder as above.
-
-5. Finally, execute run.sh:
-```
-source run.sh
+```bash
+export CELLXGENE_LOCATION=`which cellxgene`
+export CELLXGENE_DATA=../cellxgene_data  # change this directory if you put data in a different place.
+export GATEWAY_HOST=localhost:5005
+export GATEWAY_PROTOCOL=http
+export GATEWAY_IP=127.0.0.1
 ```
 
-# Customization #
+6. Now, execute the cellxgene gateway:
+
+```bash
+cellxgene-gateway
+```
+
+For convenience, you can also change `run.sh.example` and execute it.
+
+Here's what the environment variables mean:
+
+* `CELLXGENE_LOCATION` - the location of the cellxgene executable, e.g. `~/anaconda2/envs/cellxgene/bin/cellxgene`
+* `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
+* `GATEWAY_HOST` - the hostname and port that the gateway will run on, typically `localhost:5005` if running locally
+* `GATEWAY_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
+
+The defaults should be fine if you set up a venv and cellxgene_data folder as above.
+
+# Customization
 
 The current paradigm for customization is to modify files during a build or deployment phase:
 
@@ -55,29 +90,23 @@ The current paradigm for customization is to modify files during a build or depl
 
 Currently we use a build.sh that copies the gateway to a "build" directory before modifying with sed and the like.
 
-# Development #
+# Development
 
-## Running Linters ##
+## Running Linters
 
 pip install isort flake8 black
 
-```
+```bash
 isort -rc .
-```
-
-```
 flake8 .
+black -l 79 .
 ```
 
-```
-black .
-```
-
-# Getting Help #
+# Getting Help
 
 If you need help for any reason, please make a github ticket. One of the contributors should help you out.
 
-# Contributors #
+# Contributors
 
 * Niket Patel - https://github.com/NiketPatel9
 * Alok Saldanha - https://github.com/alokito

@@ -12,10 +12,10 @@ from threading import Thread
 
 from flask_api import status
 
-import env
-from cache_entry import CacheEntry
-from cellxgene_exception import CellxgeneException
-from subprocess_backend import SubprocessBackend
+from cellxgene_gateway import env
+from cellxgene_gateway.cache_entry import CacheEntry
+from cellxgene_gateway.cellxgene_exception import CellxgeneException
+from cellxgene_gateway.subprocess_backend import SubprocessBackend
 
 process_backend = SubprocessBackend()
 
@@ -51,7 +51,8 @@ class BackendCache:
         entry = CacheEntry.for_dataset(dataset, file_path, port)
 
         background_thread = Thread(
-            target=process_backend.launch, args=(env.cellxgene_location, scripts, entry)
+            target=process_backend.launch,
+            args=(env.cellxgene_location, scripts, entry),
         )
         background_thread.start()
 
