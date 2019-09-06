@@ -2,9 +2,9 @@
 
 Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zuckerberg Institute (https://github.com/chanzuckerberg/cellxgene) with multiple datasets. It displays an index of available h5ad (anndata) files. When a user clicks on a file name, it launches a Cellxgene Server instance that loads that particular data file and once it is available  proxies requests to that server.
 
-## Running locally
+# Running locally
 
-We assume your current working directory is the directory into which you've cloned this repository.
+## Prequisites
 
 0. This project requires python 3.6 or higher. Please check your version with
 
@@ -12,47 +12,53 @@ We assume your current working directory is the directory into which you've clon
 $ python --version
 ```
 
-1. Set up a venv with
+1. It is also a good idea to always set up a venv. 
 
 ```bash
 python -m venv .cellxgene-gateway
 source .cellxgene-gateway/bin/activate
 ```
 
-2. Install requirements with
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Install the gateway:
-
-_To install in development mode:_
-
-```bash
-python setup.py develop
-```
-
-_To install from GitHub:_
-
-```bash
-pip install git+https://github.com/Novartis/cellxgene-gateway
-```
-
-_To install from PyPI:_
-
-```bash
-# NOT YET DONE, COMING! STAY TUNED
-```
-
-4. Prepare a folder with .h5ad files, for example
+2. Prepare a folder with .h5ad files, for example
 
 ```bash
 mkdir ../cellxgene_data
 wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 ```
 
-5. Set your environment variables correctly:
+
+## Pip Install from Github
+
+```bash
+pip install git+https://github.com/Novartis/cellxgene-gateway
+```
+
+### Install from PyPI
+
+```bash
+# NOT YET DONE, COMING! STAY TUNED
+```
+
+### Developer Install
+
+If you want to develop the code, you will need to clone the repo. We assume your current working directory is the directory into which you've cloned this repository.
+
+
+1. Install requirements with
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Install the gateway in developer mode
+
+```bash
+python setup.py develop
+```
+
+## Running cellxgene gateway
+
+1. Set your environment variables correctly:
 
 ```bash
 export CELLXGENE_LOCATION=`which cellxgene`
@@ -62,7 +68,7 @@ export GATEWAY_PROTOCOL=http
 export GATEWAY_IP=127.0.0.1
 ```
 
-6. Now, execute the cellxgene gateway:
+2. Now, execute the cellxgene gateway:
 
 ```bash
 cellxgene-gateway
