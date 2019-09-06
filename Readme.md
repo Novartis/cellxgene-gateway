@@ -12,22 +12,16 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
 $ python --version
 ```
 
-1. It is also a good idea to always set up a venv. 
+1. It is also a good idea to set up a venv
 
 ```bash
 python -m venv .cellxgene-gateway
-source .cellxgene-gateway/bin/activate
+source .cellxgene-gateway/bin/activate # type `deactivate` to deactivate the venv
 ```
 
-2. Prepare a folder with .h5ad files, for example
+## Install cellxgene-gateway
 
-```bash
-mkdir ../cellxgene_data
-wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
-```
-
-
-## Pip Install from Github
+### Pip Install from Github
 
 ```bash
 pip install git+https://github.com/Novartis/cellxgene-gateway
@@ -41,24 +35,40 @@ pip install git+https://github.com/Novartis/cellxgene-gateway
 
 ### Developer Install
 
-If you want to develop the code, you will need to clone the repo. We assume your current working directory is the directory into which you've cloned this repository.
+If you want to develop the code, you will need to clone the repo.
 
+1. Clone the repo
 
-1. Install requirements with
+```bash
+    git clone https://github.com/Novartis/cellxgene-gateway.git
+    cd cellxgene-gateway
+```
+
+2. Install requirements with
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Install the gateway in developer mode
+3. Install the gateway in developer mode
 
 ```bash
 python setup.py develop
 ```
 
+For convenience, the code repo includes a `run.sh.example` shell script to run the gateway.
+
 ## Running cellxgene gateway
 
-1. Set your environment variables correctly:
+1. Prepare a folder with .h5ad files, for example
+
+```bash
+mkdir ../cellxgene_data
+wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
+```
+
+
+2. Set your environment variables correctly:
 
 ```bash
 export CELLXGENE_LOCATION=`which cellxgene`
@@ -68,13 +78,11 @@ export GATEWAY_PROTOCOL=http
 export GATEWAY_IP=127.0.0.1
 ```
 
-2. Now, execute the cellxgene gateway:
+3. Now, execute the cellxgene gateway:
 
 ```bash
 cellxgene-gateway
 ```
-
-For convenience, you can also change `run.sh.example` and execute it.
 
 Here's what the environment variables mean:
 
