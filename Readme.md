@@ -21,19 +21,19 @@ source .cellxgene-gateway/bin/activate # type `deactivate` to deactivate the ven
 
 ## Install cellxgene-gateway
 
-### Pip Install from Github
+### Option 1: Pip Install from Github
 
 ```bash
 pip install git+https://github.com/Novartis/cellxgene-gateway
 ```
 
-### Install from PyPI
+### Option 2: Install from PyPI
 
 ```bash
 # NOT YET DONE, COMING! STAY TUNED
 ```
 
-### Developer Install
+### Option 3: Developer Install
 
 If you want to develop the code, you will need to clone the repo.
 
