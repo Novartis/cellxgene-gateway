@@ -9,7 +9,6 @@
 
 import os
 
-deployment_env = os.environ.get("DEPLOYMENT_ENV")
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA")
 gateway_host = os.environ.get("GATEWAY_HOST")
@@ -17,7 +16,6 @@ gateway_protocol = os.environ.get("GATEWAY_PROTOCOL")
 ip = os.environ.get("GATEWAY_IP")
 
 env_vars = {
-    "DEPLOYMENT_ENV": deployment_env,
     "CELLXGENE_LOCATION": cellxgene_location,
     "CELLXGENE_DATA": cellxgene_data,
     "GATEWAY_HOST": gateway_host,
@@ -38,7 +36,6 @@ An example is:
 
     export CELLXGENE_LOCATION=~/anaconda/envs/cellxgene-dev/bin/cellxgene
     export CELLXGENE_DATA=../cellxgene_data
-    export DEPLOYMENT_ENV=dev
     export GATEWAY_HOST=localhost:5005
     export GATEWAY_PROTOCOL=http
     export GATEWAY_IP=127.0.0.1
