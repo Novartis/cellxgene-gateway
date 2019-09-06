@@ -20,12 +20,18 @@ setup(
     # mandatory
     author="Niket Patel, Yohann Potier, Alok Saldanha",
     author_email="alok.saldanha@novartis.com",
-    description=("Cell-by-gene Gateway"),
+    description=("Cellxgene Gateway"),
     license="MIT",
     keywords="visualization, genomics",
     url="http://github.com/Novartis/cellxgene-gateway",
     packages=["cellxgene_gateway"],
-    package_data={"": ["README.md", "LICENSE.txt"]},
+    package_data={
+        "cellxgene_gateway": [
+            "static/css/homepagestyle.css",
+            "static/nibr.ico",
+            "templates/*.html"
+    ]},
+    data_files=[('', ['README.md', 'LICENSE.txt']))
     install_requires=install_reqs,
     entry_points={
         "console_scripts": ["cellxgene-gateway=cellxgene_gateway.gateway:main"]
