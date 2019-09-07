@@ -14,6 +14,7 @@ cellxgene_data = os.environ.get("CELLXGENE_DATA")
 gateway_host = os.environ.get("GATEWAY_HOST")
 gateway_protocol = os.environ.get("GATEWAY_PROTOCOL")
 ip = os.environ.get("GATEWAY_IP")
+extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
