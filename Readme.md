@@ -6,13 +6,13 @@ Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zu
 
 ## Prequisites
 
-0. This project requires python 3.6 or higher. Please check your version with
+1. This project requires python 3.6 or higher. Please check your version with
 
 ```bash
 $ python --version
 ```
 
-1. It is also a good idea to set up a venv
+2. It is also a good idea to set up a venv
 
 ```bash
 python -m venv .cellxgene-gateway
@@ -33,31 +33,6 @@ pip install git+https://github.com/Novartis/cellxgene-gateway
 # NOT YET DONE, COMING! STAY TUNED
 ```
 
-### Option 3: Developer Install
-
-If you want to develop the code, you will need to clone the repo.
-
-1. Clone the repo
-
-```bash
-    git clone https://github.com/Novartis/cellxgene-gateway.git
-    cd cellxgene-gateway
-```
-
-2. Install requirements with
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Install the gateway in developer mode
-
-```bash
-python setup.py develop
-```
-
-For convenience, the code repo includes a `run.sh.example` shell script to run the gateway.
-
 ## Running cellxgene gateway
 
 1. Prepare a folder with .h5ad files, for example
@@ -71,8 +46,8 @@ wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc
 2. Set your environment variables correctly:
 
 ```bash
-export CELLXGENE_LOCATION=`which cellxgene`
 export CELLXGENE_DATA=../cellxgene_data  # change this directory if you put data in a different place.
+export CELLXGENE_LOCATION=`which cellxgene`
 export GATEWAY_HOST=localhost:5005
 export GATEWAY_PROTOCOL=http
 export GATEWAY_IP=127.0.0.1
@@ -105,6 +80,31 @@ The current paradigm for customization is to modify files during a build or depl
 Currently we use a build.sh that copies the gateway to a "build" directory before modifying with sed and the like.
 
 # Development
+
+## Developer Install
+
+If you want to develop the code, you will need to clone the repo. Make sure you have the prequesite listed above, then:
+
+1. Clone the repo
+
+```bash
+    git clone https://github.com/Novartis/cellxgene-gateway.git
+    cd cellxgene-gateway
+```
+
+2. Install requirements with
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Install the gateway in developer mode
+
+```bash
+python setup.py develop
+```
+
+For convenience, the code repo includes a `run.sh.example` shell script to run the gateway.
 
 ## Running Linters
 

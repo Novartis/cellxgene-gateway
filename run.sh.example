@@ -6,4 +6,4 @@ export GATEWAY_PROTOCOL=http
 export GATEWAY_IP=127.0.0.1
 
 #Once these are set, you run like a normal Flask app
-python gateway.py
+cellxgene-gateway
