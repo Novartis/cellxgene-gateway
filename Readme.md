@@ -82,6 +82,8 @@ Currently we use a bash script that copies the gateway to a "build" directory be
 
 # Development
 
+We’re actively developing.  Please see the "future work" section of the [wiki](https://github.com/Novartis/cellxgene-gateway/wiki#future-work). If you’re interested in being a contributor please reach out to [@alokito](https://github.com/alokito).
+
 ## Developer Install
 
 If you want to develop the code, you will need to clone the repo. Make sure you have the prequesite listed above, then:
