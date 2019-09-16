@@ -103,20 +103,5 @@ scp -r pbmc3k.h5ad ec2-user@{{ ip }}:{{ cellxgene_data }}/USER/DATA/</pre>
 		<li>Take a look at your data using the file crawler link above</li>
 	</ol>	
 
-	<br>
-	<br>
-
-	<script>
-	if (NIBRIam && NIBRIam.NIBR521 !== undefined) {
-		var usernames = document.getElementById("usernames")
-		var options = usernames.options
-				
-		for (i = 0; i < options.length; i++) { 
-			if (options[i].value.toLowerCase() == currentUser.toLowerCase()) {
-				options[i].setAttribute("selected", "selected")
-			}
-		}
-	}
-	</script>
 </body>
 </html>
