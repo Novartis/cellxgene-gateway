@@ -161,8 +161,7 @@ def filecrawl():
 
 
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
-def do_GET(path):
-
+def do_view(path):
     dataset = get_dataset(path)
     file_path = get_file_path(dataset)
     match = cache.check_entry(dataset)
@@ -182,6 +181,11 @@ def do_GET(path):
     elif match.status == "error":
         raise ProcessException.from_pid_object(match)
 
+@app.route("/cache_status", methods=["GET"])
+def do_GET_status():
+    return render_template(
+        "cache_status.html", entry_list=cache.entry_list
+    )
 
 def main():
     env.validate()
