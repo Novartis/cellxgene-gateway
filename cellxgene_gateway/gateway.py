@@ -187,9 +187,21 @@ def do_GET_status():
         "cache_status.html", entry_list=cache.entry_list
     )
 
+pruner = PruneProcessCache(cache)
+
+@app.route("/prune/<path:path>", methods=["DELETE"])
+def do_prune(path):
+    dataset = get_dataset(path)
+    match = cache.check_entry(dataset)
+    if match is None:
+        return "not found"
+    else:
+        pruner.prune(match)
+        return "success"
+
 def main():
     env.validate()
-    background_thread = Thread(target=PruneProcessCache(cache))
+    background_thread = Thread(target=pruner)
     background_thread.start()
 
     app.run(host="0.0.0.0", port=5005, debug=False)

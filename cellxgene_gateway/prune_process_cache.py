@@ -12,11 +12,21 @@ import time
 import psutil
 
 from cellxgene_gateway.util import current_time_stamp
+from cellxgene_gateway.env import ttl
 
 
 class PruneProcessCache:
     def __init__(self, cache):
         self.cache = cache
+
+    def prune(self, process):
+        self.cache.entry_list.remove(process)
+        pid = process.pid
+        if pid != None:
+            p = psutil.Process(pid)
+            p.terminate()
+            p = psutil.Process(pid + 2)
+            p.terminate()
 
     def __call__(self):
         while True:
@@ -26,14 +36,13 @@ class PruneProcessCache:
 
             processes_to_delete = []
             for p in self.cache.entry_list:
-                if timestamp - p.timestamp > 3600:
+                if timestamp - p.timestamp > (3600 if ttl is None else ttl):
                     processes_to_delete.append(p)
                     processes_to_delete
 
             for process in processes_to_delete:
-                self.cache.entry_list.remove(process)
-                pid = process.pid
-                p = psutil.Process(pid)
-                p.terminate()
-                p = psutil.Process(pid + 2)
-                p.terminate()
+                try:
+                    self.prune(process)
+                except Exception as detail:
+                    print('failed to prune process:', detail)
+

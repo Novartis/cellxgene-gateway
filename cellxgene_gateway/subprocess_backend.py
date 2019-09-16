@@ -64,7 +64,7 @@ class SubprocessBackend:
 
                 raise ProcessException.from_pid_object(cache_entry)
             else:
-                cache_entry.all_output += output
+                cache_entry.append_output(output)
 
         cache_entry.set_loaded(process.pid)
 

@@ -44,17 +44,17 @@ class CacheEntry:
     @classmethod
     def for_dataset(cls, dataset, file_path, port):
         return cls(
-            "",
+            None,
             dataset,
             file_path,
             port,
             current_time_stamp(),
             current_time_stamp(),
             "loading",
-            "",
-            "",
-            "",
-            "",
+            None,
+            None,
+            None,
+            None,
         )
 
     def set_loaded(self, pid):
@@ -66,6 +66,12 @@ class CacheEntry:
         self.stderr = stderr
         self.http_status = http_status
         self.status = "error"
+    
+    def append_output(self, output):
+        if self.all_output == None:
+            self.all_output = output
+        else:
+            self.all_output += output
 
     def serve_content(self, path):
         dataset = self.dataset
