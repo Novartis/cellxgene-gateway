@@ -24,21 +24,22 @@ env_vars = {
     "GATEWAY_IP": ip,
 }
 
-if not all(env_vars.values()):
-    raise ValueError(
-        f"""
-Please ensure that environment variables are set correctly.
-The ones with None below are missing and need to be set.
+def validate():
+    if not all(env_vars.values()):
+        raise ValueError(
+            f"""
+    Please ensure that environment variables are set correctly.
+    The ones with None below are missing and need to be set.
 
-{env_vars}
+    {env_vars}
 
-Set them at the terminal before running the gateway.
-An example is:
+    Set them at the terminal before running the gateway.
+    An example is:
 
-    export CELLXGENE_LOCATION=~/anaconda/envs/cellxgene-dev/bin/cellxgene
-    export CELLXGENE_DATA=../cellxgene_data
-    export GATEWAY_HOST=localhost:5005
-    export GATEWAY_PROTOCOL=http
-    export GATEWAY_IP=127.0.0.1
-"""
-    )
+        export CELLXGENE_LOCATION=~/anaconda/envs/cellxgene-dev/bin/cellxgene
+        export CELLXGENE_DATA=../cellxgene_data
+        export GATEWAY_HOST=localhost:5005
+        export GATEWAY_PROTOCOL=http
+        export GATEWAY_IP=127.0.0.1
+    """
+        )

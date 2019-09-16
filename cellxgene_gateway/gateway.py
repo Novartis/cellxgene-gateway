@@ -184,6 +184,7 @@ def do_GET(path):
 
 
 def main():
+    env.validate()
     background_thread = Thread(target=PruneProcessCache(cache))
     background_thread.start()
 
