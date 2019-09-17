@@ -6,6 +6,7 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
+import psutil
 from flask import make_response, request
 from requests import get, post, put
 
@@ -73,7 +74,8 @@ class CacheEntry:
         else:
             self.all_output += output
 
-    def terminate(self, process):
+    def terminate(self):
+        pid = self.pid
         if pid != None and self.status != "terminated":
             p = psutil.Process(pid)
             p.terminate()

@@ -9,8 +9,6 @@
 
 import time
 
-import psutil
-
 from cellxgene_gateway.util import current_time_stamp
 from cellxgene_gateway.env import ttl
 

@@ -9,18 +9,20 @@
 
 
 class ProcessException(Exception):
-    def __init__(self, message, stdout, stderr, http_status):
+    def __init__(self, message, stdout, stderr, http_status, dataset):
         Exception.__init__(self)
         self.message = message
         self.stdout = stdout
         self.stderr = stderr
         self.http_status = http_status
+        self.dataset = dataset
 
     @classmethod
-    def from_pid_object(cls, pid_object):
+    def from_cache_entry(cls, cache_entry):
         return cls(
-            pid_object.message,
-            pid_object.all_output,
-            pid_object.stderr,
-            pid_object.http_status,
+            cache_entry.message,
+            cache_entry.all_output,
+            cache_entry.stderr,
+            cache_entry.http_status,
+            cache_entry.dataset,
         )

@@ -25,19 +25,27 @@
      </header>
      <br>
      <div style="margin-left:20px">
-          
-     <h4>{{ message[0] }}</h4>
-     <h4>{{ message[1] }}</h4>
-     <h4>{{ message[2] }}</h4>
-     <h4>{{ message[3] }}</h4>
-
-     <a href="/filecrawl.html">
-          Please click here to be redirected to the file directory.
-     </a>
-     <br>
-     <a href="/">
-          Please click here to return to the homepage.
-     </a>
-     </div>
+     <h4>Error Details</h4>
+     <table>
+          <tr><th>Message</th><td>{{ message }}</td></tr>
+          <tr><th>Status</th><td>{{ http_status }}</td></tr>
+          <tr><th>Stdout</th><td>{{ stdout }}</td></tr>
+          <tr><th>Stderr</th><td>{{ stderr }}</td></tr>
+     </table>
+<br>
+<h4>Options</h4>
+     Please choose one of the following, or use the back button:
+     <ul>
+          <li><a href="{{url_for('do_relaunch', path=dataset)}}">
+                    Attempt to relaunch the cellxgene server.
+               </a></li>
+          <li><a href="/filecrawl.html">
+               Return to the file directory.
+          </a></li>
+          <li><a href="/">
+               Return to the homepage.
+          </a></li>
+     </ul>
+     
 </body>
 </html>

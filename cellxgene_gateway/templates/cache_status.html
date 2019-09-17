@@ -31,7 +31,7 @@
                <th>dataset</th>
                <th>port</th>
                <th>launchtime</th>
-               <th>timestamp</th>
+               <th>last access</th>
                <th>status</th>
                <th>message</th>
                <th>http_status</th>
@@ -43,8 +43,8 @@
                <td>{{ entry.pid }}</td>
                <td>{{ entry.dataset }}</td>
                <td>{{ entry.port }}</td>
-               <td>{{ entry.launchtime }}</td>
-               <td>{{ entry.timestamp }}</td>
+               <td class="timestamp">{{ entry.launchtime }}</td>
+               <td class="timestamp">{{ entry.timestamp }}</td>
                <td>{{ entry.status }}</td>
                <td>{{ entry.message }}</td>
                <td>{{ entry.http_status }}</td>
@@ -52,5 +52,15 @@
      {% endfor %}
      </tbody>
      </table>
+     <script>
+          $(() => {
+               $(".timestamp").each(function(){
+                    const el = $(this);
+                    const ts = el.text();
+                    const dt = new Date(parseInt(ts * 1000));
+                    el.html(`${dt.toISOString()}<br>(${ts})`);
+               });
+          })
+     </script>
 </body>
 </html>

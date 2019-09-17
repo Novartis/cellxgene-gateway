@@ -48,6 +48,7 @@ def handle_invalid_usage(error):
             "cellxgene_error.html",
             extra_scripts=get_extra_scripts(),
             message=message,
+            path=error.path
         ),
         error.http_status,
     )
@@ -67,7 +68,11 @@ def handle_invalid_process(error):
         render_template(
             "process_error.html",
             extra_scripts=get_extra_scripts(),
-            message=message,
+            message=error.message,
+            http_status=error.http_status,
+            stdout=error.stdout,
+            stderr=error.stderr,
+            dataset=error.dataset,
         ),
         error.http_status,
     )
@@ -180,7 +185,7 @@ def do_view(path):
             "loading.html", launchtime=launch_time, all_output=match.all_output
         )
     elif match.status == "error":
-        raise ProcessException.from_pid_object(match)
+        raise ProcessException.from_cache_entry(match)
 
 @app.route("/cache_status", methods=["GET"])
 def do_GET_status():
@@ -195,7 +200,7 @@ def do_relaunch(path):
     match = cache.check_entry(dataset)
     if not match is None:
         match.terminate()
-    return redirect(url_for('view', path=path), code=301)
+    return redirect(url_for('do_view', path=path), code=302)
 
 def main():
     env.validate()

@@ -39,6 +39,11 @@
 		  <u>File Crawler: Allows you to view all uploaded data.</u></a>
 		  
 	</div>
+	<div class="list-group" style="width:50%;padding-left:65px">
+		<a href="/cache_status" class="list-group-item list-group-item-action">
+			<u>Cache Status: view status of launched cellxgene servers.</u></a>
+	</div>
+	
 	<br>
 
 	<h1 style="padding-left:35px">
@@ -102,10 +107,6 @@ ssh ec2-user@{{ ip }} 'mkdir -p {{ cellxgene_data }}/USER/DATA/'
 scp -r pbmc3k.h5ad ec2-user@{{ ip }}:{{ cellxgene_data }}/USER/DATA/</pre>	
 		<li>Take a look at your data using the file crawler link above</li>
 	</ol>	
-
-	<ul>
-		<li><a href="/cache_status.html">Cache Status<</a>  - view status of currently loaded datasets</li>
-	</ul>
 
 </body>
 </html>

@@ -62,7 +62,7 @@ class SubprocessBackend:
                 cache_entry.status = "error"
                 cache_entry.set_error(message, stderr, http_status)
 
-                raise ProcessException.from_pid_object(cache_entry)
+                raise ProcessException.from_cache_entry(cache_entry)
             else:
                 cache_entry.append_output(output)
 
