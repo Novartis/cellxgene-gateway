@@ -48,7 +48,6 @@ def handle_invalid_usage(error):
             "cellxgene_error.html",
             extra_scripts=get_extra_scripts(),
             message=message,
-            path=error.path,
         ),
         error.http_status,
     )
