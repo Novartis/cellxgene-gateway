@@ -8,6 +8,7 @@
 # the specific language governing permissions and limitations under the License.
 
 import time
+import logging
 
 from cellxgene_gateway.util import current_time_stamp
 from cellxgene_gateway.env import ttl
@@ -32,5 +33,5 @@ class PruneProcessCache:
             for process in processes_to_delete:
                 try:
                     cache.prune(process)
-                except Exception as detail:
-                    print("failed to prune process:", detail)
+                except Exception:
+                    logging.getLogger("werkzeug").exception("failed to prune process")
