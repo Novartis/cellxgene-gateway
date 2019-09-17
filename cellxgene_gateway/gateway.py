@@ -18,6 +18,7 @@ from flask import (
     render_template,
     request,
     send_from_directory,
+    url_for,
 )
 from flask_api import status
 from werkzeug import secure_filename
@@ -187,20 +188,18 @@ def do_GET_status():
         "cache_status.html", entry_list=cache.entry_list
     )
 
-pruner = PruneProcessCache(cache)
 
-@app.route("/prune/<path:path>", methods=["DELETE"])
-def do_prune(path):
+@app.route("/relaunch/<path:path>", methods=["GET"])
+def do_relaunch(path):
     dataset = get_dataset(path)
     match = cache.check_entry(dataset)
-    if match is None:
-        return "not found"
-    else:
-        pruner.prune(match)
-        return "success"
+    if not match is None:
+        match.terminate()
+    return redirect(url_for('view', path=path), code=301)
 
 def main():
     env.validate()
+    pruner = PruneProcessCache(cache)
     background_thread = Thread(target=pruner)
     background_thread.start()
 

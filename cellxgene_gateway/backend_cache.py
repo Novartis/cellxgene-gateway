@@ -30,7 +30,7 @@ class BackendCache:
 
     def check_entry(self, dataset):
         contents = self.entry_list
-        matches = [c for c in contents if c.dataset == dataset]
+        matches = [c for c in contents if c.dataset == dataset and c.status != "terminated"]
 
         if len(matches) == 0:
             return None
@@ -61,3 +61,7 @@ class BackendCache:
         time.sleep(1)  # Automatic refresh is too fast, needs a second to pause
 
         return entry
+    
+    def prune(self, process):
+        self.entry_list.remove(process)
+        process.terminate()

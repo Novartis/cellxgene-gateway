@@ -19,15 +19,6 @@ class PruneProcessCache:
     def __init__(self, cache):
         self.cache = cache
 
-    def prune(self, process):
-        self.cache.entry_list.remove(process)
-        pid = process.pid
-        if pid != None:
-            p = psutil.Process(pid)
-            p.terminate()
-            p = psutil.Process(pid + 2)
-            p.terminate()
-
     def __call__(self):
         while True:
             time.sleep(60)
@@ -42,7 +33,7 @@ class PruneProcessCache:
 
             for process in processes_to_delete:
                 try:
-                    self.prune(process)
+                    cache.prune(process)
                 except Exception as detail:
                     print('failed to prune process:', detail)
 

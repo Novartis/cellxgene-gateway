@@ -73,6 +73,15 @@ class CacheEntry:
         else:
             self.all_output += output
 
+    def terminate(self, process):
+        if pid != None and self.status != "terminated":
+            p = psutil.Process(pid)
+            p.terminate()
+            p = psutil.Process(pid + 2)
+            p.terminate()
+        self.status = "terminated"
+
+
     def serve_content(self, path):
         dataset = self.dataset
 
