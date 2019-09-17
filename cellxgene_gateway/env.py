@@ -25,6 +25,7 @@ env_vars = {
     "GATEWAY_IP": ip,
 }
 
+
 def validate():
     if not all(env_vars.values()):
         raise ValueError(

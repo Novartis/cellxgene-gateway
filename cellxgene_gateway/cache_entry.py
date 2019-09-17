@@ -67,7 +67,7 @@ class CacheEntry:
         self.stderr = stderr
         self.http_status = http_status
         self.status = "error"
-    
+
     def append_output(self, output):
         if self.all_output == None:
             self.all_output = output
@@ -82,7 +82,6 @@ class CacheEntry:
             p = psutil.Process(pid + 2)
             p.terminate()
         self.status = "terminated"
-
 
     def serve_content(self, path):
         dataset = self.dataset

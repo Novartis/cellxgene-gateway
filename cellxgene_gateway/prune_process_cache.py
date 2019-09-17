@@ -33,5 +33,4 @@ class PruneProcessCache:
                 try:
                     cache.prune(process)
                 except Exception as detail:
-                    print('failed to prune process:', detail)
-
+                    print("failed to prune process:", detail)
