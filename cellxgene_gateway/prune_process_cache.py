@@ -21,17 +21,20 @@ class PruneProcessCache:
     def __call__(self):
         while True:
             time.sleep(60)
+            self.prune()
 
-            timestamp = current_time_stamp()
+    def prune(self):
+        timestamp = current_time_stamp()
 
-            processes_to_delete = []
-            for p in self.cache.entry_list:
-                if timestamp - p.timestamp > (3600 if ttl is None else ttl):
-                    processes_to_delete.append(p)
-                    processes_to_delete
+        processes_to_delete = []
+        for p in self.cache.entry_list:
+            if timestamp - p.timestamp > (3600 if ttl is None else ttl):
+                processes_to_delete.append(p)
+                processes_to_delete
 
-            for process in processes_to_delete:
-                try:
-                    cache.prune(process)
-                except Exception:
-                    logging.getLogger("werkzeug").exception("failed to prune process")
+        for process in processes_to_delete:
+            try:
+                cache.prune(process)
+            except Exception:
+                logging.getLogger("werkzeug").exception("failed to prune process")
+
