@@ -26,7 +26,7 @@ from werkzeug import secure_filename
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
-from cellxgene_gateway.dir_util import create_dir, recurse_dir, render_entries
+from cellxgene_gateway.dir_util import create_dir, recurse_dir, render_entries, is_subdir
 from cellxgene_gateway.extra_scripts import get_extra_scripts
 from cellxgene_gateway.path_util import get_dataset, get_file_path
 from cellxgene_gateway.process_exception import ProcessException
@@ -125,14 +125,14 @@ def make_subdir():
 def upload_file():
     upload_dir = request.form["path"]
 
-    full_upload_path = env.cellxgene_data + "/" + upload_dir
-    if os.path.isdir(full_upload_path):
+    full_upload_path = os.path.join(env.cellxgene_data, upload_dir)
+    if is_subdir(full_upload_path, env.cellxgene_data) and os.path.isdir(full_upload_path):
         if request.method == "POST":
             if "file" in request.files:
                 f = request.files["file"]
                 if f and f.filename.endswith(".h5ad"):
                     f.save(
-                        full_upload_path + "/" + secure_filename(f.filename)
+                        os.path.join(full_upload_path, secure_filename(f.filename))
                     )
                     return redirect("/filecrawl.html", code=302)
                 else:
