@@ -88,6 +88,7 @@ def render_entries(entries):
 
 def render_entry(entry):
     if entry["type"] == "file":
-        return f"<li> <a href='view{entry['path']}'>{entry['name']}</a></li>"
+        url = 'view' + '/' + entry['path'].lstrip("/")
+        return f"<li> <a href='{ url}'>{entry['name']}</a></li>"
     elif entry["type"] == "directory":
         return f"<li>{entry['name']}{render_entries(entry['children'])}</li>"
