@@ -8,6 +8,7 @@
 # the specific language governing permissions and limitations under the License.
 
 import os
+import logging
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA")
@@ -26,6 +27,11 @@ env_vars = {
     "GATEWAY_IP": ip,
 }
 
+optional_env_vars = {
+    "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
+    "GATEWAY_TTL": ttl,
+    "GATEWAY_ENABLE_UPLOAD": enable_upload,
+}
 
 def validate():
     if not all(env_vars.values()):
@@ -46,3 +52,6 @@ def validate():
         export GATEWAY_IP=127.0.0.1
     """
         )
+    else:
+        logging.getLogger("cellxgene_gateway").info(f"Got required env: {env_vars}", )
+        logging.getLogger("cellxgene_gateway").info(f"Got optional env: {optional_env_vars}")

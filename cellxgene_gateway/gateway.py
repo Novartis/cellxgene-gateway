@@ -10,6 +10,7 @@
 # import BaseHTTPServer
 import datetime
 import os
+import logging
 from threading import Thread
 
 from flask import (
@@ -204,6 +205,7 @@ def do_relaunch(path):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
     env.validate()
     pruner = PruneProcessCache(cache)
     background_thread = Thread(target=pruner)

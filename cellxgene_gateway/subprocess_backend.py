@@ -38,7 +38,7 @@ class SubprocessBackend:
         cmd = self.create_cmd(
             cellxgene_loc, cache_entry.file_path, cache_entry.port, scripts
         )
-        logging.getLogger("werkzeug").info(f"launching {cmd}")
+        logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
         process = subprocess.Popen(
             [cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )

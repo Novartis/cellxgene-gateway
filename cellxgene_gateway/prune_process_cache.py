@@ -29,11 +29,12 @@ class PruneProcessCache:
         cutoff = timestamp - self.expire_seconds
         processes_to_delete = [p for p in self.cache.entry_list if  p.timestamp < cutoff]
         processes_to_keep = [p for p in self.cache.entry_list if not p.timestamp < cutoff]
-        logging.getLogger("werkzeug").debug(f"Cutoff {cutoff} = timestamp {timestamp} - expire seconds {self.expire_seconds} , keeping {processes_to_keep}")
+        logger = logging.getLogger("cellxgene_gateway")
+        logger.debug(f"Cutoff {cutoff} = timestamp {timestamp} - expire seconds {self.expire_seconds} , keeping {processes_to_keep}")
         
         for process in processes_to_delete:
             try:
-                logging.getLogger("werkzeug").info(f"pruning process {process.pid} ({process.dataset})")
+                logger.info(f"pruning process {process.pid} ({process.dataset})")
                 self.cache.prune(process)
             except Exception:
-                logging.getLogger("werkzeug").exception("failed to prune process {process.pid} ({process.dataset})")
+                logger.exception("failed to prune process {process.pid} ({process.dataset})")
