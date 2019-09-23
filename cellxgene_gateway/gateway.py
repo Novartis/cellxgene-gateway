@@ -99,10 +99,9 @@ def index():
         cellxgene_data=env.cellxgene_data,
         extra_scripts=get_extra_scripts(),
         users=users,
+        enable_upload=env.enable_upload,
     )
 
-
-@app.route("/make_user", methods=["POST"])
 def make_user():
     dir_name = request.form["directory"]
 
@@ -111,7 +110,6 @@ def make_user():
     return redirect(location, code=302)
 
 
-@app.route("/make_subdir", methods=["POST"])
 def make_subdir():
     parent_path = os.path.join(env.cellxgene_data, request.form["usernames"])
     dir_name = request.form["directory"]
@@ -121,7 +119,6 @@ def make_subdir():
     return redirect(location, code=302)
 
 
-@app.route("/upload_file", methods=["POST"])
 def upload_file():
     upload_dir = request.form["path"]
 
@@ -152,6 +149,11 @@ def upload_file():
 
     return redirect(env.location, code=302)
 
+
+if env.enable_upload:
+    app.add_url_rule('/make_user', 'make_user', make_user, methods=["POST"])
+    app.add_url_rule('/make_subdir', 'make_subdir', make_subdir, methods=["POST"])
+    app.add_url_rule('/upload_file', 'upload_file', upload_file, methods=["POST"])
 
 @app.route("/filecrawl.html")
 def filecrawl():

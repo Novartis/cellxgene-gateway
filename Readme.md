@@ -65,7 +65,10 @@ Here's what the environment variables mean:
 * `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
 * `GATEWAY_HOST` - the hostname and port that the gateway will run on, typically `localhost:5005` if running locally
 * `GATEWAY_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
-* `GATEWAY_EXTRA_SCRIPTS` - (optional) JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
+* `GATEWAY_IP` - ip addess of instance gateway is running on, mostly used to display SSH instructions
+Optional environment variables:
+* `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
+* `GATEWAY_ENABLE_UPLOAD` - Set to `true` or `1` to enable HTTP uploads. This is not recommended for a public server.
 
 The defaults should be fine if you set up a venv and cellxgene_data folder as above.
 

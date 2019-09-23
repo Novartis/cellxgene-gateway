@@ -44,10 +44,10 @@
 			<u>Cache Status: view status of launched cellxgene servers.</u></a>
 	</div>
 	
+	{% if enable_upload %}
 	<br>
-
 	<h1 style="padding-left:35px">
-		How To Upload Data:	
+		How To Upload Data via HTTP:
 	</h1>
 	<ol style="padding-left:85px;">
 		<li>
@@ -83,12 +83,12 @@
 		<br>
 		<li>Take a look at your data using the file crawler link above</li>
 	</ol>
-
+	{% endif %}
 
 	<br>
 
 	<h1 style="padding-left:35px">
-		How To Upload Data via SSH and SCP (Linux):	
+		How To Upload Data via SSH and SCP:
 	</h1>
 	<ol style="padding-left:85px;">
 		<li>
