@@ -12,6 +12,7 @@ import datetime
 import os
 import logging
 from threading import Thread
+import json
 
 from flask import (
     Flask,
@@ -194,6 +195,15 @@ def do_view(path):
 def do_GET_status():
     return render_template("cache_status.html", entry_list=cache.entry_list)
 
+@app.route("/cache_status.json", methods=["GET"])
+def do_GET_status_json():
+    return json.dumps({'launchtime':app.launchtime,
+    'entry_list':[{
+        'dataset': entry.dataset,
+        'launchtime': entry.launchtime,
+        'last_access': entry.timestamp,
+        'status': entry.status
+    } for entry in cache.entry_list]})
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
@@ -216,9 +226,11 @@ def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
     env.validate()
     pruner = PruneProcessCache(cache)
+
     background_thread = Thread(target=pruner)
     background_thread.start()
 
+    app.launchtime = current_time_stamp()
     app.run(host="0.0.0.0", port=5005, debug=False)
 
 
