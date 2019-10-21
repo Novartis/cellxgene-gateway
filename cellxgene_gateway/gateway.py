@@ -203,6 +203,14 @@ def do_relaunch(path):
         match.terminate()
     return redirect(url_for("do_view", path=path), code=302)
 
+@app.route("/terminate/<path:path>", methods=["GET"])
+def do_terminate(path):
+    dataset = get_dataset(path)
+    match = cache.check_entry(dataset)
+    if not match is None:
+        match.terminate()
+    return redirect(url_for("do_GET_status"), code=302)
+
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')

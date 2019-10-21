@@ -35,19 +35,25 @@
                <th>status</th>
                <th>message</th>
                <th>http_status</th>
+               <th>actions</th>
           </tr>
      </thead>
      <tbody>
 	{% for entry in entry_list %}
           <tr>
                <td>{{ entry.pid }}</td>
-               <td>{{ entry.dataset }}</td>
+               <td><a href="{{ url_for('do_view', path=entry.dataset) }}">{{ entry.dataset }}</a></td>
                <td>{{ entry.port }}</td>
                <td class="timestamp">{{ entry.launchtime }}</td>
                <td class="timestamp">{{ entry.timestamp }}</td>
                <td>{{ entry.status }}</td>
                <td>{{ entry.message }}</td>
                <td>{{ entry.http_status }}</td>
+               <td>
+                 {% if entry.status == 'loaded' %}
+                   <a href="{{ url_for('do_terminate', path=entry.dataset) }}"> terminate </a>
+                 {% endif %}
+               </td>
           </tr>
      {% endfor %}
      </tbody>
