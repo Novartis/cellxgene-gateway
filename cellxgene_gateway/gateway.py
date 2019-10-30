@@ -11,7 +11,7 @@
 import datetime
 import os
 import logging
-from threading import Thread
+from threading import Thread, Lock
 import json
 
 from flask import (
@@ -168,15 +168,16 @@ def filecrawl():
         rendered_html=rendered_html,
     )
 
-
+entry_lock = Lock()
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
 def do_view(path):
     dataset = get_dataset(path)
     file_path = get_file_path(dataset)
-    match = cache.check_entry(dataset)
-    if match is None:
-        uascripts = get_extra_scripts()
-        match = cache.create_entry(dataset, file_path, uascripts)
+    with entry_lock:
+        match = cache.check_entry(dataset)
+        if match is None:
+            uascripts = get_extra_scripts()
+            match = cache.create_entry(dataset, file_path, uascripts)
 
     match.timestamp = current_time_stamp()
 
