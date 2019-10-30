@@ -7,13 +7,14 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 import psutil
+import logging
+
 from flask import make_response, request
 from requests import get, post, put
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.util import current_time_stamp
-
 
 class CacheEntry:
     def __init__(
@@ -77,10 +78,18 @@ class CacheEntry:
     def terminate(self):
         pid = self.pid
         if pid != None and self.status != "terminated":
+            terminated = []
+            def on_terminate(p):
+                terminated.append(p.pid)
             p = psutil.Process(pid)
+            children = p.children()
+            for child in children:
+                child.terminate()
+            psutil.wait_procs(children, callback=on_terminate)
+            terminated.append(p.pid)
             p.terminate()
-            p = psutil.Process(pid + 2)
-            p.terminate()
+            psutil.wait_procs([p], callback=on_terminate)
+            logging.getLogger("cellxgene_gateway").info(f"terminated {terminated}")
         self.status = "terminated"
 
     def serve_content(self, path):
