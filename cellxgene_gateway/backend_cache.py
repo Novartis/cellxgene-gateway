@@ -20,6 +20,11 @@ from cellxgene_gateway.subprocess_backend import SubprocessBackend
 process_backend = SubprocessBackend()
 
 
+def is_port_in_use(port):
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
 class BackendCache:
     def __init__(self):
         self.entry_list = []
@@ -49,7 +54,7 @@ class BackendCache:
     def create_entry(self, dataset, file_path, scripts):
         port = 8000
         existing_ports = self.get_ports()
-        while port in existing_ports:
+        while (port in existing_ports) or is_port_in_use(port):
             port += 1
 
         entry = CacheEntry.for_dataset(dataset, file_path, port)
