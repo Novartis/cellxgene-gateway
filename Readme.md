@@ -48,9 +48,6 @@ wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc
 ```bash
 export CELLXGENE_DATA=../cellxgene_data  # change this directory if you put data in a different place.
 export CELLXGENE_LOCATION=`which cellxgene`
-export GATEWAY_HOST=localhost:5005
-export GATEWAY_PROTOCOL=http
-export GATEWAY_IP=127.0.0.1
 ```
 
 3. Now, execute the cellxgene gateway:
@@ -63,10 +60,11 @@ Here's what the environment variables mean:
 
 * `CELLXGENE_LOCATION` - the location of the cellxgene executable, e.g. `~/anaconda2/envs/cellxgene/bin/cellxgene`
 * `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
-* `GATEWAY_HOST` - the hostname and port that the gateway will run on, typically `localhost:5005` if running locally
-* `GATEWAY_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy.
-* `GATEWAY_IP` - ip addess of instance gateway is running on, mostly used to display SSH instructions
 Optional environment variables:
+* `EXTERNAL_HOST` - the hostname and port from the perspective of the web browser, typically `localhost:5005` if running locally. Defaults to "localhost:{GATEWAY_PORT}"
+* `EXTERNAL_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy that performs https termination. Default value "http"
+* `GATEWAY_IP` - ip addess of instance gateway is running on, mostly used to display SSH instructions. Defaults to `socket.gethostbyname(socket.gethostname())`
+* `GATEWAY_PORT` - local port that the gateway should bind to, defaults to 5005
 * `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
 * `GATEWAY_ENABLE_UPLOAD` - Set to `true` or `1` to enable HTTP uploads. This is not recommended for a public server.
 

@@ -14,6 +14,6 @@ from json import loads
 def get_extra_scripts():
     # can be array of script tags to inject on every page, e.g. for google analytics could be
     # ['https://www.googletagmanager.com/gtag/js?id=UA-123456-2',
-    #  f"{env.gateway_protocol}://{env.gateway_host}/static/js/google_ua.js"]
+    #  f"{env.external_protocol}://{env.external_host}/static/js/google_ua.js"]
     # where google_ua.js is a script you add to the static/js folder prior to deployment.
     return [] if env.extra_scripts is None else loads(env.extra_scripts)

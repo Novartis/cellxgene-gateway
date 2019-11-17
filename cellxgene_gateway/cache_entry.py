@@ -96,7 +96,7 @@ class CacheEntry:
         dataset = self.dataset
 
         gateway_basepath = (
-            f"{env.gateway_protocol}://{env.gateway_host}/view/{dataset}/"
+            f"{env.external_protocol}://{env.external_host}/view/{dataset}/"
         )
         subpath = path[len(dataset) :]  # noqa: E203
 

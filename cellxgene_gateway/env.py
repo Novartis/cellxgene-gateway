@@ -9,11 +9,13 @@
 
 import os
 import logging
+import socket
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA")
-gateway_host = os.environ.get("GATEWAY_HOST")
-gateway_protocol = os.environ.get("GATEWAY_PROTOCOL")
+gateway_port = int(os.environ.get("GATEWAY_PORT", "5005"))
+external_host = os.environ.get("EXTERNAL_HOST", os.environ.get("GATEWAY_HOST", f"localhost:{gateway_port}"))
+external_protocol = os.environ.get("EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http"))
 ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
@@ -22,12 +24,13 @@ enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in ['true', 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
     "CELLXGENE_DATA": cellxgene_data,
-    "GATEWAY_HOST": gateway_host,
-    "GATEWAY_PROTOCOL": gateway_protocol,
     "GATEWAY_IP": ip,
 }
 
 optional_env_vars = {
+    "EXTERNAL_HOST": external_host,
+    "EXTERNAL_PROTOCOL": external_protocol,
+    "GATEWAY_PORT": gateway_port,
     "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
     "GATEWAY_TTL": ttl,
     "GATEWAY_ENABLE_UPLOAD": enable_upload,
@@ -47,8 +50,6 @@ def validate():
 
         export CELLXGENE_LOCATION=~/anaconda/envs/cellxgene-dev/bin/cellxgene
         export CELLXGENE_DATA=../cellxgene_data
-        export GATEWAY_HOST=localhost:5005
-        export GATEWAY_PROTOCOL=http
         export GATEWAY_IP=127.0.0.1
     """
         )

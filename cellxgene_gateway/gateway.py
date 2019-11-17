@@ -37,7 +37,7 @@ from cellxgene_gateway.util import current_time_stamp
 
 app = Flask(__name__)
 cache = BackendCache()
-location = f"{env.gateway_protocol}://{env.gateway_host}"
+location = f"{env.external_protocol}://{env.external_host}"
 
 
 @app.errorhandler(CellxgeneException)
@@ -232,7 +232,7 @@ def main():
     background_thread.start()
 
     app.launchtime = current_time_stamp()
-    app.run(host="0.0.0.0", port=5005, debug=False)
+    app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
 
 if __name__ == "__main__":
