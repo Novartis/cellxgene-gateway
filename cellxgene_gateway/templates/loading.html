@@ -44,9 +44,13 @@
      </a>
      </div>
      <script>
+          var count = 0;
           window.setInterval(function(){
                var dots = document.getElementById('dots');
                dots.textContent = dots.textContent + '.';
+               if (count++ > 5) {
+                    window.location.reload();
+               }
           }, 1000);
      </script>
 </body>
