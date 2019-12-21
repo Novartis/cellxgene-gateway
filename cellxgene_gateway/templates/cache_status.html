@@ -29,6 +29,7 @@
           <tr>
                <th>PID</th>
                <th>dataset</th>
+               <th>annotation_file</th>
                <th>port</th>
                <th>launchtime</th>
                <th>last access</th>
@@ -42,7 +43,8 @@
 	{% for entry in entry_list %}
           <tr>
                <td>{{ entry.pid }}</td>
-               <td><a href="{{ url_for('do_view', path=entry.dataset) }}">{{ entry.dataset }}</a></td>
+               <td><a href="{{ url_for('do_view', path=entry.dataset) }}">{{ entry.key.dataset }}</a></td>
+               <td>{{ entry.key.annotation_file }}</td>
                <td>{{ entry.port }}</td>
                <td class="timestamp">{{ entry.launchtime }}</td>
                <td class="timestamp">{{ entry.timestamp }}</td>

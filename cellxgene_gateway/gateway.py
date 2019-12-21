@@ -28,12 +28,13 @@ from werkzeug import secure_filename
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
-from cellxgene_gateway.dir_util import create_dir, recurse_dir, render_entries, is_subdir
+from cellxgene_gateway.dir_util import create_dir, is_subdir
+from cellxgene_gateway.filecrawl import recurse_dir, render_entries
 from cellxgene_gateway.extra_scripts import get_extra_scripts
-from cellxgene_gateway.path_util import get_dataset, get_file_path
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.prune_process_cache import PruneProcessCache
 from cellxgene_gateway.util import current_time_stamp
+from cellxgene_gateway.path_util import get_key
 
 app = Flask(__name__)
 cache = BackendCache()
@@ -73,7 +74,8 @@ def handle_invalid_process(error):
             http_status=error.http_status,
             stdout=error.stdout,
             stderr=error.stderr,
-            dataset=error.dataset,
+            dataset=error.key.dataset,
+            annotation_file=error.key.annotation_file,
         ),
         error.http_status,
     )
@@ -159,7 +161,6 @@ if env.enable_upload:
 
 @app.route("/filecrawl.html")
 def filecrawl():
-
     entries = recurse_dir(env.cellxgene_data)
     rendered_html = render_entries(entries)
     return render_template(
@@ -187,13 +188,13 @@ def do_filecrawl(path):
 entry_lock = Lock()
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
 def do_view(path):
-    dataset = get_dataset(path)
-    file_path = get_file_path(dataset)
+    key = get_key(path)
+    print(f"view path={path}, dataset={key.dataset}, annotation_file= {key.annotation_file}, key={key.pathpart}")
     with entry_lock:
-        match = cache.check_entry(dataset)
+        match = cache.check_entry(key)
         if match is None:
             uascripts = get_extra_scripts()
-            match = cache.create_entry(dataset, file_path, uascripts)
+            match = cache.create_entry(key, uascripts)
 
     match.timestamp = current_time_stamp()
 
@@ -216,7 +217,8 @@ def do_GET_status():
 def do_GET_status_json():
     return json.dumps({'launchtime':app.launchtime,
     'entry_list':[{
-        'dataset': entry.dataset,
+        'dataset': entry.key.dataset,
+        'annotation_file': entry.key.annotation_file,
         'launchtime': entry.launchtime,
         'last_access': entry.timestamp,
         'status': entry.status
@@ -224,16 +226,17 @@ def do_GET_status_json():
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
-    dataset = get_dataset(path)
-    match = cache.check_entry(dataset)
+    key = get_key(path)
+    match = cache.check_entry(key)
     if not match is None:
         match.terminate()
-    return redirect(url_for("do_view", path=path), code=302)
+    qs = request.query_string.decode()
+    return redirect(url_for("do_view", path=path) + (f'?{qs}' if len(qs) > 0 else ''), code=302)
 
 @app.route("/terminate/<path:path>", methods=["GET"])
 def do_terminate(path):
-    dataset = get_dataset(path)
-    match = cache.check_entry(dataset)
+    key = get_key(path)
+    match = cache.check_entry(key)
     if not match is None:
         match.terminate()
     return redirect(url_for("do_GET_status"), code=302)

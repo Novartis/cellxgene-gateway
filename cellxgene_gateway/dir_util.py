@@ -51,45 +51,8 @@ def create_dir(parent_path, dir_name):
     else:
         os.mkdir(full_path)
 
-
-def recurse_dir(path):
-    if not os.path.exists(path):
-        raise CellxgeneException(
-            "The given path does not exist.", status.HTTP_400_BAD_REQUEST
-        )
-
-    def make_entry(el):
-        full_path = os.path.join(path, el)
-        if os.path.isfile(full_path):
-            return {
-                "path": full_path.replace(env.cellxgene_data, ""),
-                "name": el,
-                "type": "file",
-            }
-        elif os.path.isdir(full_path):
-            return {
-                "path": full_path.replace(env.cellxgene_data, ""),
-                "name": el,
-                "type": "directory",
-                "children": recurse_dir(full_path),
-            }
-        else:
-            raise CellxgeneException(
-                "Given path is neither file nor directory.",
-                status.HTTP_400_BAD_REQUEST,
-            )
-
-    return [make_entry(x) for x in os.listdir(path)]
-
-
-def render_entries(entries):
-    return "<ul>" + "\n".join([render_entry(e) for e in entries]) + "</ul>"
-
-
-def render_entry(entry):
-    if entry["type"] == "file":
-        url = f"/view/{entry['path'].lstrip('/')}"
-        return f"<li> <a href='{ url}'>{entry['name']}</a></li>"
-    elif entry["type"] == "directory":
-        url = f"/filecrawl/{entry['path'].lstrip('/')}"
-        return f"<li><a href='{url}'>{entry['name']}</a>{render_entries(entry['children'])}</li>"
+annotations_suffix = '_annotations'
+def make_h5ad(el):
+    return el[:-len(annotations_suffix)]+'.h5ad'
+def make_annotations(el):
+    return el[:-5]+annotations_suffix

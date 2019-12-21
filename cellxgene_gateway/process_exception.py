@@ -15,7 +15,7 @@ class ProcessException(Exception):
         self.stdout = stdout
         self.stderr = stderr
         self.http_status = http_status
-        self.dataset = dataset
+        self.key = key
 
     @classmethod
     def from_cache_entry(cls, cache_entry):
@@ -24,5 +24,5 @@ class ProcessException(Exception):
             cache_entry.all_output,
             cache_entry.stderr,
             cache_entry.http_status,
-            cache_entry.dataset,
+            cache_entry.key,
         )
