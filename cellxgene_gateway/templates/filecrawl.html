@@ -21,7 +21,11 @@
 </head>
 <body>
      <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
-       <h3>Cellxgene Gateway - FILE CRAWLER</h3>
+          {% if path %}
+          <h3>Cellxgene Gateway - {{ path }}</h3>
+          {% else %}
+          <h3>Cellxgene Gateway - FILE CRAWLER</h3>
+          {% endif %}
      </header>
      <br>
 
@@ -29,6 +33,15 @@
 
      <br>
      {{ rendered_html|safe }}
-
+     <p>
+          Navigation:
+     <ul>
+     {% if path %}
+     <li><a href="/filecrawl.html">top level</a></li>
+     {% else %}
+     {% endif %}
+     <li><a href="/">homepage</a></li>
+     </ul>
+     </p>
 </body>
 </html>

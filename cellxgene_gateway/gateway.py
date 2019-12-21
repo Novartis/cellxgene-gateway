@@ -168,6 +168,22 @@ def filecrawl():
         rendered_html=rendered_html,
     )
 
+@app.route("/filecrawl/<path:path>")
+def do_filecrawl(path):
+    filecrawl_path = os.path.join(env.cellxgene_data, path)
+    if not os.path.isdir(filecrawl_path):
+        raise CellxgeneException(
+            "Path is not directory: " + filecrawl_path, status.HTTP_400_BAD_REQUEST
+        )
+    entries = recurse_dir(filecrawl_path)
+    rendered_html = render_entries(entries)
+    return render_template(
+        "filecrawl.html",
+        extra_scripts=get_extra_scripts(),
+        rendered_html=rendered_html,
+        path=path,
+    )
+
 entry_lock = Lock()
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
 def do_view(path):

@@ -68,7 +68,7 @@ def recurse_dir(path):
             }
         elif os.path.isdir(full_path):
             return {
-                "path": full_path,
+                "path": full_path.replace(env.cellxgene_data, ""),
                 "name": el,
                 "type": "directory",
                 "children": recurse_dir(full_path),
@@ -88,7 +88,8 @@ def render_entries(entries):
 
 def render_entry(entry):
     if entry["type"] == "file":
-        url = 'view' + '/' + entry['path'].lstrip("/")
+        url = f"/view/{entry['path'].lstrip('/')}"
         return f"<li> <a href='{ url}'>{entry['name']}</a></li>"
     elif entry["type"] == "directory":
-        return f"<li>{entry['name']}{render_entries(entry['children'])}</li>"
+        url = f"/filecrawl/{entry['path'].lstrip('/')}"
+        return f"<li><a href='{url}'>{entry['name']}</a>{render_entries(entry['children'])}</li>"
