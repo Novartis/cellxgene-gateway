@@ -19,7 +19,8 @@ def recurse_dir(path):
             entries = []
         else:
             entries = [{
-                "name": x[:x.index('-')] if '-' in x else x,
+                "name": x[:-13] if (x[-13] in ['-','_']) else (
+                    x[:-4] if x.endwith('.csv') else x),
                 "path": os.path.join(full_path, x).replace(env.cellxgene_data, ""),
             } for x in os.listdir(full_path) if x.endswith('.csv') and os.path.isfile(os.path.join(full_path, x))]
         return [{"name":'new', "path":full_path.replace(env.cellxgene_data, "")}] + entries
