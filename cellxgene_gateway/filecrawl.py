@@ -23,7 +23,7 @@ def recurse_dir(path):
                     x[:-4] if x.endwith('.csv') else x),
                 "path": os.path.join(full_path, x).replace(env.cellxgene_data, ""),
             } for x in os.listdir(full_path) if x.endswith('.csv') and os.path.isfile(os.path.join(full_path, x))]
-        return [{"name":'new', "path":full_path.replace(env.cellxgene_data, "")}] + entries
+        return [{"name":'new', "class":'new', "path":full_path.replace(env.cellxgene_data, "")}] + entries
 
     def make_entry(el):
         full_path = os.path.join(path, el)
@@ -56,12 +56,14 @@ def render_entries(entries):
 
 def get_url(entry):
     return f"view/{ entry['path'].lstrip('/') }"
+def get_class(entry):
+    return f" class='{entry['class']}'" if 'class' in entry else ''
 
 def render_annotations(entry):
     if len(entry['annotations']) > 0:
-        return ' | annotations: ' + ", ".join([f"<a href='{get_url(a)}'>{a['name']}</a>" for a in entry['annotations']])
+        return ' | annotations: ' + ", ".join([f"<a href='{get_url(a)}'{get_class(a)}>{a['name']}</a>" for a in entry['annotations']])
     else:
-        return '';
+        return ''
 
 def render_entry(entry):
     if entry["type"] == "file":

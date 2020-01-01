@@ -17,6 +17,7 @@ import json
 from flask import (
     Flask,
     redirect,
+    make_response,
     render_template,
     request,
     send_from_directory,
@@ -163,11 +164,16 @@ if env.enable_upload:
 def filecrawl():
     entries = recurse_dir(env.cellxgene_data)
     rendered_html = render_entries(entries)
-    return render_template(
+    resp = make_response(render_template(
         "filecrawl.html",
         extra_scripts=get_extra_scripts(),
         rendered_html=rendered_html,
-    )
+    ))
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    resp.headers['Cache-Control'] = 'public, max-age=0'
+    return resp
 
 @app.route("/filecrawl/<path:path>")
 def do_filecrawl(path):
