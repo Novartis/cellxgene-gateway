@@ -43,7 +43,7 @@
 	{% for entry in entry_list %}
           <tr>
                <td>{{ entry.pid }}</td>
-               <td><a href="{{ url_for('do_view', path=entry.dataset) }}">{{ entry.key.dataset }}</a></td>
+               <td><a href="{{ url_for('do_view', path=entry.key.pathpart) }}">{{ entry.key.dataset }}</a></td>
                <td>{{ entry.key.annotation_file }}</td>
                <td>{{ entry.port }}</td>
                <td class="timestamp">{{ entry.launchtime }}</td>
@@ -53,7 +53,7 @@
                <td>{{ entry.http_status }}</td>
                <td>
                  {% if entry.status == 'loaded' %}
-                   <a href="{{ url_for('do_terminate', path=entry.dataset) }}"> terminate </a>
+                   <a href="{{ url_for('do_terminate', path=entry.key.pathpart) }}"> terminate </a>
                  {% endif %}
                </td>
           </tr>
