@@ -8,7 +8,6 @@
 # the specific language governing permissions and limitations under the License.
 
 # import BaseHTTPServer
-import datetime
 import os
 import logging
 from threading import Thread, Lock
@@ -204,13 +203,8 @@ def do_view(path):
 
     match.timestamp = current_time_stamp()
 
-    if match.status == "loaded":
+    if match.status == "loaded" or match.status == "loading":
         return match.serve_content(path)
-    elif match.status == "loading":
-        launch_time = datetime.datetime.fromtimestamp(match.launchtime)
-        return render_template(
-            "loading.html", launchtime=launch_time, all_output=match.all_output
-        )
     elif match.status == "error":
         raise ProcessException.from_cache_entry(match)
 

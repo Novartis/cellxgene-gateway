@@ -8,8 +8,9 @@
 # the specific language governing permissions and limitations under the License.
 import psutil
 import logging
+import datetime
 
-from flask import make_response, request
+from flask import make_response, request, render_template
 from requests import get, post, put
 
 from cellxgene_gateway import env
@@ -92,17 +93,20 @@ class CacheEntry:
         self.status = "terminated"
 
     def serve_content(self, path):
-        dataset = self.key.dataset
-
         gateway_basepath = (
             f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
         )
         subpath = path[len(self.key.pathpart) :]  # noqa: E203
-
+            
         if len(subpath) == 0:
             r = make_response(f"Redirect to {gateway_basepath}\n", 301)
             r.headers["location"] = gateway_basepath+querystring()
             return r
+        elif self.status == "loading":
+            launch_time = datetime.datetime.fromtimestamp(self.launchtime)
+            return render_template(
+                "loading.html", launchtime=launch_time, all_output=self.all_output
+            )
 
         port = self.port
         cellxgene_basepath = f"http://127.0.0.1:{port}"
