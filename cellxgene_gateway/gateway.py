@@ -37,6 +37,14 @@ from cellxgene_gateway.util import current_time_stamp
 from cellxgene_gateway.path_util import get_key
 
 app = Flask(__name__)
+
+def _force_https(app):
+    def wrapper(environ, start_response):
+        environ['wsgi.url_scheme'] = env.external_protocol
+        return app(environ, start_response)
+    return wrapper
+app.wsgi_app = _force_https(app.wsgi_app)
+
 cache = BackendCache()
 location = f"{env.external_protocol}://{env.external_host}"
 
@@ -151,7 +159,7 @@ def upload_file():
             "Invalid directory.", status.HTTP_400_BAD_REQUEST
         )
 
-    return redirect(env.location, code=302)
+    return redirect(location, code=302)
 
 
 if env.enable_upload:
