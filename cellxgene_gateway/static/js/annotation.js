@@ -1,8 +1,6 @@
 // neandertal javascript
 const new_annotation_callback = (() =>{
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const pickn = (c, n) => n==0?'':c.substr(Math.random()*c.length,1) + pickn(c,n-1);
-    const suffix = `_${pickn(chars,8)}.csv`;
+    const suffix = `.csv`;
     return (e) => {
         e.preventDefault();
         const el = $(e.target);
