@@ -19,8 +19,8 @@ def recurse_dir(path):
             entries = []
         else:
             entries = [{
-                "name": x[:-13] if (x[-13] in ['-','_']) else (
-                    x[:-4] if x.endwith('.csv') else x),
+                "name": x[:-13] if (len(x) > 13 and x[-13] in ['-','_']) else (
+                    x[:-4] if x.endswith('.csv') else x),
                 "path": os.path.join(full_path, x).replace(env.cellxgene_data, ""),
             } for x in os.listdir(full_path) if x.endswith('.csv') and os.path.isfile(os.path.join(full_path, x))]
         return [{"name":'new', "class":'new', "path":full_path.replace(env.cellxgene_data, "")}] + entries
@@ -55,7 +55,7 @@ def render_entries(entries):
     return "<ul>" + "\n".join([render_entry(e) for e in entries]) + "</ul>"
 
 def get_url(entry):
-    return f"view/{ entry['path'].lstrip('/') }"
+    return f"/view/{ entry['path'].lstrip('/') }"
 def get_class(entry):
     return f" class='{entry['class']}'" if 'class' in entry else ''
 
