@@ -11,21 +11,30 @@ import logging
 import subprocess
 
 from flask_api import status
-
+from cellxgene_gateway.env import enable_annotations
 from cellxgene_gateway.process_exception import ProcessException
-
+from cellxgene_gateway.dir_util import make_annotations
+from cellxgene_gateway.path_util import get_file_path, get_annotation_file_path
 
 class SubprocessBackend:
     def __init__(self):
         pass
 
-    def create_cmd(self, cellxgene_loc, file_path, port, scripts):
-
+    def create_cmd(self, cellxgene_loc, file_path, port, scripts, annotation_file_path):
+        if enable_annotations and not annotation_file_path is None:
+            annotation_args_prefix = " --experimental-annotations"
+            if annotation_file_path == "":
+                annotation_args = f"{annotation_args_prefix} --experimental-annotations-output-dir {make_annotations(file_path)}"
+            else:
+                annotation_args = f"{annotation_args_prefix} --experimental-annotations-file {annotation_file_path}"
+        else:
+            annotation_args = ""
         cmd = (
             f"yes | {cellxgene_loc} launch {file_path}"
             + " --port "
             + str(port)
             + " --host 127.0.0.1"
+            + annotation_args
         )
 
         for s in scripts:
@@ -36,7 +45,7 @@ class SubprocessBackend:
     def launch(self, cellxgene_loc, scripts, cache_entry):
 
         cmd = self.create_cmd(
-            cellxgene_loc, cache_entry.file_path, cache_entry.port, scripts
+            cellxgene_loc, get_file_path(cache_entry.key), cache_entry.port, scripts, get_annotation_file_path(cache_entry.key)
         )
         logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
         process = subprocess.Popen(

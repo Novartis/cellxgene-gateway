@@ -33,12 +33,12 @@ class BackendCache:
         contents = self.entry_list
         return [c.port for c in contents]
 
-    def check_entry(self, dataset):
+    def check_entry(self, key):
         contents = self.entry_list
         matches = [
             c
             for c in contents
-            if c.dataset == dataset and c.status != "terminated"
+            if c.key.dataset == key.dataset and c.key.annotation_file == key.annotation_file and c.status != "terminated"
         ]
 
         if len(matches) == 0:
@@ -51,13 +51,14 @@ class BackendCache:
                 "Found " + str(len(matches)) + " for " + dataset,
             )
 
-    def create_entry(self, dataset, file_path, scripts):
+    def create_entry(self, key, scripts):
         port = 8000
         existing_ports = self.get_ports()
+
         while (port in existing_ports) or is_port_in_use(port):
             port += 1
 
-        entry = CacheEntry.for_dataset(dataset, file_path, port)
+        entry = CacheEntry.for_key(key, port)
 
         background_thread = Thread(
             target=process_backend.launch,

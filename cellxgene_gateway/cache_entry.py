@@ -8,20 +8,21 @@
 # the specific language governing permissions and limitations under the License.
 import psutil
 import logging
+import datetime
 
-from flask import make_response, request
+from flask import make_response, request, render_template
 from requests import get, post, put
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.util import current_time_stamp
+from cellxgene_gateway.flask_util import querystring
 
 class CacheEntry:
     def __init__(
         self,
         pid,
-        dataset,
-        file_path,
+        key,
         port,
         launchtime,
         timestamp,
@@ -32,8 +33,7 @@ class CacheEntry:
         http_status,
     ):
         self.pid = pid
-        self.dataset = dataset
-        self.file_path = file_path
+        self.key = key
         self.port = port
         self.launchtime = launchtime
         self.timestamp = timestamp
@@ -44,11 +44,11 @@ class CacheEntry:
         self.http_status = http_status
 
     @classmethod
-    def for_dataset(cls, dataset, file_path, port):
+    def for_key(cls, key, port):
+
         return cls(
             None,
-            dataset,
-            file_path,
+            key,
             port,
             current_time_stamp(),
             current_time_stamp(),
@@ -93,45 +93,62 @@ class CacheEntry:
         self.status = "terminated"
 
     def serve_content(self, path):
-        dataset = self.dataset
-
         gateway_basepath = (
-            f"{env.external_protocol}://{env.external_host}/view/{dataset}/"
+            f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
         )
-        subpath = path[len(dataset) :]  # noqa: E203
-
+        subpath = path[len(self.key.pathpart) :]  # noqa: E203
+            
         if len(subpath) == 0:
             r = make_response(f"Redirect to {gateway_basepath}\n", 301)
-            r.headers["location"] = gateway_basepath
+            r.headers["location"] = gateway_basepath+querystring()
             return r
+        elif self.status == "loading":
+            launch_time = datetime.datetime.fromtimestamp(self.launchtime)
+            return render_template(
+                "loading.html", launchtime=launch_time, all_output=self.all_output
+            )
 
         port = self.port
         cellxgene_basepath = f"http://127.0.0.1:{port}"
-
         headers = {}
+        copy_headers = [
+            'accept',
+            'accept-encoding',
+            'accept-language',
+            'cache-control',
+            'connection',
+            'content-length',
+            'content-type',
+            'cookie',
+            'host',
+            'origin',
+            'pragma',
+            'referer',
+            'sec-fetch-mode',
+            'sec-fetch-site',
+            'user-agent'
+        ]
+        for h in copy_headers:
+            if h in request.headers:
+                headers[h] = request.headers[h]
 
-        if "accept" in request.headers:
-            headers["accept"] = request.headers["accept"]
-        if "user-agent" in request.headers:
-            headers["user-agent"] = request.headers["user-agent"]
-        if "content-type" in request.headers:
-            headers["content-type"] = request.headers["content-type"]
+        full_path = cellxgene_basepath + subpath + querystring()
 
         if request.method in ["GET", "HEAD", "OPTIONS"]:
             cellxgene_response = get(
-                cellxgene_basepath + subpath, headers=headers
+                full_path, headers=headers
             )
         elif request.method == "PUT":
             cellxgene_response = put(
-                cellxgene_basepath + subpath,
+                full_path,
                 headers=headers,
-                data=request.data.decode(),
+                data=request.data,
             )
         elif request.method == "POST":
             cellxgene_response = post(
-                cellxgene_basepath + subpath,
+                full_path,
                 headers=headers,
-                data=request.data.decode(),
+                data=request.data,
             )
         else:
             raise CellxgeneException(
@@ -146,10 +163,15 @@ class CacheEntry:
         else:
             gateway_content = cellxgene_response.content
 
+        resp_headers = {}
+        for h in copy_headers:
+            if h in cellxgene_response.headers:
+                resp_headers[h] = cellxgene_response.headers[h]
+
         gateway_response = make_response(
             gateway_content,
             cellxgene_response.status_code,
-            {"Content-Type": content_type},
+            resp_headers,
         )
 
         return gateway_response
