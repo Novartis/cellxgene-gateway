@@ -23,7 +23,7 @@ from flask import (
     url_for,
 )
 from flask_api import status
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
