@@ -9,7 +9,7 @@
 
 
 class ProcessException(Exception):
-    def __init__(self, message, stdout, stderr, http_status, dataset):
+    def __init__(self, message, stdout, stderr, http_status, key):
         Exception.__init__(self)
         self.message = message
         self.stdout = stdout
