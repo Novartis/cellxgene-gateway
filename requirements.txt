@@ -1,4 +1,4 @@
-cellxgene
+cellxgene==0.14.1
 flask
 flask_api
 psutil

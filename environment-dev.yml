@@ -8,4 +8,4 @@ dependencies:
 - psutil
 - pip:
   - flask-api
-  - cellxgene
+  - cellxgene==0.14.1
