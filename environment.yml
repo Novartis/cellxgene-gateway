@@ -1,4 +1,4 @@
-name: cellxgene-dev
+name: cellxgene-gateway
 channels:
 - conda-forge
 dependencies:
