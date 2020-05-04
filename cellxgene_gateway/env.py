@@ -21,6 +21,7 @@ extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
 enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in ['true', '1']
 enable_annotations = os.environ.get("GATEWAY_ENABLE_ANNOTATIONS", "").lower() in ['true', '1']
+enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in ['true', '1']
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
@@ -36,6 +37,7 @@ optional_env_vars = {
     "GATEWAY_TTL": ttl,
     "GATEWAY_ENABLE_UPLOAD": enable_upload,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
+    "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
 }
 
 def validate():

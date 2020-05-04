@@ -11,10 +11,11 @@ import logging
 import subprocess
 
 from flask_api import status
-from cellxgene_gateway.env import enable_annotations
+from cellxgene_gateway.env import enable_annotations, enable_backed_mode
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.dir_util import make_annotations
 from cellxgene_gateway.path_util import get_file_path, get_annotation_file_path
+
 
 class SubprocessBackend:
     def __init__(self):
@@ -22,19 +23,20 @@ class SubprocessBackend:
 
     def create_cmd(self, cellxgene_loc, file_path, port, scripts, annotation_file_path):
         if enable_annotations and not annotation_file_path is None:
-            annotation_args_prefix = " --experimental-annotations"
             if annotation_file_path == "":
-                annotation_args = f"{annotation_args_prefix} --experimental-annotations-output-dir {make_annotations(file_path)}"
+                extra_args = f" --annotations-dir {make_annotations(file_path)}"
             else:
-                annotation_args = f"{annotation_args_prefix} --experimental-annotations-file {annotation_file_path}"
+                extra_args = f" --annotations-file {annotation_file_path}"
         else:
-            annotation_args = ""
+            extra_args = " --disable-annotations"
+        if enable_backed_mode:
+            extra_args += " --backed"
         cmd = (
             f"yes | {cellxgene_loc} launch {file_path}"
             + " --port "
             + str(port)
             + " --host 127.0.0.1"
-            + annotation_args
+            + extra_args
         )
 
         for s in scripts:
