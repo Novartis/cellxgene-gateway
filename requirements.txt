@@ -1,4 +1,4 @@
-cellxgene==0.14.1
+cellxgene>=0.15
 flask
 flask_api
 psutil

@@ -67,6 +67,8 @@ Optional environment variables:
 * `GATEWAY_PORT` - local port that the gateway should bind to, defaults to 5005
 * `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
 * `GATEWAY_ENABLE_UPLOAD` - Set to `true` or `1` to enable HTTP uploads. This is not recommended for a public server.
+* `GATEWAY_ENABLE_ANNOTATIONS` - Set to `true` or to `1` to enable cellxgene annotations. 
+* `GATEWAY_ENABLE_BACKED_MODE` - Set to `true` or to `1` to load AnnData in file-backed mode. This saves memory and speeds up launch time but may reduce overall performance.  
 
 The defaults should be fine if you set up a venv and cellxgene_data folder as above.
 
