@@ -16,7 +16,7 @@ setup(
     # mandatory
     name="cellxgene-gateway",
     # mandatory
-    version="0.1",
+    version="0.1.1",
     # mandatory
     author="Niket Patel, Yohann Potier, Alok Saldanha",
     author_email="alok.saldanha@novartis.com",
