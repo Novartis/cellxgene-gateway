@@ -8,7 +8,7 @@ def recurse_dir(path):
             "The given path does not exist.", status.HTTP_400_BAD_REQUEST
         )
 
-    all_entries = os.listdir(path)
+    all_entries = sorted(os.listdir(path))
     def is_h5ad(el):
         return el.endswith('.h5ad') and os.path.isfile(os.path.join(path, el))
     h5ad_entries = [x for x in all_entries if is_h5ad(x)]
@@ -22,7 +22,7 @@ def recurse_dir(path):
                 "name": x[:-13] if (len(x) > 13 and x[-13] in ['-','_']) else (
                     x[:-4] if x.endswith('.csv') else x),
                 "path": os.path.join(full_path, x).replace(env.cellxgene_data, ""),
-            } for x in os.listdir(full_path) if x.endswith('.csv') and os.path.isfile(os.path.join(full_path, x))]
+            } for x in sorted(os.listdir(full_path)) if x.endswith('.csv') and os.path.isfile(os.path.join(full_path, x))]
         return [{"name":'new', "class":'new', "path":full_path.replace(env.cellxgene_data, "")}] + entries
 
     def make_entry(el):
@@ -48,7 +48,7 @@ def recurse_dir(path):
                 "type": "neither",
             }
 
-    return [make_entry(x) for x in os.listdir(path)]
+    return [make_entry(x) for x in sorted(os.listdir(path))]
 
 
 def render_entries(entries):
