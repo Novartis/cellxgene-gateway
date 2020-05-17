@@ -48,7 +48,7 @@ def recurse_dir(path):
                 "type": "neither",
             }
 
-    return [make_entry(x) for x in sorted(os.listdir(path))]
+    return [make_entry(x) for x in all_entries]
 
 
 def render_entries(entries):
