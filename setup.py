@@ -1,7 +1,6 @@
 import os
 from setuptools import setup
 
-
 def parse_requirements():
     reqs = []
     with open("requirements.txt", "r") as f:
@@ -9,6 +8,8 @@ def parse_requirements():
             reqs.append(l.strip("\n"))
     return reqs
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 install_reqs = parse_requirements()
 
@@ -21,6 +22,8 @@ setup(
     author="Niket Patel, Yohann Potier, Alok Saldanha",
     author_email="alok.saldanha@novartis.com",
     description=("Cellxgene Gateway"),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license="MIT",
     keywords="visualization, genomics",
     url="http://github.com/Novartis/cellxgene-gateway",
@@ -31,10 +34,11 @@ setup(
             "static/nibr.ico",
             "templates/*.html"
     ]},
-    data_files=[('', ['Readme.md', 'LICENSE.txt'])],
+    data_files=[('', ['README.md', 'LICENSE'])],
     install_requires=install_reqs,
     entry_points={
         "console_scripts": ["cellxgene-gateway=cellxgene_gateway.gateway:main"]
     },
     classifiers=["Topic :: Scientific/Engineering :: Visualization"],
+    python_requires='>=3.6',
 )
