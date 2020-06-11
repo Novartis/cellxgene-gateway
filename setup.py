@@ -31,7 +31,7 @@ setup(
             "static/nibr.ico",
             "templates/*.html"
     ]},
-    data_files=[('', ['Readme.md', 'LICENSE.txt'])],
+    data_files=[('', ['README.md', 'LICENSE.txt'])],
     install_requires=install_reqs,
     entry_points={
         "console_scripts": ["cellxgene-gateway=cellxgene_gateway.gateway:main"]
