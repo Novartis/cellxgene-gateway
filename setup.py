@@ -1,5 +1,23 @@
 import os
-from setuptools import setup
+import codecs
+from setuptools import find_packages, setup
+import sys
+
+if sys.version_info < (3,6):
+    sys.exit('Sorry, Python < 3.6 is not supported')
+
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
+
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 def parse_requirements():
     reqs = []
@@ -17,7 +35,7 @@ setup(
     # mandatory
     name="cellxgene-gateway",
     # mandatory
-    version="0.2.0",
+    version=get_version("cellxgene_gateway/__init__.py"),
     # mandatory
     author="Niket Patel, Yohann Potier, Alok Saldanha",
     author_email="alok.saldanha@novartis.com",
