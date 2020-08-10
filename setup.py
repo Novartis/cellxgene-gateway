@@ -3,21 +3,24 @@ import codecs
 from setuptools import find_packages, setup
 import sys
 
-if sys.version_info < (3,6):
-    sys.exit('Sorry, Python < 3.6 is not supported')
+if sys.version_info < (3, 6):
+    sys.exit("Sorry, Python < 3.6 is not supported")
+
 
 def read(rel_path):
     here = os.path.abspath(os.path.dirname(__file__))
-    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+    with codecs.open(os.path.join(here, rel_path), "r") as fp:
         return fp.read()
+
 
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
-        if line.startswith('__version__'):
+        if line.startswith("__version__"):
             delim = '"' if '"' in line else "'"
             return line.split(delim)[1]
     else:
         raise RuntimeError("Unable to find version string.")
+
 
 def parse_requirements():
     reqs = []
@@ -25,6 +28,7 @@ def parse_requirements():
         for l in f.readlines():
             reqs.append(l.strip("\n"))
     return reqs
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -50,13 +54,14 @@ setup(
         "cellxgene_gateway": [
             "static/css/homepagestyle.css",
             "static/nibr.ico",
-            "templates/*.html"
-    ]},
-    data_files=[('', ['README.md', 'LICENSE'])],
+            "templates/*.html",
+        ]
+    },
+    data_files=[("", ["README.md", "LICENSE"])],
     install_requires=install_reqs,
     entry_points={
         "console_scripts": ["cellxgene-gateway=cellxgene_gateway.gateway:main"]
     },
     classifiers=["Topic :: Scientific/Engineering :: Visualization"],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )

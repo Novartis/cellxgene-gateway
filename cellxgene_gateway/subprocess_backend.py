@@ -21,10 +21,14 @@ class SubprocessBackend:
     def __init__(self):
         pass
 
-    def create_cmd(self, cellxgene_loc, file_path, port, scripts, annotation_file_path):
+    def create_cmd(
+        self, cellxgene_loc, file_path, port, scripts, annotation_file_path
+    ):
         if enable_annotations and not annotation_file_path is None:
             if annotation_file_path == "":
-                extra_args = f" --annotations-dir {make_annotations(file_path)}"
+                extra_args = (
+                    f" --annotations-dir {make_annotations(file_path)}"
+                )
             else:
                 extra_args = f" --annotations-file {annotation_file_path}"
         else:
@@ -47,7 +51,11 @@ class SubprocessBackend:
     def launch(self, cellxgene_loc, scripts, cache_entry):
 
         cmd = self.create_cmd(
-            cellxgene_loc, get_file_path(cache_entry.key), cache_entry.port, scripts, get_annotation_file_path(cache_entry.key)
+            cellxgene_loc,
+            get_file_path(cache_entry.key),
+            cache_entry.port,
+            scripts,
+            get_annotation_file_path(cache_entry.key),
         )
         logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
         process = subprocess.Popen(

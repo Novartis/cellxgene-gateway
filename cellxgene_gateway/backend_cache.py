@@ -22,8 +22,10 @@ process_backend = SubprocessBackend()
 
 def is_port_in_use(port):
     import socket
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+        return s.connect_ex(("localhost", port)) == 0
+
 
 class BackendCache:
     def __init__(self):
@@ -38,7 +40,9 @@ class BackendCache:
         matches = [
             c
             for c in contents
-            if c.key.dataset == key.dataset and c.key.annotation_file == key.annotation_file and c.status != "terminated"
+            if c.key.dataset == key.dataset
+            and c.key.annotation_file == key.annotation_file
+            and c.status != "terminated"
         ]
 
         if len(matches) == 0:
