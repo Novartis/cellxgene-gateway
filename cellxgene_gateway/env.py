@@ -14,14 +14,26 @@ import socket
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA")
 gateway_port = int(os.environ.get("GATEWAY_PORT", "5005"))
-external_host = os.environ.get("EXTERNAL_HOST", os.environ.get("GATEWAY_HOST", f"localhost:{gateway_port}"))
-external_protocol = os.environ.get("EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http"))
+external_host = os.environ.get(
+    "EXTERNAL_HOST",
+    os.environ.get("GATEWAY_HOST", f"localhost:{gateway_port}"),
+)
+external_protocol = os.environ.get(
+    "EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http")
+)
 ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
-enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in ['true', '1']
-enable_annotations = os.environ.get("GATEWAY_ENABLE_ANNOTATIONS", "").lower() in ['true', '1']
-enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in ['true', '1']
+enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
+    "true",
+    "1",
+]
+enable_annotations = os.environ.get(
+    "GATEWAY_ENABLE_ANNOTATIONS", ""
+).lower() in ["true", "1"]
+enable_backed_mode = os.environ.get(
+    "GATEWAY_ENABLE_BACKED_MODE", ""
+).lower() in ["true", "1"]
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
@@ -39,6 +51,7 @@ optional_env_vars = {
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
 }
+
 
 def validate():
     if not all(env_vars.values()):
@@ -58,5 +71,9 @@ def validate():
     """
         )
     else:
-        logging.getLogger("cellxgene_gateway").info(f"Got required env: {env_vars}", )
-        logging.getLogger("cellxgene_gateway").info(f"Got optional env: {optional_env_vars}")
+        logging.getLogger("cellxgene_gateway").info(
+            f"Got required env: {env_vars}",
+        )
+        logging.getLogger("cellxgene_gateway").info(
+            f"Got optional env: {optional_env_vars}"
+        )

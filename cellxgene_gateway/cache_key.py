@@ -22,6 +22,7 @@ from cellxgene_gateway.cellxgene_exception import CellxgeneException
 # 3) somedir/dataset_annotations: an annotation directory. The corresponding h5ad must exist, but the directory may not.
 #    in this case, pathpart == 'dataset_annotations', dataset == 'somedir/dataset.h5ad'
 
+
 class CacheKey:
     def __init__(self, pathpart, dataset, annotation_file):
         self.pathpart = pathpart

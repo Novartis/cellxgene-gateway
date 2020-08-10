@@ -17,7 +17,7 @@ from cellxgene_gateway.env import ttl
 class PruneProcessCache:
     def __init__(self, cache):
         self.cache = cache
-        self.expire_seconds = (3600 if ttl is None else int(ttl))
+        self.expire_seconds = 3600 if ttl is None else int(ttl)
 
     def __call__(self):
         while True:
@@ -27,14 +27,24 @@ class PruneProcessCache:
     def prune(self):
         timestamp = current_time_stamp()
         cutoff = timestamp - self.expire_seconds
-        processes_to_delete = [p for p in self.cache.entry_list if  p.timestamp < cutoff]
-        processes_to_keep = [p for p in self.cache.entry_list if not p.timestamp < cutoff]
+        processes_to_delete = [
+            p for p in self.cache.entry_list if p.timestamp < cutoff
+        ]
+        processes_to_keep = [
+            p for p in self.cache.entry_list if not p.timestamp < cutoff
+        ]
         logger = logging.getLogger("cellxgene_gateway")
-        logger.debug(f"Cutoff {cutoff} = timestamp {timestamp} - expire seconds {self.expire_seconds} , keeping {processes_to_keep}")
-        
+        logger.debug(
+            f"Cutoff {cutoff} = timestamp {timestamp} - expire seconds {self.expire_seconds} , keeping {processes_to_keep}"
+        )
+
         for process in processes_to_delete:
             try:
-                logger.info(f"pruning process {process.pid} ({process.key.dataset})")
+                logger.info(
+                    f"pruning process {process.pid} ({process.key.dataset})"
+                )
                 self.cache.prune(process)
             except Exception:
-                logger.exception("failed to prune process {process.pid} ({process.dataset})")
+                logger.exception(
+                    "failed to prune process {process.pid} ({process.dataset})"
+                )
