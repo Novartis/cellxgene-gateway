@@ -31,11 +31,8 @@ install:
 
 script:
   # Your test script goes here
-  - python -m unittest discover tests
-  
-  # NOTE: Replace with environment.yml later
-  - conda install -c conda-forge black
   - black -l 79 . --check
+  - python -m unittest discover tests
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

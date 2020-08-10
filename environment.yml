@@ -6,6 +6,7 @@ dependencies:
 - requests
 - flask
 - psutil
+- black
 - pip:
   - flask-api
   - cellxgene>=0.15
