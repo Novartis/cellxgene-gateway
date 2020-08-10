@@ -167,6 +167,14 @@ if env.enable_upload:
     app.add_url_rule('/make_subdir', 'make_subdir', make_subdir, methods=["POST"])
     app.add_url_rule('/upload_file', 'upload_file', upload_file, methods=["POST"])
 
+def set_no_cache(resp):
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    resp.headers['Cache-Control'] = 'public, max-age=0'
+    return resp
+
+
 @app.route("/filecrawl.html")
 def filecrawl():
     entries = recurse_dir(env.cellxgene_data)
@@ -176,11 +184,7 @@ def filecrawl():
         extra_scripts=get_extra_scripts(),
         rendered_html=rendered_html,
     ))
-    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    resp.headers["Pragma"] = "no-cache"
-    resp.headers["Expires"] = "0"
-    resp.headers['Cache-Control'] = 'public, max-age=0'
-    return resp
+    return set_no_cache(resp)
 
 @app.route("/filecrawl/<path:path>")
 def do_filecrawl(path):
@@ -249,6 +253,10 @@ def do_terminate(path):
         match.terminate()
     return redirect(url_for("do_GET_status"), code=302)
 
+@app.route("/metadata/ip_address", methods=["GET"])
+def ip_address():
+    resp = make_response(env.ip)
+    return set_no_cache(resp)
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
