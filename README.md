@@ -114,6 +114,8 @@ For convenience, the code repo includes a `run.sh.example` shell script to run t
 
 ## Running Tests
 
+[![Build Status](https://travis-ci.org/Novartis/cellxgene-gateway.svg?branch=master)](https://travis-ci.org/Novartis/cellxgene-gateway)
+
 ```bash
     python -m unittest discover tests
 ```
