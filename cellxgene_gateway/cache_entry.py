@@ -99,7 +99,7 @@ class CacheEntry:
 
     def rewrite_text_content(self, cellxgene_content):
         # for v0.16.0 compatibility, see issue #24
-        gateway_content = re.sub('(="|\()/static/', r'\1static/', cellxgene_content).replace(
+        gateway_content = re.sub('(="|\()/static/', f'\\1{self.gateway_basepath()}static/', cellxgene_content).replace(
             "http://fonts.gstatic.com", "https://fonts.gstatic.com"
         ).replace(self.cellxgene_basepath(), self.gateway_basepath())
         return gateway_content
