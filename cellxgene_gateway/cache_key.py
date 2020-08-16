@@ -7,13 +7,6 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
-import os
-
-from flask_api import status
-
-from cellxgene_gateway import env
-from cellxgene_gateway.cellxgene_exception import CellxgeneException
-
 # There are three kinds of CacheKey:
 # 1) somedir/dataset.h5ad: a dataset
 #    in this case, pathpart == dataset == 'somedir/dataset.h5ad'

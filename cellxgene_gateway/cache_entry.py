@@ -12,12 +12,12 @@ import datetime
 
 from flask import make_response, request, render_template
 from requests import get, post, put
+import re
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.util import current_time_stamp
 from cellxgene_gateway.flask_util import querystring
-
 
 class CacheEntry:
     def __init__(
@@ -97,8 +97,20 @@ class CacheEntry:
             )
         self.status = "terminated"
 
+    def rewrite_text_content(self, cellxgene_content):
+        # for v0.16.0 compatibility, see issue #24
+        gateway_content = re.sub('(="|\()/static/', f'\\1{self.gateway_basepath()}static/', cellxgene_content).replace(
+            "http://fonts.gstatic.com", "https://fonts.gstatic.com"
+        ).replace(self.cellxgene_basepath(), self.gateway_basepath())
+        return gateway_content
+
+    def gateway_basepath(self):
+        return f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
+    def cellxgene_basepath(self):
+        return f"http://127.0.0.1:{self.port}"
+
     def serve_content(self, path):
-        gateway_basepath = f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
+        gateway_basepath = self.gateway_basepath()
         subpath = path[len(self.key.pathpart) :]  # noqa: E203
 
         if len(subpath) == 0:
@@ -113,8 +125,6 @@ class CacheEntry:
                 all_output=self.all_output,
             )
 
-        port = self.port
-        cellxgene_basepath = f"http://127.0.0.1:{port}"
         headers = {}
         copy_headers = [
             "accept",
@@ -137,7 +147,7 @@ class CacheEntry:
             if h in request.headers:
                 headers[h] = request.headers[h]
 
-        full_path = cellxgene_basepath + subpath + querystring()
+        full_path = self.cellxgene_basepath() + subpath + querystring()
 
         if request.method in ["GET", "HEAD", "OPTIONS"]:
             cellxgene_response = get(full_path, headers=headers)
@@ -155,10 +165,7 @@ class CacheEntry:
             )
         content_type = cellxgene_response.headers["content-type"]
         if "text" in content_type:
-            cellxgene_content = cellxgene_response.content.decode()
-            gateway_content = cellxgene_content.replace(
-                "http://fonts.gstatic.com", "https://fonts.gstatic.com"
-            ).replace(cellxgene_basepath, gateway_basepath)
+            gateway_content = self.rewrite_text_content(cellxgene_response.content.decode())
         else:
             gateway_content = cellxgene_response.content
 
