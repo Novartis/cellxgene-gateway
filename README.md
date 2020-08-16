@@ -39,7 +39,7 @@ Note: you may need to downgrade h5py with `pip install h5py==2.9.0` due to an [i
 
 ```bash
 mkdir ../cellxgene_data
-wget https://github.com/chanzuckerberg/cellxgene/raw/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
+wget https://raw.githubusercontent.com/chanzuckerberg/cellxgene/master/example-dataset/pbmc3k.h5ad -O ../cellxgene_data/pbmc3k.h5ad
 ```
 
 
@@ -61,6 +61,7 @@ Here's what the environment variables mean:
 * `CELLXGENE_LOCATION` - the location of the cellxgene executable, e.g. `~/anaconda2/envs/cellxgene/bin/cellxgene`
 * `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
 Optional environment variables:
+* `CELLXGENE_ARGS` - catch-all variable that can be used to pass additional command line args to cellxgene server
 * `EXTERNAL_HOST` - the hostname and port from the perspective of the web browser, typically `localhost:5005` if running locally. Defaults to "localhost:{GATEWAY_PORT}"
 * `EXTERNAL_PROTOCOL` - typically http when running locally, can be https when deployed if the gateway is behind a load balancer or reverse proxy that performs https termination. Default value "http"
 * `GATEWAY_IP` - ip addess of instance gateway is running on, mostly used to display SSH instructions. Defaults to `socket.gethostbyname(socket.gethostname())`

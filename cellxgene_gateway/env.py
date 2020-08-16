@@ -13,6 +13,7 @@ import socket
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA")
+cellxgene_args = os.environ.get("CELLXGENE_ARGS", None)
 gateway_port = int(os.environ.get("GATEWAY_PORT", "5005"))
 external_host = os.environ.get(
     "EXTERNAL_HOST",
@@ -50,6 +51,7 @@ optional_env_vars = {
     "GATEWAY_ENABLE_UPLOAD": enable_upload,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
+    "CELLXGENE_ARGS": cellxgene_args,
 }
 
 
