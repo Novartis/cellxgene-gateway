@@ -11,7 +11,11 @@ import logging
 import subprocess
 
 from flask_api import status
-from cellxgene_gateway.env import enable_annotations, enable_backed_mode
+from cellxgene_gateway.env import (
+    enable_annotations,
+    enable_backed_mode,
+    cellxgene_args,
+)
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.dir_util import make_annotations
 from cellxgene_gateway.path_util import get_file_path, get_annotation_file_path
@@ -35,6 +39,9 @@ class SubprocessBackend:
             extra_args = " --disable-annotations"
         if enable_backed_mode:
             extra_args += " --backed"
+        if not cellxgene_args is None:
+            extra_args += f" {cellxgene_args}"
+
         cmd = (
             f"yes | {cellxgene_loc} launch {file_path}"
             + " --port "
