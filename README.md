@@ -30,7 +30,7 @@ Note: you may need to downgrade h5py with `pip install h5py==2.9.0` due to an [i
 ### Option 2: Install from PyPI
 
 ```bash
-# NOT YET DONE, COMING! STAY TUNED
+pip install cellxgene-gateway
 ```
 
 ## Running cellxgene gateway

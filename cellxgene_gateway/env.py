@@ -22,7 +22,7 @@ external_host = os.environ.get(
 external_protocol = os.environ.get(
     "EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http")
 )
-ip = os.environ.get("GATEWAY_IP")
+ip = os.environ.get("GATEWAY_IP", "127.0.0.1")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
 enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
@@ -39,12 +39,12 @@ enable_backed_mode = os.environ.get(
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
     "CELLXGENE_DATA": cellxgene_data,
-    "GATEWAY_IP": ip,
 }
 
 optional_env_vars = {
     "EXTERNAL_HOST": external_host,
     "EXTERNAL_PROTOCOL": external_protocol,
+    "GATEWAY_IP": ip,
     "GATEWAY_PORT": gateway_port,
     "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
     "GATEWAY_TTL": ttl,
@@ -69,7 +69,6 @@ def validate():
 
         export CELLXGENE_LOCATION=~/anaconda/envs/cellxgene-dev/bin/cellxgene
         export CELLXGENE_DATA=../cellxgene_data
-        export GATEWAY_IP=127.0.0.1
     """
         )
     else:
