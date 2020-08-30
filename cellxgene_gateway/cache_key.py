@@ -17,10 +17,11 @@ from cellxgene_gateway.cellxgene_exception import CellxgeneException
 # There are three kinds of CacheKey:
 # 1) somedir/dataset.h5ad: a dataset
 #    in this case, pathpart == dataset == 'somedir/dataset.h5ad'
-# 2) somedir/dataset_annotations/saldaal1-T5HMVBNV.csv : an actual annotaitons file.
-#    in this case, pathpart == 'dataset_annotations/saldaal1-T5HMVBNV.csv', dataset == 'somedir/dataset.h5ad'
+# 2) somedir/dataset_annotations/my_annotations.csv : an actual annotaitons file.
+#    in this case, pathpart == 'dataset_annotations/my_annotations.csv', dataset == 'somedir/dataset.h5ad'
 # 3) somedir/dataset_annotations: an annotation directory. The corresponding h5ad must exist, but the directory may not.
 #    in this case, pathpart == 'dataset_annotations', dataset == 'somedir/dataset.h5ad'
+
 
 class CacheKey:
     def __init__(self, pathpart, dataset, annotation_file):

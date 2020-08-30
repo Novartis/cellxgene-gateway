@@ -11,17 +11,22 @@ import logging
 import subprocess
 
 from flask_api import status
-from cellxgene_gateway.env import enable_annotations, enable_backed_mode
-from cellxgene_gateway.process_exception import ProcessException
+
+from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.dir_util import make_annotations
-from cellxgene_gateway.path_util import get_file_path, get_annotation_file_path
+from cellxgene_gateway.env import enable_annotations, enable_backed_mode
+from cellxgene_gateway.path_util import get_annotation_file_path, get_file_path
+from cellxgene_gateway.process_exception import ProcessException
+
 
 
 class SubprocessBackend:
     def __init__(self):
         pass
 
-    def create_cmd(self, cellxgene_loc, file_path, port, scripts, annotation_file_path):
+    def create_cmd(
+        self, cellxgene_loc, file_path, port, scripts, annotation_file_path
+    ):
         if enable_annotations and not annotation_file_path is None:
             if annotation_file_path == "":
                 extra_args = f" --annotations-dir {make_annotations(file_path)}"
@@ -47,7 +52,11 @@ class SubprocessBackend:
     def launch(self, cellxgene_loc, scripts, cache_entry):
 
         cmd = self.create_cmd(
-            cellxgene_loc, get_file_path(cache_entry.key), cache_entry.port, scripts, get_annotation_file_path(cache_entry.key)
+            cellxgene_loc,
+            get_file_path(cache_entry.key),
+            cache_entry.port,
+            scripts,
+            get_annotation_file_path(cache_entry.key),
         )
         logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
         process = subprocess.Popen(
@@ -70,7 +79,7 @@ class SubprocessBackend:
                     message = "Cellxgene failed to launch dataset."
                     http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-                cache_entry.status = "error"
+                cache_entry.status = CacheEntryStatus.error
                 cache_entry.set_error(message, stderr, http_status)
 
                 raise ProcessException.from_cache_entry(cache_entry)

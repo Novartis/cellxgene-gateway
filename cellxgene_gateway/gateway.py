@@ -7,16 +7,17 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
+import json
+import logging
+
 # import BaseHTTPServer
 import os
-import logging
-from threading import Thread, Lock
-import json
+from threading import Lock, Thread
 
 from flask import (
     Flask,
-    redirect,
     make_response,
+    redirect,
     render_template,
     request,
     send_from_directory,
@@ -27,22 +28,27 @@ from werkzeug.utils import secure_filename
 
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
+from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.dir_util import create_dir, is_subdir
-from cellxgene_gateway.filecrawl import recurse_dir, render_entries
 from cellxgene_gateway.extra_scripts import get_extra_scripts
+from cellxgene_gateway.filecrawl import recurse_dir, render_entries
+from cellxgene_gateway.path_util import get_key
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.prune_process_cache import PruneProcessCache
 from cellxgene_gateway.util import current_time_stamp
-from cellxgene_gateway.path_util import get_key
 
 app = Flask(__name__)
 
+
 def _force_https(app):
     def wrapper(environ, start_response):
-        environ['wsgi.url_scheme'] = env.external_protocol
+        environ["wsgi.url_scheme"] = env.external_protocol
         return app(environ, start_response)
+
     return wrapper
+
+
 app.wsgi_app = _force_https(app.wsgi_app)
 
 cache = BackendCache()
@@ -114,6 +120,7 @@ def index():
         enable_upload=env.enable_upload,
     )
 
+
 def make_user():
     dir_name = request.form["directory"]
 
@@ -135,13 +142,17 @@ def upload_file():
     upload_dir = request.form["path"]
 
     full_upload_path = os.path.join(env.cellxgene_data, upload_dir)
-    if is_subdir(full_upload_path, env.cellxgene_data) and os.path.isdir(full_upload_path):
+    if is_subdir(full_upload_path, env.cellxgene_data) and os.path.isdir(
+        full_upload_path
+    ):
         if request.method == "POST":
             if "file" in request.files:
                 f = request.files["file"]
                 if f and f.filename.endswith(".h5ad"):
                     f.save(
-                        os.path.join(full_upload_path, secure_filename(f.filename))
+                        os.path.join(
+                            full_upload_path, secure_filename(f.filename)
+                        )
                     )
                     return redirect("/filecrawl.html", code=302)
                 else:
@@ -163,31 +174,40 @@ def upload_file():
 
 
 if env.enable_upload:
-    app.add_url_rule('/make_user', 'make_user', make_user, methods=["POST"])
-    app.add_url_rule('/make_subdir', 'make_subdir', make_subdir, methods=["POST"])
-    app.add_url_rule('/upload_file', 'upload_file', upload_file, methods=["POST"])
+    app.add_url_rule("/make_user", "make_user", make_user, methods=["POST"])
+    app.add_url_rule(
+        "/make_subdir", "make_subdir", make_subdir, methods=["POST"]
+    )
+    app.add_url_rule(
+        "/upload_file", "upload_file", upload_file, methods=["POST"]
+    )
+
 
 @app.route("/filecrawl.html")
 def filecrawl():
     entries = recurse_dir(env.cellxgene_data)
     rendered_html = render_entries(entries)
-    resp = make_response(render_template(
-        "filecrawl.html",
-        extra_scripts=get_extra_scripts(),
-        rendered_html=rendered_html,
-    ))
+    resp = make_response(
+        render_template(
+            "filecrawl.html",
+            extra_scripts=get_extra_scripts(),
+            rendered_html=rendered_html,
+        )
+    )
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
     resp.headers["Expires"] = "0"
-    resp.headers['Cache-Control'] = 'public, max-age=0'
+    resp.headers["Cache-Control"] = "public, max-age=0"
     return resp
+
 
 @app.route("/filecrawl/<path:path>")
 def do_filecrawl(path):
     filecrawl_path = os.path.join(env.cellxgene_data, path)
     if not os.path.isdir(filecrawl_path):
         raise CellxgeneException(
-            "Path is not directory: " + filecrawl_path, status.HTTP_400_BAD_REQUEST
+            "Path is not directory: " + filecrawl_path,
+            status.HTTP_400_BAD_REQUEST,
         )
     entries = recurse_dir(filecrawl_path)
     rendered_html = render_entries(entries)
@@ -198,11 +218,16 @@ def do_filecrawl(path):
         path=path,
     )
 
+
 entry_lock = Lock()
+
+
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
 def do_view(path):
     key = get_key(path)
-    print(f"view path={path}, dataset={key.dataset}, annotation_file= {key.annotation_file}, key={key.pathpart}")
+    print(
+        f"view path={path}, dataset={key.dataset}, annotation_file= {key.annotation_file}, key={key.pathpart}"
+    )
     with entry_lock:
         match = cache.check_entry(key)
         if match is None:
@@ -211,9 +236,9 @@ def do_view(path):
 
     match.timestamp = current_time_stamp()
 
-    if match.status == "loaded" or match.status == "loading":
+    if match.status == CacheEntryStatus.loaded or match.status == CacheEntryStatus.loading:
         return match.serve_content(path)
-    elif match.status == "error":
+    elif match.status == CacheEntryStatus.error:
         raise ProcessException.from_cache_entry(match)
 
 
@@ -221,16 +246,25 @@ def do_view(path):
 def do_GET_status():
     return render_template("cache_status.html", entry_list=cache.entry_list)
 
+
 @app.route("/cache_status.json", methods=["GET"])
 def do_GET_status_json():
-    return json.dumps({'launchtime':app.launchtime,
-    'entry_list':[{
-        'dataset': entry.key.dataset,
-        'annotation_file': entry.key.annotation_file,
-        'launchtime': entry.launchtime,
-        'last_access': entry.timestamp,
-        'status': entry.status
-    } for entry in cache.entry_list]})
+    return json.dumps(
+        {
+            "launchtime": app.launchtime,
+            "entry_list": [
+                {
+                    "dataset": entry.key.dataset,
+                    "annotation_file": entry.key.annotation_file,
+                    "launchtime": entry.launchtime,
+                    "last_access": entry.timestamp,
+                    "status": entry.status,
+                }
+                for entry in cache.entry_list
+            ],
+        }
+    )
+
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
@@ -239,7 +273,11 @@ def do_relaunch(path):
     if not match is None:
         match.terminate()
     qs = request.query_string.decode()
-    return redirect(url_for("do_view", path=path) + (f'?{qs}' if len(qs) > 0 else ''), code=302)
+    return redirect(
+        url_for("do_view", path=path) + (f"?{qs}" if len(qs) > 0 else ""),
+        code=302,
+    )
+
 
 @app.route("/terminate/<path:path>", methods=["GET"])
 def do_terminate(path):
@@ -251,7 +289,10 @@ def do_terminate(path):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
+    )
     env.validate()
     pruner = PruneProcessCache(cache)
 

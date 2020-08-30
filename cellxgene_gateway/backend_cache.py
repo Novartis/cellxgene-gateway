@@ -13,7 +13,7 @@ from threading import Thread
 from flask_api import status
 
 from cellxgene_gateway import env
-from cellxgene_gateway.cache_entry import CacheEntry
+from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.subprocess_backend import SubprocessBackend
 
@@ -22,8 +22,10 @@ process_backend = SubprocessBackend()
 
 def is_port_in_use(port):
     import socket
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+        return s.connect_ex(("localhost", port)) == 0
+
 
 class BackendCache:
     def __init__(self):
@@ -38,7 +40,9 @@ class BackendCache:
         matches = [
             c
             for c in contents
-            if c.key.dataset == key.dataset and c.key.annotation_file == key.annotation_file and c.status != "terminated"
+            if c.key.dataset == key.dataset
+            and c.key.annotation_file == key.annotation_file
+            and c.status != CacheEntryStatus.terminated
         ]
 
         if len(matches) == 0:

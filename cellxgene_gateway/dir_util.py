@@ -51,8 +51,13 @@ def create_dir(parent_path, dir_name):
     else:
         os.mkdir(full_path)
 
-annotations_suffix = '_annotations'
+
+annotations_suffix = "_annotations"
+
+
 def make_h5ad(el):
-    return el[:-len(annotations_suffix)]+'.h5ad'
+    return el[: -len(annotations_suffix)] + ".h5ad"
+
+
 def make_annotations(el):
-    return el[:-5]+annotations_suffix
+    return el[:-5] + annotations_suffix
