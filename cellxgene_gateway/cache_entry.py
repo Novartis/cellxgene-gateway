@@ -6,18 +6,26 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
-import psutil
-import logging
 import datetime
+import logging
 
-from flask import make_response, request, render_template
+import psutil
+from enum import Enum
+from flask import make_response, render_template, request
 from requests import get, post, put
 import re
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
-from cellxgene_gateway.util import current_time_stamp
 from cellxgene_gateway.flask_util import querystring
+from cellxgene_gateway.util import current_time_stamp
+
+
+class CacheEntryStatus(Enum):
+    loaded = "loaded"
+    loading = "loading"
+    error = "error"
+    terminated = "terminated"
 
 
 class CacheEntry:
@@ -28,7 +36,7 @@ class CacheEntry:
         port,
         launchtime,
         timestamp,
-        status,
+        status: CacheEntryStatus,
         message,
         all_output,
         stderr,
@@ -54,7 +62,7 @@ class CacheEntry:
             port,
             current_time_stamp(),
             current_time_stamp(),
-            "loading",
+            CacheEntryStatus.loading,
             None,
             None,
             None,
@@ -63,13 +71,13 @@ class CacheEntry:
 
     def set_loaded(self, pid):
         self.pid = pid
-        self.status = "loaded"
+        self.status = CacheEntryStatus.loaded
 
     def set_error(self, message, stderr, http_status):
         self.message = message
         self.stderr = stderr
         self.http_status = http_status
-        self.status = "error"
+        self.status = CacheEntryStatus.error
 
     def append_output(self, output):
         if self.all_output == None:
@@ -79,7 +87,7 @@ class CacheEntry:
 
     def terminate(self):
         pid = self.pid
-        if pid != None and self.status != "terminated":
+        if pid != None and self.status != CacheEntryStatus.terminated:
             terminated = []
 
             def on_terminate(p):
@@ -96,7 +104,7 @@ class CacheEntry:
             logging.getLogger("cellxgene_gateway").info(
                 f"terminated {terminated}"
             )
-        self.status = "terminated"
+        self.status = CacheEntryStatus.terminated
 
     def rewrite_text_content(self, cellxgene_content):
         # for v0.16.0 compatibility, see issue #24
@@ -125,7 +133,7 @@ class CacheEntry:
             r = make_response(f"Redirect to {gateway_basepath}\n", 301)
             r.headers["location"] = gateway_basepath + querystring()
             return r
-        elif self.status == "loading":
+        elif self.status == CacheEntryStatus.loading:
             launch_time = datetime.datetime.fromtimestamp(self.launchtime)
             return render_template(
                 "loading.html",

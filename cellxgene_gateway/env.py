@@ -7,8 +7,8 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
-import os
 import logging
+import os
 import socket
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
@@ -31,10 +31,10 @@ enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
 ]
 enable_annotations = os.environ.get(
     "GATEWAY_ENABLE_ANNOTATIONS", ""
-).lower() in ["true", "1"]
+).lower() in ["true", "1",]
 enable_backed_mode = os.environ.get(
     "GATEWAY_ENABLE_BACKED_MODE", ""
-).lower() in ["true", "1"]
+).lower() in ["true", "1",]
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,

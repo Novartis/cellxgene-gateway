@@ -11,14 +11,15 @@ import logging
 import subprocess
 
 from flask_api import status
+from cellxgene_gateway.cache_entry import CacheEntryStatus
+from cellxgene_gateway.dir_util import make_annotations
+from cellxgene_gateway.path_util import get_annotation_file_path, get_file_path
 from cellxgene_gateway.env import (
     enable_annotations,
     enable_backed_mode,
     cellxgene_args,
 )
 from cellxgene_gateway.process_exception import ProcessException
-from cellxgene_gateway.dir_util import make_annotations
-from cellxgene_gateway.path_util import get_file_path, get_annotation_file_path
 
 
 class SubprocessBackend:
@@ -85,7 +86,7 @@ class SubprocessBackend:
                     message = "Cellxgene failed to launch dataset."
                     http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-                cache_entry.status = "error"
+                cache_entry.status = CacheEntryStatus.error
                 cache_entry.set_error(message, stderr, http_status)
 
                 raise ProcessException.from_cache_entry(cache_entry)

@@ -7,16 +7,17 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
+import json
+import logging
+
 # import BaseHTTPServer
 import os
-import logging
-from threading import Thread, Lock
-import json
+from threading import Lock, Thread
 
 from flask import (
     Flask,
-    redirect,
     make_response,
+    redirect,
     render_template,
     request,
     send_from_directory,
@@ -27,14 +28,15 @@ from werkzeug.utils import secure_filename
 
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
+from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.dir_util import create_dir, is_subdir
-from cellxgene_gateway.filecrawl import recurse_dir, render_entries
 from cellxgene_gateway.extra_scripts import get_extra_scripts
+from cellxgene_gateway.filecrawl import recurse_dir, render_entries
+from cellxgene_gateway.path_util import get_key
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.prune_process_cache import PruneProcessCache
 from cellxgene_gateway.util import current_time_stamp
-from cellxgene_gateway.path_util import get_key
 
 app = Flask(__name__)
 
@@ -238,9 +240,12 @@ def do_view(path):
 
     match.timestamp = current_time_stamp()
 
-    if match.status == "loaded" or match.status == "loading":
+    if (
+        match.status == CacheEntryStatus.loaded
+        or match.status == CacheEntryStatus.loading
+    ):
         return match.serve_content(path)
-    elif match.status == "error":
+    elif match.status == CacheEntryStatus.error:
         raise ProcessException.from_cache_entry(match)
 
 

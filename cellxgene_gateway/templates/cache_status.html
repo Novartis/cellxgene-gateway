@@ -48,11 +48,11 @@
                <td>{{ entry.port }}</td>
                <td class="timestamp">{{ entry.launchtime }}</td>
                <td class="timestamp">{{ entry.timestamp }}</td>
-               <td>{{ entry.status }}</td>
+               <td>{{ entry.status.name }}</td>
                <td>{{ entry.message }}</td>
                <td>{{ entry.http_status }}</td>
                <td>
-                 {% if entry.status == 'loaded' %}
+                 {% if entry.status.name == 'loaded' %}
                    <a href="{{ url_for('do_terminate', path=entry.key.pathpart) }}"> terminate </a>
                  {% endif %}
                </td>

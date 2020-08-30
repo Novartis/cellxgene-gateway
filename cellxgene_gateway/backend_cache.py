@@ -13,7 +13,7 @@ from threading import Thread
 from flask_api import status
 
 from cellxgene_gateway import env
-from cellxgene_gateway.cache_entry import CacheEntry
+from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.subprocess_backend import SubprocessBackend
 
@@ -42,7 +42,7 @@ class BackendCache:
             for c in contents
             if c.key.dataset == key.dataset
             and c.key.annotation_file == key.annotation_file
-            and c.status != "terminated"
+            and c.status != CacheEntryStatus.terminated
         ]
 
         if len(matches) == 0:

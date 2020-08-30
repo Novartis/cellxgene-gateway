@@ -12,9 +12,9 @@ import os
 from flask_api import status
 
 from cellxgene_gateway import env
+from cellxgene_gateway.cache_key import CacheKey
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.dir_util import make_h5ad
-from cellxgene_gateway.cache_key import CacheKey
 
 
 def get_key(path):
@@ -31,7 +31,7 @@ def get_key(path):
             return CacheKey(trimmed, trimmed, None)
         elif trimmed.endswith(".csv"):
 
-            # 2) somedir/dataset_annotations/saldaal1-T5HMVBNV.csv : an actual annotations file.
+            # 2) somedir/dataset_annotations/my_annotations.csv : an actual annotations file.
             annotations_dir = os.path.split(trimmed)[0]
             dataset = make_h5ad(annotations_dir)
             if data_file_exists(dataset):

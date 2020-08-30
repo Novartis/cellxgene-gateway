@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from cellxgene_gateway.cache_entry import CacheEntry
+
 from cellxgene_gateway.backend_cache import BackendCache
+from cellxgene_gateway.cache_entry import CacheEntry
 
 
 class TestPruneProcessCache(unittest.TestCase):
