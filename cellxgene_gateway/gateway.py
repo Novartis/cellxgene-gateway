@@ -236,7 +236,10 @@ def do_view(path):
 
     match.timestamp = current_time_stamp()
 
-    if match.status == CacheEntryStatus.loaded or match.status == CacheEntryStatus.loading:
+    if (
+        match.status == CacheEntryStatus.loaded
+        or match.status == CacheEntryStatus.loading
+    ):
         return match.serve_content(path)
     elif match.status == CacheEntryStatus.error:
         raise ProcessException.from_cache_entry(match)

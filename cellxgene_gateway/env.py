@@ -24,15 +24,16 @@ external_protocol = os.environ.get(
 ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
-enable_upload = os.environ.get(
-    "GATEWAY_ENABLE_UPLOAD", ""
-).lower() in ["true", "1"]
+enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
+    "true",
+    "1",
+]
 enable_annotations = os.environ.get(
     "GATEWAY_ENABLE_ANNOTATIONS", ""
 ).lower() in ["true", "1"]
 enable_backed_mode = os.environ.get(
     "GATEWAY_ENABLE_BACKED_MODE", ""
-).lower() in ['true', '1']
+).lower() in ["true", "1"]
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,

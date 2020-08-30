@@ -10,7 +10,7 @@ class TestRenderEntry(unittest.TestCase):
             "path": "/somepath/",
             "name": "entry",
             "type": "file",
-            "annotations": []
+            "annotations": [],
         }
         rendered = render_entry(entry)
         self.assertIn("view/somepath", rendered)
@@ -20,7 +20,7 @@ class TestRenderEntry(unittest.TestCase):
             "path": "/somepath",
             "name": "entry",
             "type": "file",
-            "annotations": []
+            "annotations": [],
         }
         rendered = render_entry(entry)
         self.assertIn("view/somepath", rendered)
@@ -30,7 +30,7 @@ class TestRenderEntry(unittest.TestCase):
             "path": "somepath/",
             "name": "entry",
             "type": "file",
-            "annotations": []
+            "annotations": [],
         }
         rendered = render_entry(entry)
         self.assertIn("view/somepath", rendered)
@@ -40,7 +40,7 @@ class TestRenderEntry(unittest.TestCase):
             "path": "somepath",
             "name": "entry",
             "type": "file",
-            "annotations": []
+            "annotations": [],
         }
         rendered = render_entry(entry)
         self.assertIn("view/somepath", rendered)

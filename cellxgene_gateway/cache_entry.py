@@ -26,6 +26,7 @@ class CacheEntryStatus(Enum):
     error = "error"
     terminated = "terminated"
 
+
 class CacheEntry:
     def __init__(
         self,

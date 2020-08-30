@@ -9,7 +9,12 @@
 
 import os
 from cellxgene_gateway import env
-from cellxgene_gateway.dir_util import make_h5ad, make_annotations, annotations_suffix
+from cellxgene_gateway.dir_util import (
+    make_h5ad,
+    make_annotations,
+    annotations_suffix,
+)
+
 
 def recurse_dir(path):
     if not os.path.exists(path):
@@ -18,6 +23,7 @@ def recurse_dir(path):
         )
 
     all_entries = sorted(os.listdir(path))
+
     def is_h5ad(el):
         return el.endswith(".h5ad") and os.path.isfile(os.path.join(path, el))
 

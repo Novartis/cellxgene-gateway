@@ -9,5 +9,6 @@ class TestCacheEntry(unittest.TestCase):
         entry = CacheEntry.for_key("some-key", 1)
         self.assertEqual(entry.status, CacheEntryStatus.loading)
 
+
 if __name__ == "__main__":
     unittest.main()
