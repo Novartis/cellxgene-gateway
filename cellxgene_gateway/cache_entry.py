@@ -169,11 +169,15 @@ class CacheEntry:
             cellxgene_response = get(full_path, headers=headers)
         elif request.method == "PUT":
             cellxgene_response = put(
-                full_path, headers=headers, data=request.data,
+                full_path,
+                headers=headers,
+                data=request.data,
             )
         elif request.method == "POST":
             cellxgene_response = post(
-                full_path, headers=headers, data=request.data,
+                full_path,
+                headers=headers,
+                data=request.data,
             )
         else:
             raise CellxgeneException(
@@ -193,7 +197,9 @@ class CacheEntry:
                 resp_headers[h] = cellxgene_response.headers[h]
 
         gateway_response = make_response(
-            gateway_content, cellxgene_response.status_code, resp_headers,
+            gateway_content,
+            cellxgene_response.status_code,
+            resp_headers,
         )
 
         return gateway_response
