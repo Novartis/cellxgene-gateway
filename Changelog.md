@@ -1,3 +1,7 @@
+# 0.2.2
+
+  * Fixed bug with annotations (missing annotation.js asset)
+
 # 0.2.1
 
   * Minor fixes to enable cellxgene 0.16.0
