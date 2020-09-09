@@ -53,6 +53,7 @@ setup(
     package_data={
         "cellxgene_gateway": [
             "static/css/homepagestyle.css",
+            "static/js/annotation.js",
             "static/nibr.ico",
             "templates/*.html",
         ]
