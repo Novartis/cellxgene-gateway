@@ -44,47 +44,6 @@
 			<u>Cache Status: view status of launched cellxgene servers.</u></a>
 	</div>
 	
-	{% if enable_upload %}
-	<br>
-	<h1 style="padding-left:35px">
-		How To Upload Data via HTTP:
-	</h1>
-	<ol style="padding-left:85px;">
-		<li>
-			Create a folder for your Username: 
-		</li>
-		<br>
-		<form action="{{ url_for('make_user') }}" method="post">
-		    Username <input type="text" name="directory">
-		    <input type="submit" value="Create">
-		</form>
-		<li>
-			Create a subdirectory under the selected Folder: 
-		</li>		
-		<br>
-		<form action="{{ url_for('make_subdir') }}" method="post">
-			<select name="usernames" id="usernames">
-				{% for user in users %}
-					<option value="{{ user }}">{{ user }}</option>
-				{% endfor %}
-			</select>
-			<br>
-			Subdirectory Name <input type="text" name="directory">
-		    <input type="submit" value="Create">
-		</form>
-		<li>Choose a folder to copy your data to, then upload your data file (must be in .h5ad format).</li>
-		<br>
-		<form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
-		Type in the name of the directory and subdirectory you wish to upload to, i.e. "USER/cells". <input type="text" name="path">
-		<br>
-		File: <input type="file" name="file"><br>
-		<input style="position:relative; top:10px;" type="submit" value="Upload">
-		</form>
-		<br>
-		<li>Take a look at your data using the file crawler link above</li>
-	</ol>
-	{% endif %}
-
 	<br>
 
 	<h1 style="padding-left:35px">

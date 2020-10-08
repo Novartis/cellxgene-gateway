@@ -8,9 +8,10 @@
 # the specific language governing permissions and limitations under the License.
 import datetime
 import logging
+import urllib.parse
+from enum import Enum
 
 import psutil
-from enum import Enum
 from flask import make_response, render_template, request
 from requests import get, post, put
 import re
@@ -69,6 +70,10 @@ class CacheEntry:
             None,
         )
 
+    @property
+    def source_name(self):
+        return self.key.source_name
+
     def set_loaded(self, pid):
         self.pid = pid
         self.status = CacheEntryStatus.loaded
@@ -98,9 +103,13 @@ class CacheEntry:
             for child in children:
                 child.terminate()
             psutil.wait_procs(children, callback=on_terminate)
-            terminated.append(p.pid)
-            p.terminate()
-            psutil.wait_procs([p], callback=on_terminate)
+            # the parent process may automatically die once its children have --
+            try:
+                p.terminate()
+                psutil.wait_procs([p], callback=on_terminate)
+            except psutil.NoSuchProcess:
+                pass
+
             logging.getLogger("cellxgene_gateway").info(
                 f"terminated {terminated}"
             )
@@ -120,15 +129,19 @@ class CacheEntry:
         return gateway_content
 
     def gateway_basepath(self):
-        return f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
+        source_path = (
+            f"/source/{urllib.parse.quote_plus(self.source_name)}"
+            if self.source_name
+            else ""
+        )
+        return f"{env.external_protocol}://{env.external_host}{source_path}/view/{self.key.descriptor}/"
 
     def cellxgene_basepath(self):
         return f"http://127.0.0.1:{self.port}"
 
     def serve_content(self, path):
         gateway_basepath = self.gateway_basepath()
-        subpath = path[len(self.key.pathpart) :]  # noqa: E203
-
+        subpath = path[len(self.key.descriptor) :]  # noqa: E203
         if len(subpath) == 0:
             r = make_response(f"Redirect to {gateway_basepath}\n", 301)
             r.headers["location"] = gateway_basepath + querystring()
@@ -201,5 +214,4 @@ class CacheEntry:
             cellxgene_response.status_code,
             resp_headers,
         )
-
         return gateway_response

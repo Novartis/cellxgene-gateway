@@ -59,7 +59,12 @@ cellxgene-gateway
 Here's what the environment variables mean:
 
 * `CELLXGENE_LOCATION` - the location of the cellxgene executable, e.g. `~/anaconda2/envs/cellxgene/bin/cellxgene`
+
+At least one of the following is required:
 * `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
+* `CELLXGENE_BUCKET` - an s3 bucket that can contain keys with `.h5ad` data files, e.g. `my-cellxgene-data-bucket`
+Cellxgene Gateway is designed to make it easy to add additional data sources, please see the source code for gateway.py and the ItemSource interface in items/item_source.py
+
 Optional environment variables:
 * `CELLXGENE_ARGS` - catch-all variable that can be used to pass additional command line args to cellxgene server
 * `EXTERNAL_HOST` - the hostname and port from the perspective of the web browser, typically `localhost:5005` if running locally. Defaults to "localhost:{GATEWAY_PORT}"
@@ -67,7 +72,6 @@ Optional environment variables:
 * `GATEWAY_IP` - ip addess of instance gateway is running on, mostly used to display SSH instructions. Defaults to `socket.gethostbyname(socket.gethostname())`
 * `GATEWAY_PORT` - local port that the gateway should bind to, defaults to 5005
 * `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
-* `GATEWAY_ENABLE_UPLOAD` - Set to `true` or `1` to enable HTTP uploads. This is not recommended for a public server.
 * `GATEWAY_ENABLE_ANNOTATIONS` - Set to `true` or to `1` to enable cellxgene annotations. 
 * `GATEWAY_ENABLE_BACKED_MODE` - Set to `true` or to `1` to load AnnData in file-backed mode. This saves memory and speeds up launch time but may reduce overall performance.  
 
@@ -126,9 +130,8 @@ For convenience, the code repo includes a `run.sh.example` shell script to run t
 pip install isort flake8 black
 
 ```bash
-isort -rc .
-flake8 .
-black -l 79 .
+isort -rc . # rc means recursive, and was deprecated in dev version of isort
+black .
 ```
 
 # Getting Help

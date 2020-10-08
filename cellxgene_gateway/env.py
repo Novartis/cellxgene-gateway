@@ -22,13 +22,9 @@ external_host = os.environ.get(
 external_protocol = os.environ.get(
     "EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http")
 )
-ip = os.environ.get("GATEWAY_IP", "127.0.0.1")
+ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 ttl = os.environ.get("GATEWAY_TTL")
-enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
-    "true",
-    "1",
-]
 enable_annotations = os.environ.get(
     "GATEWAY_ENABLE_ANNOTATIONS", ""
 ).lower() in [
@@ -44,7 +40,6 @@ enable_backed_mode = os.environ.get(
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
-    "CELLXGENE_DATA": cellxgene_data,
 }
 
 optional_env_vars = {
@@ -54,10 +49,10 @@ optional_env_vars = {
     "GATEWAY_PORT": gateway_port,
     "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
     "GATEWAY_TTL": ttl,
-    "GATEWAY_ENABLE_UPLOAD": enable_upload,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
     "CELLXGENE_ARGS": cellxgene_args,
+    "CELLXGENE_DATA": cellxgene_data,
 }
 
 
