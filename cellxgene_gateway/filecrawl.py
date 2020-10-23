@@ -91,7 +91,7 @@ def render_entries(entries):
 
 
 def get_url(entry):
-    return f"/view/{ entry['path'].lstrip('/') }"
+    return f"/view/{ entry['path'].lstrip('/') }/"
 
 
 def get_class(entry):
