@@ -1,0 +1,47 @@
+# Tests that run on every PR
+
+name: Pull Request Checks
+
+on: [pull_request]
+
+jobs:
+  black:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout repository
+
+      - uses: actions/setup-python@v2
+        name: Setup Python
+        with:
+          python-version: 3.9
+
+      - name: Install black
+        run: |
+          python -m pip install --upgrade pip
+          pip install black
+      - name: Run black
+        run: |
+          black -l 79 . --check
+  # This job is copied over from `deploy.yaml`
+  run-tests:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      # See: https://github.com/marketplace/actions/setup-conda
+      - uses: s-weigand/setup-conda@v1
+        with:
+          conda-channels: "conda-forge"
+
+      - name: Build environment
+        run: |
+          conda env create -f environment.yml
+          conda activate cellxgene-gateway
+          python setup.py install
+
+      - name: Run tests
+        run: |
+          conda activate cellxgene-gateway
+          python -m unittest discover tests
+          bash <(curl -s https://codecov.io/bash)
