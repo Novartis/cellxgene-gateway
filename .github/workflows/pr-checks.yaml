@@ -2,7 +2,7 @@
 
 name: Pull Request Checks
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   black:
