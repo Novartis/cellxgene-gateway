@@ -113,6 +113,14 @@ python setup.py develop
 
 For convenience, the code repo includes a `run.sh.example` shell script to run the gateway.
 
+4. Install pre-commit hooks
+
+```bash
+conda install -c conda-forge pre-commit
+pre-commit install
+```
+
+
 ## Running Tests
 
 [![Build Status](https://travis-ci.org/Novartis/cellxgene-gateway.svg?branch=master)](https://travis-ci.org/Novartis/cellxgene-gateway)
