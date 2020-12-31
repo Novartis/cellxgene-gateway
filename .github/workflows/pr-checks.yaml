@@ -2,7 +2,7 @@
 
 name: Pull Request Checks
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   black:
@@ -37,11 +37,13 @@ jobs:
       - name: Build environment
         run: |
           conda env create -f environment.yml
+          eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
           python setup.py install
 
       - name: Run tests
         run: |
+          eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
           python -m unittest discover tests
           bash <(curl -s https://codecov.io/bash)
