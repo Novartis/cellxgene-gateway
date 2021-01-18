@@ -50,10 +50,9 @@ def _force_https(app):
 
 
 app.wsgi_app = _force_https(app.wsgi_app)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
 cache = BackendCache()
-location = f"{env.external_protocol}://{env.external_host}"
 
 
 @app.errorhandler(CellxgeneException)
@@ -127,7 +126,7 @@ def make_user():
 
     create_dir(env.cellxgene_data, dir_name)
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 def make_subdir():
@@ -136,7 +135,7 @@ def make_subdir():
 
     create_dir(parent_path, dir_name)
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 def upload_file():
@@ -150,8 +149,12 @@ def upload_file():
             if "file" in request.files:
                 f = request.files["file"]
                 if f and f.filename.endswith(".h5ad"):
-                    f.save(os.path.join(full_upload_path, secure_filename(f.filename)))
-                    return redirect("/filecrawl.html", code=302)
+                    f.save(
+                        os.path.join(
+                            full_upload_path, secure_filename(f.filename)
+                        )
+                    )
+                    return redirect(url_for("filecrawl"), code=302)
                 else:
                     raise CellxgeneException(
                         "Uploaded file must be in anndata (.h5ad) format.",
@@ -163,15 +166,21 @@ def upload_file():
                     status.HTTP_400_BAD_REQUEST,
                 )
     else:
-        raise CellxgeneException("Invalid directory.", status.HTTP_400_BAD_REQUEST)
+        raise CellxgeneException(
+            "Invalid directory.", status.HTTP_400_BAD_REQUEST
+        )
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 if env.enable_upload:
     app.add_url_rule("/make_user", "make_user", make_user, methods=["POST"])
-    app.add_url_rule("/make_subdir", "make_subdir", make_subdir, methods=["POST"])
-    app.add_url_rule("/upload_file", "upload_file", upload_file, methods=["POST"])
+    app.add_url_rule(
+        "/make_subdir", "make_subdir", make_subdir, methods=["POST"]
+    )
+    app.add_url_rule(
+        "/upload_file", "upload_file", upload_file, methods=["POST"]
+    )
 
 
 def set_no_cache(resp):
