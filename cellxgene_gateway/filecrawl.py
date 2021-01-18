@@ -45,10 +45,13 @@ def recurse_dir(path):
                     "name": x[:-13]
                     if (len(x) > 13 and x[-13] in ["-", "_"])
                     else (x[:-4] if x.endswith(".csv") else x),
-                    "path": os.path.join(full_path, x).replace(env.cellxgene_data, ""),
+                    "path": os.path.join(full_path, x).replace(
+                        env.cellxgene_data, ""
+                    ),
                 }
                 for x in sorted(os.listdir(full_path))
-                if x.endswith(".csv") and os.path.isfile(os.path.join(full_path, x))
+                if x.endswith(".csv")
+                and os.path.isfile(os.path.join(full_path, x))
             ]
         return [
             {
@@ -89,7 +92,7 @@ def render_entries(entries):
 
 
 def get_url(entry):
-    return url_for("do_view", path=entry["path"])
+    return url_for("do_view", path=entry["path"].lstrip("/"))
 
 
 def get_class(entry):

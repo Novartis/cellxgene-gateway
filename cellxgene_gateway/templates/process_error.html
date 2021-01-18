@@ -39,10 +39,10 @@
           <li><a href="{{url_for('do_relaunch', path=dataset)}}">
                     Attempt to relaunch the cellxgene server.
                </a></li>
-          <li><a href="/filecrawl.html">
+          <li><a href="{{ url_for('filecrawl') }}">
                Return to the file directory.
           </a></li>
-          <li><a href="/">
+          <li><a href="{{ url_for('index') }}">
                Return to the homepage.
           </a></li>
      </ul>
