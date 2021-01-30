@@ -92,7 +92,7 @@ def render_entries(entries):
 
 
 def get_url(entry):
-    return url_for("do_view", path=entry["path"].lstrip("/"))
+    return url_for("do_view", path=entry["path"].lstrip("/")) +"/""
 
 
 def get_class(entry):
