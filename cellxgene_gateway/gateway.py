@@ -50,7 +50,21 @@ def _force_https(app):
 
 
 app.wsgi_app = _force_https(app.wsgi_app)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
+if (
+    env.proxy_fix_for > 0
+    or env.proxy_fix_proto > 0
+    or env.proxy_fix_host > 0
+    or env.proxy_fix_port > 0
+    or env.proxy_fix_prefix > 0
+):
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=env.proxy_fix_for,
+        x_proto=env.proxy_fix_proto,
+        x_host=env.proxy_fix_host,
+        x_port=env.proxy_fix_port,
+        x_prefix=env.proxy_fix_prefix,
+    )
 
 cache = BackendCache()
 
