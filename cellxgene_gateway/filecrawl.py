@@ -14,6 +14,7 @@ from cellxgene_gateway.dir_util import (
     make_annotations,
     annotations_suffix,
 )
+from flask import url_for
 
 
 def recurse_dir(path):
@@ -91,7 +92,7 @@ def render_entries(entries):
 
 
 def get_url(entry):
-    return f"/view/{ entry['path'].lstrip('/') }/"
+    return url_for("do_view", path=entry["path"].lstrip("/") + "/")
 
 
 def get_class(entry):

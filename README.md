@@ -60,6 +60,7 @@ Here's what the environment variables mean:
 
 * `CELLXGENE_LOCATION` - the location of the cellxgene executable, e.g. `~/anaconda2/envs/cellxgene/bin/cellxgene`
 * `CELLXGENE_DATA` - a directory that can contain subdirectories with `.h5ad` data files, *without* trailing slash, e.g. `/mnt/cellxgene_data`
+
 Optional environment variables:
 * `CELLXGENE_ARGS` - catch-all variable that can be used to pass additional command line args to cellxgene server
 * `EXTERNAL_HOST` - the hostname and port from the perspective of the web browser, typically `localhost:5005` if running locally. Defaults to "localhost:{GATEWAY_PORT}"
@@ -69,7 +70,14 @@ Optional environment variables:
 * `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
 * `GATEWAY_ENABLE_UPLOAD` - Set to `true` or `1` to enable HTTP uploads. This is not recommended for a public server.
 * `GATEWAY_ENABLE_ANNOTATIONS` - Set to `true` or to `1` to enable cellxgene annotations. 
-* `GATEWAY_ENABLE_BACKED_MODE` - Set to `true` or to `1` to load AnnData in file-backed mode. This saves memory and speeds up launch time but may reduce overall performance.  
+* `GATEWAY_ENABLE_BACKED_MODE` - Set to `true` or to `1` to load AnnData in file-backed mode. This saves memory and speeds up launch time but may reduce overall performance.
+
+If any of the following optional variables are set, [ProxyFix](https://werkzeug.palletsprojects.com/en/1.0.x/middleware/proxy_fix/) will be used.
+* `PROXY_FIX_FOR` - Number of upstream proxies setting X-Forwarded-For
+* `PROXY_FIX_PROTO` - Number of upstream proxies setting X-Forwarded-Proto
+* `PROXY_FIX_HOST` - Number of upstream proxies setting X-Forwarded-Host
+* `PROXY_FIX_PORT` - Number of upstream proxies setting X-Forwarded-Port
+* `PROXY_FIX_PREFIX` - Number of upstream proxies setting X-Forwarded-Prefix
 
 The defaults should be fine if you set up a venv and cellxgene_data folder as above.
 

@@ -47,6 +47,12 @@ env_vars = {
     "CELLXGENE_DATA": cellxgene_data,
 }
 
+proxy_fix_for = int(os.environ.get("PROXY_FIX_FOR", "0"))
+proxy_fix_proto = int(os.environ.get("PROXY_FIX_PROTO", "0"))
+proxy_fix_host = int(os.environ.get("PROXY_FIX_HOST", "0"))
+proxy_fix_port = int(os.environ.get("PROXY_FIX_PORT", "0"))
+proxy_fix_prefix = int(os.environ.get("PROXY_FIX_PREFIX", "0"))
+
 optional_env_vars = {
     "EXTERNAL_HOST": external_host,
     "EXTERNAL_PROTOCOL": external_protocol,
@@ -58,6 +64,11 @@ optional_env_vars = {
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
     "CELLXGENE_ARGS": cellxgene_args,
+    "PROXY_FIX_FOR": proxy_fix_for,
+    "PROXY_FIX_PROTO": proxy_fix_proto,
+    "PROXY_FIX_HOST": proxy_fix_host,
+    "PROXY_FIX_PORT": proxy_fix_port,
+    "PROXY_FIX_PREFIX": proxy_fix_prefix,
 }
 
 

@@ -25,7 +25,7 @@ from flask import (
 )
 from flask_api import status
 from werkzeug.utils import secure_filename
-
+from werkzeug.middleware.proxy_fix import ProxyFix
 from cellxgene_gateway import env
 from cellxgene_gateway.backend_cache import BackendCache
 from cellxgene_gateway.cache_entry import CacheEntryStatus
@@ -50,9 +50,23 @@ def _force_https(app):
 
 
 app.wsgi_app = _force_https(app.wsgi_app)
+if (
+    env.proxy_fix_for > 0
+    or env.proxy_fix_proto > 0
+    or env.proxy_fix_host > 0
+    or env.proxy_fix_port > 0
+    or env.proxy_fix_prefix > 0
+):
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=env.proxy_fix_for,
+        x_proto=env.proxy_fix_proto,
+        x_host=env.proxy_fix_host,
+        x_port=env.proxy_fix_port,
+        x_prefix=env.proxy_fix_prefix,
+    )
 
 cache = BackendCache()
-location = f"{env.external_protocol}://{env.external_host}"
 
 
 @app.errorhandler(CellxgeneException)
@@ -126,7 +140,7 @@ def make_user():
 
     create_dir(env.cellxgene_data, dir_name)
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 def make_subdir():
@@ -135,7 +149,7 @@ def make_subdir():
 
     create_dir(parent_path, dir_name)
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 def upload_file():
@@ -154,7 +168,7 @@ def upload_file():
                             full_upload_path, secure_filename(f.filename)
                         )
                     )
-                    return redirect("/filecrawl.html", code=302)
+                    return redirect(url_for("filecrawl"), code=302)
                 else:
                     raise CellxgeneException(
                         "Uploaded file must be in anndata (.h5ad) format.",
@@ -170,7 +184,7 @@ def upload_file():
             "Invalid directory.", status.HTTP_400_BAD_REQUEST
         )
 
-    return redirect(location, code=302)
+    return redirect(url_for("index"), code=302)
 
 
 if env.enable_upload:

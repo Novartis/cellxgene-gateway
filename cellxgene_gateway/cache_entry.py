@@ -8,6 +8,8 @@
 # the specific language governing permissions and limitations under the License.
 import datetime
 import logging
+from flask.helpers import url_for
+from flask.wrappers import Response
 
 import psutil
 from enum import Enum
@@ -120,7 +122,7 @@ class CacheEntry:
         return gateway_content
 
     def gateway_basepath(self):
-        return f"{env.external_protocol}://{env.external_host}/view/{self.key.pathpart}/"
+        return url_for("do_view", path=self.key.pathpart) + "/"
 
     def cellxgene_basepath(self):
         return f"http://127.0.0.1:{self.port}"
@@ -130,7 +132,7 @@ class CacheEntry:
         subpath = path[len(self.key.pathpart) :]  # noqa: E203
 
         if len(subpath) == 0:
-            r = make_response(f"Redirect to {gateway_basepath}\n", 301)
+            r = make_response(f"Redirect to {gateway_basepath}\n", 302)
             r.headers["location"] = gateway_basepath + querystring()
             return r
         elif self.status == CacheEntryStatus.loading:
