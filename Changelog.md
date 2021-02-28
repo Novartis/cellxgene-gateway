@@ -1,3 +1,7 @@
+# 0.2.3
+
+* Added support for ProxyFix
+
 # 0.2.2
 
   * Fixed bug with annotations (missing annotation.js asset)
