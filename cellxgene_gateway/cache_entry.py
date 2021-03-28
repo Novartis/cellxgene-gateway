@@ -8,14 +8,14 @@
 # the specific language governing permissions and limitations under the License.
 import datetime
 import logging
-from flask.helpers import url_for
-from flask.wrappers import Response
+import re
+from enum import Enum
 
 import psutil
-from enum import Enum
 from flask import make_response, render_template, request
+from flask.helpers import url_for
+from flask.wrappers import Response
 from requests import get, post, put
-import re
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
@@ -103,9 +103,7 @@ class CacheEntry:
             terminated.append(p.pid)
             p.terminate()
             psutil.wait_procs([p], callback=on_terminate)
-            logging.getLogger("cellxgene_gateway").info(
-                f"terminated {terminated}"
-            )
+            logging.getLogger("cellxgene_gateway").info(f"terminated {terminated}")
         self.status = CacheEntryStatus.terminated
 
     def rewrite_text_content(self, cellxgene_content):
@@ -182,9 +180,7 @@ class CacheEntry:
                 data=request.data,
             )
         else:
-            raise CellxgeneException(
-                f"Unexpected method {request.method}", 400
-            )
+            raise CellxgeneException(f"Unexpected method {request.method}", 400)
         content_type = cellxgene_response.headers["content-type"]
         if "text" in content_type:
             gateway_content = self.rewrite_text_content(

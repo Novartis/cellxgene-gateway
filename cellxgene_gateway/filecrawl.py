@@ -8,13 +8,11 @@
 # the specific language governing permissions and limitations under the License.
 
 import os
-from cellxgene_gateway import env
-from cellxgene_gateway.dir_util import (
-    make_h5ad,
-    make_annotations,
-    annotations_suffix,
-)
+
 from flask import url_for
+
+from cellxgene_gateway import env
+from cellxgene_gateway.dir_util import annotations_suffix, make_annotations, make_h5ad
 
 
 def recurse_dir(path):
@@ -45,19 +43,18 @@ def recurse_dir(path):
                     "name": x[:-13]
                     if (len(x) > 13 and x[-13] in ["-", "_"])
                     else (x[:-4] if x.endswith(".csv") else x),
-                    "path": os.path.join(full_path, x).replace(
+                    "path": os.path.join(full_path, x + "/").replace(
                         env.cellxgene_data, ""
                     ),
                 }
                 for x in sorted(os.listdir(full_path))
-                if x.endswith(".csv")
-                and os.path.isfile(os.path.join(full_path, x))
+                if x.endswith(".csv") and os.path.isfile(os.path.join(full_path, x))
             ]
         return [
             {
                 "name": "new",
                 "class": "new",
-                "path": full_path.replace(env.cellxgene_data, ""),
+                "path": full_path.replace(env.cellxgene_data, "").rstrip("/"),
             }
         ] + entries
 
@@ -92,7 +89,7 @@ def render_entries(entries):
 
 
 def get_url(entry):
-    return url_for("do_view", path=entry["path"].lstrip("/") + "/")
+    return url_for("do_view", path=entry["path"].lstrip("/"))
 
 
 def get_class(entry):
@@ -113,7 +110,7 @@ def render_annotations(entry):
 
 def render_entry(entry):
     if entry["type"] == "file":
-        return f"<li> <a href='{ get_url(entry) }'>{entry['name']}</a> {render_annotations(entry)}</li>"
+        return f"<li> <a href='{ get_url(entry) }/'>{entry['name']}</a> {render_annotations(entry)}</li>"
     elif entry["type"] == "directory":
         url = f"/filecrawl/{entry['path'].lstrip('/')}"
         return f"<li><a href='{url}'>{entry['name']}</a>{render_entries(entry['children'])}</li>"

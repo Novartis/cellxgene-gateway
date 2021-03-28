@@ -29,15 +29,11 @@ enable_upload = os.environ.get("GATEWAY_ENABLE_UPLOAD", "").lower() in [
     "true",
     "1",
 ]
-enable_annotations = os.environ.get(
-    "GATEWAY_ENABLE_ANNOTATIONS", ""
-).lower() in [
+enable_annotations = os.environ.get("GATEWAY_ENABLE_ANNOTATIONS", "").lower() in [
     "true",
     "1",
 ]
-enable_backed_mode = os.environ.get(
-    "GATEWAY_ENABLE_BACKED_MODE", ""
-).lower() in [
+enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in [
     "true",
     "1",
 ]

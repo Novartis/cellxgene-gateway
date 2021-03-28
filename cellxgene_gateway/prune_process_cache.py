@@ -10,8 +10,7 @@
 import logging
 import time
 
-from cellxgene_gateway import env
-from cellxgene_gateway import util
+from cellxgene_gateway import env, util
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +28,7 @@ class PruneProcessCache:
     def prune(self):
         timestamp = util.current_time_stamp()
         cutoff = timestamp - self.expire_seconds
-        processes_to_delete = [
-            p for p in self.cache.entry_list if p.timestamp < cutoff
-        ]
+        processes_to_delete = [p for p in self.cache.entry_list if p.timestamp < cutoff]
         processes_to_keep = [
             p for p in self.cache.entry_list if not p.timestamp < cutoff
         ]
@@ -42,9 +39,7 @@ class PruneProcessCache:
 
         for process in processes_to_delete:
             try:
-                logger.info(
-                    f"pruning process {process.pid} ({process.key.dataset})"
-                )
+                logger.info(f"pruning process {process.pid} ({process.key.dataset})")
                 self.cache.prune(process)
             except Exception:
                 logger.exception(
