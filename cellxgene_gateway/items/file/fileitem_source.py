@@ -150,9 +150,16 @@ class FileItemSource(ItemSource):
     def make_fileitem_from_path(
         self, filename, subpath, is_annotation=False, is_shallow=False
     ) -> FileItem:
+        if is_annotation and filename.endswith(self.annotation_file_suffix):
+            name = filename[: -len(self.annotation_file_suffix)]
+            ext = self.annotation_file_suffix
+        else:
+            name = filename
+            ext = ""
         item = FileItem(
             subpath=subpath,
-            name=filename,
+            name=name,
+            ext=ext,
             type=ItemType.annotation if is_annotation else ItemType.h5ad,
         )
 

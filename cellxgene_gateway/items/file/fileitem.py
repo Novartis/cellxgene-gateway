@@ -18,10 +18,11 @@ class FileItem(Item):
     The Item superclass expects a 'name' and 'type'.
     """
 
-    def __init__(self, subpath: str, *args, **kwargs):
+    def __init__(self, subpath: str, ext: str = "", *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subpath = subpath
+        self.ext = ext
 
     @property
     def descriptor(self) -> str:
-        return os.path.join(self.subpath, self.name).strip("/")
+        return os.path.join(self.subpath, self.name + self.ext).strip("/")

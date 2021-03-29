@@ -10,7 +10,7 @@ from cellxgene_gateway.items.file.fileitem_source import FileItemSource
 from cellxgene_gateway.items.item import ItemType
 
 key = CacheKey(
-    FileItem("/czi/", "pbmc3k.h5ad", ItemType.h5ad),
+    FileItem("/czi/", name="pbmc3k.h5ad", type=ItemType.h5ad),
     FileItemSource("/tmp", "local"),
 )
 
