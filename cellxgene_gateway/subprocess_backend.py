@@ -15,7 +15,6 @@ from flask_api import status
 from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.dir_util import make_annotations
 from cellxgene_gateway.env import cellxgene_args, enable_annotations, enable_backed_mode
-from cellxgene_gateway.path_util import get_annotation_file_path, get_file_path
 from cellxgene_gateway.process_exception import ProcessException
 
 
@@ -38,8 +37,7 @@ class SubprocessBackend:
 
         cmd = (
             f"yes | {cellxgene_loc} launch {file_path}"
-            + " --port "
-            + str(port)
+            + f" --port {port}"
             + " --host 127.0.0.1"
             + extra_args
         )
@@ -50,13 +48,12 @@ class SubprocessBackend:
         return cmd
 
     def launch(self, cellxgene_loc, scripts, cache_entry):
-
         cmd = self.create_cmd(
             cellxgene_loc,
-            get_file_path(cache_entry.key),
+            cache_entry.key.file_path,
             cache_entry.port,
             scripts,
-            get_annotation_file_path(cache_entry.key),
+            cache_entry.key.annotation_file_path,
         )
         logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
         process = subprocess.Popen(
