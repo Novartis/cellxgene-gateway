@@ -130,6 +130,7 @@ class FileItemSource(ItemSource):
             )
             item = self.lookup_item(h5ad_descriptor)
             if item is not None:
+                dir_util.ensure_dir_exists(self.full_path(annotation_item.subpath))
                 return LookupResult(item, annotation_item)
         else:
             item = self.lookup_item(descriptor)

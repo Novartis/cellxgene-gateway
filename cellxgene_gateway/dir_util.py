@@ -62,3 +62,8 @@ def make_h5ad(el):
 
 def make_annotations(el):
     return el[:-5] + annotations_suffix
+
+
+def ensure_dir_exists(file_path):
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
