@@ -22,7 +22,7 @@ jobs:
           pip install black
       - name: Run black
         run: |
-          black -l 79 . --check
+          black . --check
   # This job is copied over from `deploy.yaml`
   run-tests:
     runs-on: ubuntu-18.04

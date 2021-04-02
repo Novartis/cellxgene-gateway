@@ -29,8 +29,10 @@ class S3ItemSource(ItemSource):
     ):
         self._name = name
         self.s3 = s3fs.S3FileSystem()
-        if bucket.startswith('s3://'):
-            raise Exception(f"Bucket name should not include s3:// prefix, got {bucket}")
+        if bucket.startswith("s3://"):
+            raise Exception(
+                f"Bucket name should not include s3:// prefix, got {bucket}"
+            )
         self.bucket = bucket
         self.h5ad_suffix = h5ad_suffix
         self.annotation_dir_suffix = annotation_dir_suffix
@@ -69,7 +71,7 @@ class S3ItemSource(ItemSource):
             raise Exception(f"S3 url '{url}' does not exist.")
 
         s3key_map = dict(
-            (filepath[len(self.bucket) :].lstrip('/'), "s3://" + filepath)
+            (filepath[len(self.bucket) :].lstrip("/"), "s3://" + filepath)
             for filepath in sorted(self.s3.ls(url))
         )
 
