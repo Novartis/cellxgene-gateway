@@ -48,7 +48,7 @@
                <tr>
                     <td>{{ entry.pid }}</td>
                     <td><a
-                              href="{{ url_for('do_view', path=entry.key.descriptor, source_name=entry.key.source_name) }}">{{ entry.key.h5ad_item.descriptor }}</a>
+                              href="{{ entry.key.view_url }}">{{ entry.key.h5ad_item.descriptor }}</a>
                     </td>
                     <td>{{ entry.key.annotation_descriptor }}</td>
                     <td>{{ entry.source_name }}</td>

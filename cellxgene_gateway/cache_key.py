@@ -15,8 +15,7 @@
 # 3) somedir/dataset_annotations: an annotation directory. The corresponding h5ad must exist, but the directory may not.
 #    in this case, descriptor == 'somedir/dataset_annotations', dataset == 'somedir/dataset.h5ad'
 
-from flask.helpers import url_for
-
+from cellxgene_gateway import flask_util
 from cellxgene_gateway.items.item import Item
 from cellxgene_gateway.items.item_source import ItemSource, LookupResult
 
@@ -41,12 +40,14 @@ class CacheKey:
             return self.source.get_local_path(self.annotation_item)
 
     def relaunch_url(self):
-        return url_for("do_relaunch", source=self.source_name, path=self.descriptor)
+        return flask_util.relaunch_url(self.descriptor, self.source_name)
 
     def gateway_basepath(self):
-        return (
-            url_for("do_view", source_name=self.source_name, path=self.descriptor) + "/"
-        )
+        return self.view_url + "/"
+
+    @property
+    def view_url(self):
+        return flask_util.view_url(self.descriptor, self.source_name)
 
     @property
     def source_name(self):

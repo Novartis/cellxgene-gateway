@@ -10,23 +10,20 @@
 import os
 import urllib.parse
 
-from flask import url_for
-
-from cellxgene_gateway import env
+from cellxgene_gateway import env, flask_util
+from cellxgene_gateway.cache_key import CacheKey
 from cellxgene_gateway.dir_util import annotations_suffix, make_annotations, make_h5ad
 
 
 def render_annotations(item, item_source):
-    url = url_for(
-        "do_view",
-        path=item_source.get_annotations_subpath(item),
-        source_name=item_source.name,
+    url = flask_util.view_url(
+        item_source.get_annotations_subpath(item), item_source.name
     )
     new_annotation = f"<a class='new' href='{url}'>new</a>"
     annotations = (
         ", ".join(
             [
-                f"<a href='{url_for('do_view', path=a.descriptor, source_name = item_source.name)}/'>{a.name}</a>"
+                f"<a href='{CacheKey(item, item_source, a).view_url}/'>{a.name}</a>"
                 for a in item.annotations
             ]
         )
@@ -38,8 +35,7 @@ def render_annotations(item, item_source):
 
 
 def render_item(item, item_source):
-    url = url_for("do_view", path=item.descriptor, source_name=item_source.name) + "/"
-    item_string = f"<li> <a href='{ url }'>{item.name}</a> {render_annotations(item, item_source)}</li>"
+    item_string = f"<li> <a href='{ CacheKey(item, item_source).view_url }/'>{item.name}</a> {render_annotations(item, item_source)}</li>"
     return item_string
 
 

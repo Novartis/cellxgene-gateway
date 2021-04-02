@@ -26,7 +26,7 @@ from flask_api import status
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
 
-from cellxgene_gateway import env
+from cellxgene_gateway import env, flask_util
 from cellxgene_gateway.backend_cache import BackendCache
 from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.cache_key import CacheKey
@@ -248,7 +248,7 @@ def do_relaunch(path):
         match.terminate()
     qs = request.query_string.decode()
     return redirect(
-        url_for("do_view", path=path) + (f"?{qs}" if len(qs) > 0 else ""),
+        key.view_url + (f"?{qs}" if len(qs) > 0 else ""),
         code=302,
     )
 
@@ -302,6 +302,7 @@ def main():
         default_item_source = "local"
     if len(item_sources) == 0:
         raise Exception("Please specify CELLXGENE_DATA or CELLXGENE_BUCKET")
+    flask_util.include_source_in_url = len(item_sources) > 1
 
     launch()
 
