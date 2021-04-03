@@ -240,15 +240,14 @@ def do_GET_status_json():
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
-    source_name = request.args.get("source") or default_item_source.name
+    source_name = request.args.get("source_name") or default_item_source.name
     source = matching_source(source_name)
     key = CacheKey.for_lookup(source, source.lookup(path))
     match = cache.check_entry(key)
     if not match is None:
         match.terminate()
-    qs = request.query_string.decode()
     return redirect(
-        key.view_url + (f"?{qs}" if len(qs) > 0 else ""),
+        key.view_url,
         code=302,
     )
 
