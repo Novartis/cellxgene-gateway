@@ -6,10 +6,11 @@
 # under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
-
+# import BaseHTTPServer
 import json
 import logging
 import os
+import urllib.parse
 from threading import Lock, Thread
 
 from flask import (
@@ -25,19 +26,22 @@ from flask_api import status
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import secure_filename
 
-from cellxgene_gateway import env
+from cellxgene_gateway import env, flask_util
 from cellxgene_gateway.backend_cache import BackendCache
 from cellxgene_gateway.cache_entry import CacheEntryStatus
+from cellxgene_gateway.cache_key import CacheKey
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.dir_util import create_dir, is_subdir
 from cellxgene_gateway.extra_scripts import get_extra_scripts
-from cellxgene_gateway.filecrawl import recurse_dir, render_entries
-from cellxgene_gateway.path_util import get_key
+from cellxgene_gateway.filecrawl import render_item_source
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.prune_process_cache import PruneProcessCache
 from cellxgene_gateway.util import current_time_stamp
 
 app = Flask(__name__)
+
+item_sources = []
+default_item_source = None
 
 
 def _force_https(app):
@@ -101,8 +105,8 @@ def handle_invalid_process(error):
             http_status=error.http_status,
             stdout=error.stdout,
             stderr=error.stderr,
-            dataset=error.key.dataset,
-            annotation_file=error.key.annotation_file,
+            relaunch_url=error.key.relaunch_url(),
+            annotation_file=error.key.annotation_descriptor,
         ),
         error.http_status,
     )
@@ -119,74 +123,40 @@ def favicon():
 
 @app.route("/")
 def index():
-    users = [
-        name
-        for name in os.listdir(env.cellxgene_data)
-        if os.path.isdir(os.path.join(env.cellxgene_data, name))
-    ]
     return render_template(
         "index.html",
         ip=env.ip,
         cellxgene_data=env.cellxgene_data,
         extra_scripts=get_extra_scripts(),
-        users=users,
-        enable_upload=env.enable_upload,
     )
 
 
-def make_user():
-    dir_name = request.form["directory"]
+@app.route("/filecrawl.html")
+@app.route("/filecrawl/<path:path>")
+def filecrawl(path=None):
+    source_name = request.args.get("source")
+    sources = (
+        filter(
+            lambda x: x.name == urllib.parse.unquote_plus(source_name),
+            item_sources,
+        )
+        if source_name
+        else item_sources
+    )
+    # loop all data sources --
+    rendered_sources = [
+        render_item_source(item_source, path) for item_source in sources
+    ]  # will we need to make this async in the page???
+    rendered_html = "\n".join(rendered_sources)
 
-    create_dir(env.cellxgene_data, dir_name)
-
-    return redirect(url_for("index"), code=302)
-
-
-def make_subdir():
-    parent_path = os.path.join(env.cellxgene_data, request.form["usernames"])
-    dir_name = request.form["directory"]
-
-    create_dir(parent_path, dir_name)
-
-    return redirect(url_for("index"), code=302)
-
-
-def upload_file():
-    upload_dir = request.form["path"]
-
-    full_upload_path = os.path.join(env.cellxgene_data, upload_dir)
-    if is_subdir(full_upload_path, env.cellxgene_data) and os.path.isdir(
-        full_upload_path
-    ):
-        if request.method == "POST":
-            if "file" in request.files:
-                f = request.files["file"]
-                if f and f.filename.endswith(".h5ad"):
-                    f.save(os.path.join(full_upload_path, secure_filename(f.filename)))
-                    return redirect(url_for("filecrawl"), code=302)
-                else:
-                    raise CellxgeneException(
-                        "Uploaded file must be in anndata (.h5ad) format.",
-                        status.HTTP_400_BAD_REQUEST,
-                    )
-            else:
-                raise CellxgeneException(
-                    "A file must be chosen to upload.",
-                    status.HTTP_400_BAD_REQUEST,
-                )
-    else:
-        raise CellxgeneException("Invalid directory.", status.HTTP_400_BAD_REQUEST)
-
-    return redirect(url_for("index"), code=302)
-
-
-if env.enable_upload:
-    app.add_url_rule("/make_user", "make_user", make_user, methods=["POST"])
-    app.add_url_rule("/make_subdir", "make_subdir", make_subdir, methods=["POST"])
-    app.add_url_rule("/upload_file", "upload_file", upload_file, methods=["POST"])
-
-
-def set_no_cache(resp):
+    resp = make_response(
+        render_template(
+            "filecrawl.html",
+            extra_scripts=get_extra_scripts(),
+            rendered_html=rendered_html,
+            path=path,
+        )
+    )
     resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     resp.headers["Pragma"] = "no-cache"
     resp.headers["Expires"] = "0"
@@ -194,52 +164,44 @@ def set_no_cache(resp):
     return resp
 
 
-@app.route("/filecrawl.html")
-def filecrawl():
-    entries = recurse_dir(env.cellxgene_data)
-    rendered_html = render_entries(entries)
-    resp = make_response(
-        render_template(
-            "filecrawl.html",
-            extra_scripts=get_extra_scripts(),
-            rendered_html=rendered_html,
-        )
-    )
-    return set_no_cache(resp)
-
-
-@app.route("/filecrawl/<path:path>")
-def do_filecrawl(path):
-    filecrawl_path = os.path.join(env.cellxgene_data, path)
-    if not os.path.isdir(filecrawl_path):
-        raise CellxgeneException(
-            "Path is not directory: " + filecrawl_path,
-            status.HTTP_400_BAD_REQUEST,
-        )
-    entries = recurse_dir(filecrawl_path)
-    rendered_html = render_entries(entries)
-    return render_template(
-        "filecrawl.html",
-        extra_scripts=get_extra_scripts(),
-        rendered_html=rendered_html,
-        path=path,
-    )
-
-
 entry_lock = Lock()
 
 
+def matching_source(source_name):
+    if source_name is None:
+        source_name = default_item_source.name
+    matching = [i for i in item_sources if i.name == source_name]
+    if len(matching) != 1:
+        raise Exception(f"Could not find matching item source {source_name}")
+    source = matching[0]
+    return source
+
+
+@app.route(
+    "/source/<path:source_name>/view/<path:path>",
+    methods=["GET", "PUT", "POST"],
+)
 @app.route("/view/<path:path>", methods=["GET", "PUT", "POST"])
-def do_view(path):
-    key = get_key(path)
-    print(
-        f"view path={path}, dataset={key.dataset}, annotation_file= {key.annotation_file}, key={key.pathpart}"
-    )
-    with entry_lock:
-        match = cache.check_entry(key)
-        if match is None:
-            uascripts = get_extra_scripts()
-            match = cache.create_entry(key, uascripts)
+def do_view(path, source_name=None):
+    source = matching_source(source_name)
+    match = cache.check_path(source, path)
+
+    if match is None:
+        lookup = source.lookup(path)
+        if lookup is None:
+            raise CellxgeneException(
+                f"Could not find item for path {path} in source {source.name}",
+                404,
+            )
+        key = CacheKey.for_lookup(source, lookup)
+        print(
+            f"view path={path}, source_name={source_name}, dataset={key.file_path}, annotation_file= {key.annotation_file_path}, key={key.descriptor}, source={key.source_name}"
+        )
+        with entry_lock:
+            match = cache.check_entry(key)
+            if match is None:
+                uascripts = get_extra_scripts()
+                match = cache.create_entry(key, uascripts)
 
     match.timestamp = current_time_stamp()
 
@@ -278,38 +240,38 @@ def do_GET_status_json():
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
-    key = get_key(path)
+    source_name = request.args.get("source_name") or default_item_source.name
+    source = matching_source(source_name)
+    key = CacheKey.for_lookup(source, source.lookup(path))
     match = cache.check_entry(key)
     if not match is None:
         match.terminate()
-    qs = request.query_string.decode()
     return redirect(
-        url_for("do_view", path=path) + (f"?{qs}" if len(qs) > 0 else ""),
+        key.view_url,
         code=302,
     )
 
 
 @app.route("/terminate/<path:path>", methods=["GET"])
 def do_terminate(path):
-    key = get_key(path)
+    source_name = request.args.get("source_name") or default_item_source.name
+    source = matching_source(source_name)
+    key = CacheKey.for_lookup(source, source.lookup(path))
     match = cache.check_entry(key)
     if not match is None:
         match.terminate()
     return redirect(url_for("do_GET_status"), code=302)
 
 
-@app.route("/metadata/ip_address", methods=["GET"])
-def ip_address():
-    resp = make_response(env.ip)
-    return set_no_cache(resp)
-
-
-def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
-    )
+def launch():
     env.validate()
+    if not item_sources or not len(item_sources):
+        raise Exception("No data sources specified for Cellxgene Gateway")
+
+    global default_item_source
+    if default_item_source is None:
+        default_item_source = item_sources[0]
+
     pruner = PruneProcessCache(cache)
 
     background_thread = Thread(target=pruner)
@@ -317,6 +279,31 @@ def main():
 
     app.launchtime = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
+
+
+def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
+    )
+    cellxgene_data = os.environ.get("CELLXGENE_DATA", None)
+    cellxgene_bucket = os.environ.get("CELLXGENE_BUCKET", None)
+
+    if cellxgene_bucket is not None:
+        from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
+
+        item_sources.append(S3ItemSource(cellxgene_bucket, name="s3"))
+        default_item_source = "s3"
+    if cellxgene_data is not None:
+        from cellxgene_gateway.items.file.fileitem_source import FileItemSource
+
+        item_sources.append(FileItemSource(cellxgene_data, name="local"))
+        default_item_source = "local"
+    if len(item_sources) == 0:
+        raise Exception("Please specify CELLXGENE_DATA or CELLXGENE_BUCKET")
+    flask_util.include_source_in_url = len(item_sources) > 1
+
+    launch()
 
 
 if __name__ == "__main__":

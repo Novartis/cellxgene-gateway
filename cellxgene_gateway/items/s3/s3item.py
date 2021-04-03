@@ -7,27 +7,21 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
-from flask import request, url_for
+import os
+
+from cellxgene_gateway.items.item import Item
 
 
-def querystring():
-    qs = request.query_string.decode()
-    return f"?{qs}" if len(qs) > 0 else ""
+class S3Item(Item):
+    """e.g. FileItem(subpath = subpath, name = filename, type = ItemType.h5ad)
 
+    The Item superclass expects a 'name' and 'type'.
+    """
 
-include_source_in_url = False
+    def __init__(self, s3key: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.s3key = s3key
 
-
-def url(endpoint, descriptor, source_name):
-    if include_source_in_url:
-        return url_for(endpoint, source_name=source_name, path=descriptor)
-    else:
-        return url_for(endpoint, path=descriptor)
-
-
-def view_url(descriptor, source_name):
-    return url("do_view", descriptor, source_name)
-
-
-def relaunch_url(descriptor, source_name):
-    return url("do_relaunch", descriptor, source_name)
+    @property
+    def descriptor(self) -> str:
+        return self.s3key

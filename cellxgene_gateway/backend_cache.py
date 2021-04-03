@@ -9,11 +9,13 @@
 
 import time
 from threading import Thread
+from typing import List
 
 from flask_api import status
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
+from cellxgene_gateway.cache_key import CacheKey
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.subprocess_backend import SubprocessBackend
 
@@ -35,13 +37,13 @@ class BackendCache:
         contents = self.entry_list
         return [c.port for c in contents]
 
-    def check_entry(self, key):
+    def check_path(self, source, path):
         contents = self.entry_list
         matches = [
             c
             for c in contents
-            if c.key.dataset == key.dataset
-            and c.key.annotation_file == key.annotation_file
+            if c.key.source.name == source.name
+            and path.startswith(c.key.descriptor)
             and c.status != CacheEntryStatus.terminated
         ]
 
@@ -52,10 +54,28 @@ class BackendCache:
         else:
             raise CellxgeneException(
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
-                "Found " + str(len(matches)) + " for " + dataset,
+                "Found " + str(len(matches)) + " for " + path,
             )
 
-    def create_entry(self, key, scripts):
+    def check_entry(self, key):
+        contents = self.entry_list
+        matches = [
+            c
+            for c in contents
+            if c.key.equals(key) and c.status != CacheEntryStatus.terminated
+        ]
+
+        if len(matches) == 0:
+            return None
+        elif len(matches) == 1:
+            return matches[0]
+        else:
+            raise CellxgeneException(
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                "Found " + str(len(matches)) + " for " + key.dataset,
+            )
+
+    def create_entry(self, key: CacheKey, scripts: List[str]):
         port = 8000
         existing_ports = self.get_ports()
 

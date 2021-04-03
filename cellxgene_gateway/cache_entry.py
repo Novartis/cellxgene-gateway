@@ -9,11 +9,11 @@
 import datetime
 import logging
 import re
+import urllib.parse
 from enum import Enum
 
 import psutil
 from flask import make_response, render_template, request
-from flask.helpers import url_for
 from flask.wrappers import Response
 from requests import get, post, put
 
@@ -71,6 +71,10 @@ class CacheEntry:
             None,
         )
 
+    @property
+    def source_name(self):
+        return self.key.source_name
+
     def set_loaded(self, pid):
         self.pid = pid
         self.status = CacheEntryStatus.loaded
@@ -100,9 +104,13 @@ class CacheEntry:
             for child in children:
                 child.terminate()
             psutil.wait_procs(children, callback=on_terminate)
-            terminated.append(p.pid)
-            p.terminate()
-            psutil.wait_procs([p], callback=on_terminate)
+            # the parent process may automatically die once its children have --
+            try:
+                p.terminate()
+                psutil.wait_procs([p], callback=on_terminate)
+            except psutil.NoSuchProcess:
+                pass
+
             logging.getLogger("cellxgene_gateway").info(f"terminated {terminated}")
         self.status = CacheEntryStatus.terminated
 
@@ -111,24 +119,20 @@ class CacheEntry:
         gateway_content = (
             re.sub(
                 '(="|\()/static/',
-                f"\\1{self.gateway_basepath()}static/",
+                f"\\1{self.key.gateway_basepath()}static/",
                 cellxgene_content,
             )
             .replace("http://fonts.gstatic.com", "https://fonts.gstatic.com")
-            .replace(self.cellxgene_basepath(), self.gateway_basepath())
+            .replace(self.cellxgene_basepath(), self.key.gateway_basepath())
         )
         return gateway_content
-
-    def gateway_basepath(self):
-        return url_for("do_view", path=self.key.pathpart) + "/"
 
     def cellxgene_basepath(self):
         return f"http://127.0.0.1:{self.port}"
 
     def serve_content(self, path):
-        gateway_basepath = self.gateway_basepath()
-        subpath = path[len(self.key.pathpart) :]  # noqa: E203
-
+        gateway_basepath = self.key.gateway_basepath()
+        subpath = path[len(self.key.descriptor) :]  # noqa: E203
         if len(subpath) == 0:
             r = make_response(f"Redirect to {gateway_basepath}\n", 302)
             r.headers["location"] = gateway_basepath + querystring()
@@ -199,5 +203,4 @@ class CacheEntry:
             cellxgene_response.status_code,
             resp_headers,
         )
-
         return gateway_response

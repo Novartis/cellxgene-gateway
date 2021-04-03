@@ -36,7 +36,7 @@
 <h4>Options</h4>
      Please choose one of the following, or use the back button:
      <ul>
-          <li><a href="{{url_for('do_relaunch', path=dataset)}}">
+          <li><a href="{{ relaunch_url }}">
                     Attempt to relaunch the cellxgene server.
                </a></li>
           <li><a href="{{ url_for('filecrawl') }}">

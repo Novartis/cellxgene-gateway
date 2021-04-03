@@ -1,7 +1,8 @@
-import os
 import codecs
-from setuptools import find_packages, setup
+import os
 import sys
+
+from setuptools import find_packages, setup
 
 if sys.version_info < (3, 6):
     sys.exit("Sorry, Python < 3.6 is not supported")
@@ -25,8 +26,8 @@ def get_version(rel_path):
 def parse_requirements():
     reqs = []
     with open("requirements.txt", "r") as f:
-        for l in f.readlines():
-            reqs.append(l.strip("\n"))
+        for line in f.readlines():
+            reqs.append(line.strip("\n"))
     return reqs
 
 
@@ -49,7 +50,7 @@ setup(
     license="MIT",
     keywords="visualization, genomics",
     url="http://github.com/Novartis/cellxgene-gateway",
-    packages=["cellxgene_gateway"],
+    packages=find_packages(),
     package_data={
         "cellxgene_gateway": [
             "static/css/homepagestyle.css",
