@@ -45,5 +45,16 @@ jobs:
         run: |
           eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
-          python -m unittest discover tests
-          bash <(curl -s https://codecov.io/bash)
+          coverage run -m unittest discover tests
+
+      - name: Check coverage
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate cellxgene-gateway
+          coverage report --fail-under 41
+          coverage xml -i
+
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true

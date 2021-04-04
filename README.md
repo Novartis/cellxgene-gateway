@@ -140,6 +140,12 @@ pre-commit install
     python -m unittest discover tests
 ```
 
+## Code Coverage
+```bash
+    coverage run -m unittest discover tests
+    coverage html
+```
+
 ## Running Linters
 
 pip install isort flake8 black
