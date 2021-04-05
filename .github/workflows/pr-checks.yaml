@@ -51,7 +51,7 @@ jobs:
         run: |
           eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
-          coverage report --fail-under 47
+          coverage report --fail-under 41
           coverage xml -i
 
       - name: "Upload coverage to Codecov"
