@@ -1,3 +1,6 @@
+# 0.3.1
+
+ * Added missing __init__.py
 # 0.3.0
 
  * Added support for itemsource interface, allowing s3 hosting
