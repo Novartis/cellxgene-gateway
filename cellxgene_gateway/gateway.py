@@ -46,7 +46,8 @@ default_item_source = None
 
 def _force_https(app):
     def wrapper(environ, start_response):
-        environ["wsgi.url_scheme"] = env.external_protocol
+        if env.external_protocol is not None:
+            environ["wsgi.url_scheme"] = env.external_protocol
         return app(environ, start_response)
 
     return wrapper

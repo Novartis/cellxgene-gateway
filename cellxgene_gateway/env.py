@@ -20,7 +20,7 @@ external_host = os.environ.get(
     os.environ.get("GATEWAY_HOST", f"localhost:{gateway_port}"),
 )
 external_protocol = os.environ.get(
-    "EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", "http")
+    "EXTERNAL_PROTOCOL", os.environ.get("GATEWAY_PROTOCOL", None)
 )
 ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")

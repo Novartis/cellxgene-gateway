@@ -1,6 +1,14 @@
+# 0.3.0
+
+ * Added support for itemsource interface, allowing s3 hosting
+ * Removed support for http file uploads
+ * Only set wsgi.url_scheme when EXTERNAL_PROTOCOL is set (see issue #43) 
+ * Dropped flake8 due to conflicts with black
+ * Added code coverage metrics
+
 # 0.2.3
 
-* Added support for ProxyFix
+ * Added support for ProxyFix
 
 # 0.2.2
 
