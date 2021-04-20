@@ -61,7 +61,7 @@ class S3ItemSource(ItemSource):
         return self.convert_h5ad_key_to_annotation(item.descriptor)
 
     def list_items(self, filter: str = None) -> ItemTree:
-        item_tree = self.scan_directory()
+        item_tree = self.scan_directory("" if filter is None else filter)
         return item_tree
 
     def scan_directory(self, directory_key="") -> dict:
