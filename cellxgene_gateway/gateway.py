@@ -217,7 +217,11 @@ def do_view(path, source_name=None):
 
 @app.route("/cache_status", methods=["GET"])
 def do_GET_status():
-    return render_template("cache_status.html", entry_list=cache.entry_list)
+    return render_template(
+        "cache_status.html",
+        entry_list=cache.entry_list,
+        extra_scripts=get_extra_scripts(),
+    )
 
 
 @app.route("/cache_status.json", methods=["GET"])
