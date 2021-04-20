@@ -38,8 +38,8 @@ class S3ItemSource(ItemSource):
         self.annotation_dir_suffix = annotation_dir_suffix
         self.annotation_file_suffix = annotation_file_suffix
 
-    def url(self, path):
-        return "s3://" + join(self.bucket, path)
+    def url(self, key):
+        return "s3://" + self.bucket + "/" + key
 
     @property
     def name(self):
@@ -64,8 +64,8 @@ class S3ItemSource(ItemSource):
         item_tree = self.scan_directory()
         return item_tree
 
-    def scan_directory(self, subpath="") -> dict:
-        url = self.url(subpath)
+    def scan_directory(self, directory_key="") -> dict:
+        url = self.url(directory_key)
 
         if not self.s3.exists(url):
             raise Exception(f"S3 url '{url}' does not exist.")
@@ -78,32 +78,32 @@ class S3ItemSource(ItemSource):
         def is_annotation_dir(dir_s3key):
             return (
                 dir_s3key.endswith(self.annotation_dir_suffix)
-                and self.convert_annotation_key_to_h5ad(dir_s3key) in h5ad_paths
+                and self.convert_annotation_key_to_h5ad(dir_s3key) in h5ad_keys
             )
 
-        h5ad_paths = [
+        h5ad_keys = [
             filepath
             for filepath, item_url in s3key_map.items()
             if self.is_h5ad_url(item_url)
         ]
 
-        subdirs = [
+        subdir_keys = [
             filepath
             for filepath, item_url in s3key_map.items()
             if self.s3.isdir(item_url) and not is_annotation_dir(filepath)
         ]
 
         items = [
-            self.make_s3item_from_key(filename, join(subpath, filename))
-            for filename in h5ad_paths
+            self.make_s3item_from_key(
+                key[key.rindex("/") + 1 :] if "/" in key else key, key
+            )
+            for key in h5ad_keys
         ]
         branches = None
-        if len(subdirs) > 0:
-            branches = [
-                self.scan_directory(join(subpath, subdir)) for subdir in subdirs
-            ]
+        if len(subdir_keys) > 0:
+            branches = [self.scan_directory(key) for key in subdir_keys]
 
-        return ItemTree(subpath, items, branches)
+        return ItemTree(directory_key, items, branches)
 
     def create_annotation(self, item: S3Item, name: str) -> S3Item:
         annotation = self.make_s3item_from_key(
