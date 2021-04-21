@@ -41,6 +41,9 @@ class S3ItemSource(ItemSource):
     def url(self, key):
         return "s3://" + self.bucket + "/" + key
 
+    def remove_bucket(self, filepath):
+        return filepath[len(self.bucket) :].lstrip("/")
+
     @property
     def name(self):
         return self._name or f"Items:{self.url('')}"
@@ -71,7 +74,7 @@ class S3ItemSource(ItemSource):
             raise Exception(f"S3 url '{url}' does not exist.")
 
         s3key_map = dict(
-            (filepath[len(self.bucket) :].lstrip("/"), "s3://" + filepath)
+            (self.remove_bucket(filepath), "s3://" + filepath)
             for filepath in sorted(self.s3.ls(url))
         )
 
@@ -93,12 +96,7 @@ class S3ItemSource(ItemSource):
             if self.s3.isdir(item_url) and not is_annotation_dir(filepath)
         ]
 
-        items = [
-            self.make_s3item_from_key(
-                key[key.rindex("/") + 1 :] if "/" in key else key, key
-            )
-            for key in h5ad_keys
-        ]
+        items = [self.make_s3item_from_key(basename(key), key) for key in h5ad_keys]
         branches = None
         if len(subdir_keys) > 0:
             branches = [self.scan_directory(key) for key in subdir_keys]
@@ -163,11 +161,11 @@ class S3ItemSource(ItemSource):
         if self.s3.isdir(annotations_fullpath):
             return [
                 self.make_s3item_from_key(
-                    annotation, join(annotations_subpath, annotation), True
+                    basename(annotation), self.remove_bucket(annotation), True
                 )
                 for annotation in sorted(self.s3.ls(annotations_fullpath))
                 if annotation.endswith(self.annotation_file_suffix)
-                and self.s3.isfile(join(annotations_fullpath, annotation))
+                and self.s3.isfile("s3://" + annotation)
             ]
         else:
             return None
