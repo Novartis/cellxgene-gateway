@@ -8,6 +8,7 @@
 # the specific language governing permissions and limitations under the License.
 
 from json import loads
+from json.decoder import JSONDecodeError
 
 from cellxgene_gateway import env
 
@@ -17,4 +18,9 @@ def get_extra_scripts():
     # ['https://www.googletagmanager.com/gtag/js?id=UA-123456-2',
     #  f"{env.external_protocol}://{env.external_host}/static/js/google_ua.js"]
     # where google_ua.js is a script you add to the static/js folder prior to deployment.
-    return [] if env.extra_scripts is None else loads(env.extra_scripts)
+    try:
+        return [] if env.extra_scripts is None else loads(env.extra_scripts)
+    except JSONDecodeError as exc:
+        raise Exception(
+            f'Error parsing GATEWAY_EXTRA_SCRIPTS, expected JSON array e.g. ["https://example.com/path/to/script.js"]'
+        ) from exc
