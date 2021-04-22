@@ -24,7 +24,7 @@ class TestScanDirectory(unittest.TestCase):
         )
 
     @patch("s3fs.S3FileSystem")
-    def test__scan_directory__properly_recurses_suburls(self, s3func):
+    def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(self, s3func):
         class S3Mock:
             def exists(path):
                 if path in [
@@ -154,5 +154,16 @@ class TestScanDirectory(unittest.TestCase):
         )
         self.assertEqual(lvl2.branches, None)
 
-    def test__list_items__pass_filter_into_scan_directory(self):
-        pass
+
+class TestListItems(unittest.TestCase):
+    def test_GIVEN_filter_THEN_pass_filter_into_scan_directory(self):
+        source = S3ItemSource("my-bucket")
+        source.scan_directory = MagicMock()
+        tree = source.list_items("some-filter")
+        source.scan_directory.assert_called_once_with("some-filter")
+
+    def test_GIVEN_no_filter_THEN_pass_empty_string_into_scan_directory(self):
+        source = S3ItemSource("my-bucket")
+        source.scan_directory = MagicMock()
+        tree = source.list_items()
+        source.scan_directory.assert_called_once_with("")
