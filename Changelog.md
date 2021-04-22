@@ -1,6 +1,12 @@
+# 0.3.2
+
+ * Fixed bug #45 affecting multi-level S3 folders
+ * Added extra_scripts to cache_status page
+
 # 0.3.1
 
  * Added missing __init__.py
+
 # 0.3.0
 
  * Added support for itemsource interface, allowing s3 hosting
