@@ -2,7 +2,7 @@
 
 Cellxgene Gateway allows you to use the Cellxgene Server provided by the Chan Zuckerberg Institute (https://github.com/chanzuckerberg/cellxgene) with multiple datasets. It displays an index of available h5ad (anndata) files. When a user clicks on a file name, it launches a Cellxgene Server instance that loads that particular data file and once it is available  proxies requests to that server.
 
-[![codecov](https://codecov.io/gh/Novartis/cellxgene-gateway/branch/master/graph/badge.svg?token=ndEFSzRKJn)](https://codecov.io/gh/Novartis/cellxgene-gateway)
+[![codecov](https://codecov.io/gh/Novartis/cellxgene-gateway/branch/master/graph/badge.svg?token=ndEFSzRKJn)](https://codecov.io/gh/Novartis/cellxgene-gateway) [![PyPI](https://img.shields.io/pypi/v/cellxgene-gateway)](https://pypi.org/project/cellxgene-gateway/) [![PyPI - Downloads](https://img.shields.io/pypi/dm/cellxgene-gateway)](https://pypistats.org/packages/cellxgene-gateway)
 
 # Running locally
 
