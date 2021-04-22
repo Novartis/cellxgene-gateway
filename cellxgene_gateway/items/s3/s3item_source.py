@@ -38,8 +38,11 @@ class S3ItemSource(ItemSource):
         self.annotation_dir_suffix = annotation_dir_suffix
         self.annotation_file_suffix = annotation_file_suffix
 
-    def url(self, path):
-        return "s3://" + join(self.bucket, path)
+    def url(self, key):
+        return "s3://" + self.bucket + "/" + key
+
+    def remove_bucket(self, filepath):
+        return filepath[len(self.bucket) :].lstrip("/")
 
     @property
     def name(self):
@@ -61,49 +64,44 @@ class S3ItemSource(ItemSource):
         return self.convert_h5ad_key_to_annotation(item.descriptor)
 
     def list_items(self, filter: str = None) -> ItemTree:
-        item_tree = self.scan_directory()
+        item_tree = self.scan_directory("" if filter is None else filter)
         return item_tree
 
-    def scan_directory(self, subpath="") -> dict:
-        url = self.url(subpath)
+    def scan_directory(self, directory_key="") -> dict:
+        url = self.url(directory_key)
 
         if not self.s3.exists(url):
             raise Exception(f"S3 url '{url}' does not exist.")
 
         s3key_map = dict(
-            (filepath[len(self.bucket) :].lstrip("/"), "s3://" + filepath)
+            (self.remove_bucket(filepath), "s3://" + filepath)
             for filepath in sorted(self.s3.ls(url))
         )
 
         def is_annotation_dir(dir_s3key):
             return (
                 dir_s3key.endswith(self.annotation_dir_suffix)
-                and self.convert_annotation_key_to_h5ad(dir_s3key) in h5ad_paths
+                and self.convert_annotation_key_to_h5ad(dir_s3key) in h5ad_keys
             )
 
-        h5ad_paths = [
+        h5ad_keys = [
             filepath
             for filepath, item_url in s3key_map.items()
             if self.is_h5ad_url(item_url)
         ]
 
-        subdirs = [
+        subdir_keys = [
             filepath
             for filepath, item_url in s3key_map.items()
             if self.s3.isdir(item_url) and not is_annotation_dir(filepath)
         ]
 
-        items = [
-            self.make_s3item_from_key(filename, join(subpath, filename))
-            for filename in h5ad_paths
-        ]
+        items = [self.make_s3item_from_key(basename(key), key) for key in h5ad_keys]
         branches = None
-        if len(subdirs) > 0:
-            branches = [
-                self.scan_directory(join(subpath, subdir)) for subdir in subdirs
-            ]
+        if len(subdir_keys) > 0:
+            branches = [self.scan_directory(key) for key in subdir_keys]
 
-        return ItemTree(subpath, items, branches)
+        return ItemTree(directory_key, items, branches)
 
     def create_annotation(self, item: S3Item, name: str) -> S3Item:
         annotation = self.make_s3item_from_key(
@@ -163,11 +161,11 @@ class S3ItemSource(ItemSource):
         if self.s3.isdir(annotations_fullpath):
             return [
                 self.make_s3item_from_key(
-                    annotation, join(annotations_subpath, annotation), True
+                    basename(annotation), self.remove_bucket(annotation), True
                 )
                 for annotation in sorted(self.s3.ls(annotations_fullpath))
                 if annotation.endswith(self.annotation_file_suffix)
-                and self.s3.isfile(join(annotations_fullpath, annotation))
+                and self.s3.isfile("s3://" + annotation)
             ]
         else:
             return None
