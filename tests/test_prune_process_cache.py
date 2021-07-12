@@ -14,7 +14,6 @@ key = CacheKey(
 
 
 class TestPruneProcessCache(unittest.TestCase):
-    @unittest.skip("skipping until #39 fixed")
     @patch("cellxgene_gateway.util.current_time_stamp", new=lambda: 0)
     @patch("cellxgene_gateway.env.ttl", new="10")
     @patch("cellxgene_gateway.cache_entry.CacheEntry")
@@ -27,6 +26,7 @@ class TestPruneProcessCache(unittest.TestCase):
         old.foo = 12
         old.pid = 1
         old.key = key
+        old.terminate.return_value = None
         seal(old)
         new.key = key
         cache.entry_list.append(old)
@@ -39,6 +39,7 @@ class TestPruneProcessCache(unittest.TestCase):
         self.assertEqual(len(cache.entry_list), 1)
         self.assertEqual(cache.entry_list[0], new)
         self.assertEqual(cache.entry_list[0], new)
+        self.assertTrue(old.terminate.called)
 
 
 if __name__ == "__main__":
