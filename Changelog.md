@@ -1,3 +1,7 @@
+# 0.3.3
+
+* Fixed bug #48 affecting cache pruning
+
 # 0.3.2
 
  * Fixed bug #45 affecting multi-level S3 folders
