@@ -1,5 +1,6 @@
 cellxgene>=0.15
 flask<2.0.0,>=1.0.2
-flask_api
+flask-api==2.0
+werkzeug==1.0.1
 psutil
 requests

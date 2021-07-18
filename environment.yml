@@ -7,8 +7,12 @@ dependencies:
 - flask<2.0.0,>=1.0.2
 - psutil
 - black
+- twine
+- isort
 - coverage
 - pip
 - pip:
-  - flask-api
+  - pre_commit
+  - flask-api==2.0
+  - werkzeug==1.0.1
   - cellxgene>=0.15
