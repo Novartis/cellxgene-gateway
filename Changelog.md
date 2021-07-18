@@ -1,3 +1,7 @@
+# 0.3.4
+
+* Fixed bug #50 affecting subdirectory listing
+
 # 0.3.3
 
 * Fixed bug #48 affecting cache pruning
