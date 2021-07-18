@@ -1,3 +1,7 @@
+# 0.3.5
+
+* Pinned flask version to match cellxgene 0.17.0
+
 # 0.3.4
 
 * Fixed bug #50 affecting subdirectory listing
