@@ -51,7 +51,7 @@ class FileItemSource(ItemSource):
         return self.convert_h5ad_path_to_annotation(item.descriptor)
 
     def list_items(self, filter: str = None) -> ItemTree:
-        item_tree = self.scan_directory()
+        item_tree = self.scan_directory("" if filter is None else filter)
 
         """def get_items(dir):
             if dir.branches:
