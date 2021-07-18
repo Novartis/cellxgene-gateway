@@ -1,3 +1,7 @@
+# 0.3.6
+
+* pinned version of werkzeug
+
 # 0.3.5
 
 * Pinned flask version to match cellxgene 0.17.0
