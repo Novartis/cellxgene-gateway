@@ -1,3 +1,7 @@
+# 0.3.7
+
+* added back /metadata/ip_address endpoint
+
 # 0.3.6
 
 * pinned version of werkzeug
