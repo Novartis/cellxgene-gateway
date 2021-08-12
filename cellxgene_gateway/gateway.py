@@ -52,6 +52,14 @@ def _force_https(app):
     return wrapper
 
 
+def set_no_cache(resp):
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    resp.headers["Cache-Control"] = "public, max-age=0"
+    return resp
+
+
 app.wsgi_app = _force_https(app.wsgi_app)
 if (
     env.proxy_fix_for > 0
@@ -157,10 +165,7 @@ def filecrawl(path=None):
             path=path,
         )
     )
-    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    resp.headers["Pragma"] = "no-cache"
-    resp.headers["Expires"] = "0"
-    resp.headers["Cache-Control"] = "public, max-age=0"
+    set_no_cache(resp)
     return resp
 
 
@@ -265,6 +270,12 @@ def do_terminate(path):
     if not match is None:
         match.terminate()
     return redirect(url_for("do_GET_status"), code=302)
+
+
+@app.route("/metadata/ip_address", methods=["GET"])
+def ip_address():
+    resp = make_response(env.ip)
+    return set_no_cache(resp)
 
 
 def launch():
