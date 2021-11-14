@@ -214,7 +214,10 @@ def do_view(path, source_name=None):
         match.status == CacheEntryStatus.loaded
         or match.status == CacheEntryStatus.loading
     ):
-        return match.serve_content(path)
+        if source.is_authorized(match.key.descriptor):
+            return match.serve_content(path)
+        else:
+            raise CellxgeneException("User not authorized to access this data", 403)
     elif match.status == CacheEntryStatus.error:
         raise ProcessException.from_cache_entry(match)
 

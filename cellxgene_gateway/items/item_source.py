@@ -41,6 +41,10 @@ class ItemSource(ABC):
         raise Exception('"update" unimplemented')
 
     @abstractmethod
+    def is_authorized(self, descriptor: str) -> bool:
+        raise Exception('"is_authorized" unimplemented')
+
+    @abstractmethod
     def lookup(self, descriptor: str) -> LookupResult:
         raise Exception('"lookup" unimplemented')
 

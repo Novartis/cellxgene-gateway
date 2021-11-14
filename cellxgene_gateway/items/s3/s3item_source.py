@@ -113,6 +113,9 @@ class S3ItemSource(ItemSource):
     def update(self, item: S3Item) -> None:
         pass
 
+    def is_authorized(self, descriptor):
+        return True
+
     def lookup_item(self, descriptor):
         full_path = self.url(descriptor)
         if self.is_h5ad_url(full_path):

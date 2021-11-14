@@ -121,6 +121,9 @@ class FileItemSource(ItemSource):
         if self.is_h5ad_file(full_path):
             return self.shallowitem_from_descriptor(descriptor)
 
+    def is_authorized(self, descriptor):
+        return True
+
     def lookup(self, indescriptor: str) -> LookupResult:
         descriptor = indescriptor.strip("/")
         if descriptor.endswith(self.annotation_file_suffix):

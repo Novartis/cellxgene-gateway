@@ -75,7 +75,9 @@
                     const el = $(this);
                     const ts = el.text();
                     const dt = new Date(parseInt(ts * 1000));
-                    el.html(`${dt.toISOString()}<br>(${ts})`);
+                    el.prepend(`${dt.toISOString()}<br>(`);
+                    el.append(')');
+
                });
           })
      </script>
