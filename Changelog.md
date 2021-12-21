@@ -1,3 +1,7 @@
+# 0.3.8
+
+* Fixed bug #57 affecting deeply nested subdirectory listing
+
 # 0.3.7
 
 * added back /metadata/ip_address endpoint
