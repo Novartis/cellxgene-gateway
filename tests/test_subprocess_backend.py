@@ -33,7 +33,7 @@ class TestSubprocessBackend(unittest.TestCase):
             backend.launch(cellxgene_loc, scripts, entry)
         popen.assert_called_once_with(
             [
-                "yes | /some/cellxgene launch /tmp/czi/pbmc3k.h5ad --port 8000 --host 127.0.0.1 --disable-annotations --scripts http://example.com/script.js --scripts http://example.com/script2.js"
+                "yes | /some/cellxgene launch /tmp/czi/pbmc3k.h5ad --port 8000 --host 127.0.0.1 --disable-annotations --disable-gene-sets-save --scripts http://example.com/script.js --scripts http://example.com/script2.js"
             ],
             shell=True,
             stderr=-1,
