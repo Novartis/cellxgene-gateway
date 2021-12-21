@@ -54,7 +54,7 @@ def render_item_tree(item_tree, item_source):
     if item_tree.descriptor:
         descriptor = item_tree.descriptor.lstrip("/")
         url = f"/filecrawl/{descriptor}?source={item_source.name}"
-        name = descriptor.rsplit("/")[1] if descriptor.find("/") >= 0 else descriptor
+        name = descriptor.rsplit("/", 1)[-1]
         return f"<li><a href='{url}'>{name}</a>{html}</li>"
     else:
         return html
