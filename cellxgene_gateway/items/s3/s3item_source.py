@@ -7,15 +7,20 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
-from os.path import basename, dirname, join
+from os.path import basename, dirname
 from typing import List
 
 import s3fs
+from flask import request
 
 from cellxgene_gateway import dir_util
 from cellxgene_gateway.items.item import ItemTree, ItemType
 from cellxgene_gateway.items.item_source import ItemSource, LookupResult
 from cellxgene_gateway.items.s3.s3item import S3Item
+
+
+def truthy(val: str):
+    return val.lower() in ["true", "1"]
 
 
 class S3ItemSource(ItemSource):
@@ -76,10 +81,10 @@ class S3ItemSource(ItemSource):
 
         if not self.s3.exists(url):
             raise Exception(f"S3 url '{url}' does not exist.")
-
+        refresh = truthy(request.args.get("refresh", default="false")) or not self.use_listings_cache
         s3key_map = dict(
             (self.remove_bucket(filepath), "s3://" + filepath)
-            for filepath in sorted(self.s3.ls(url, refresh=not self.use_listings_cache))
+            for filepath in sorted(self.s3.ls(url, refresh=refresh))
         )
 
         def is_annotation_dir(dir_s3key):

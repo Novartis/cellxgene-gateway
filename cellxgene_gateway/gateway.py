@@ -22,9 +22,7 @@ from flask import (
     send_from_directory,
     url_for,
 )
-from flask_api import status
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.utils import secure_filename
 
 from cellxgene_gateway import env, flask_util
 from cellxgene_gateway.backend_cache import BackendCache
