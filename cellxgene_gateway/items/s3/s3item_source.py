@@ -28,7 +28,7 @@ class S3ItemSource(ItemSource):
         annotation_file_suffix=".csv",
     ):
         self._name = name
-        self.s3 = s3fs.S3FileSystem()
+        self.s3 = s3fs.S3FileSystem(use_listings_cache=False)
         if bucket.startswith("s3://"):
             raise Exception(
                 f"Bucket name should not include s3:// prefix, got {bucket}"
