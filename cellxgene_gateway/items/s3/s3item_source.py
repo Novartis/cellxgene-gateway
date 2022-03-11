@@ -75,7 +75,7 @@ class S3ItemSource(ItemSource):
 
         s3key_map = dict(
             (self.remove_bucket(filepath), "s3://" + filepath)
-            for filepath in sorted(self.s3.ls(url))
+            for filepath in sorted(self.s3.ls(url, refresh=True))
         )
 
         def is_annotation_dir(dir_s3key):
