@@ -28,7 +28,11 @@ class S3ItemSource(ItemSource):
         annotation_file_suffix=".csv",
     ):
         self._name = name
-        self.s3 = s3fs.S3FileSystem(use_listings_cache=False)
+        disable_cache = os.environ.get("S3_DISABLE_LISTINGS_CACHE", "false").lower()
+        assert disable_cache in ['0', '1', 'false', 'true']
+        self.use_listings_cache = disable_cache.lower() not in ["0", "false"]
+
+        self.s3 = s3fs.S3FileSystem(use_listings_cache=self.use_listings_cache)
         if bucket.startswith("s3://"):
             raise Exception(
                 f"Bucket name should not include s3:// prefix, got {bucket}"
@@ -75,7 +79,7 @@ class S3ItemSource(ItemSource):
 
         s3key_map = dict(
             (self.remove_bucket(filepath), "s3://" + filepath)
-            for filepath in sorted(self.s3.ls(url, refresh=True))
+            for filepath in sorted(self.s3.ls(url, refresh=not self.use_listings_cache))
         )
 
         def is_annotation_dir(dir_s3key):
@@ -166,7 +170,7 @@ class S3ItemSource(ItemSource):
                 self.make_s3item_from_key(
                     basename(annotation), self.remove_bucket(annotation), True
                 )
-                for annotation in sorted(self.s3.ls(annotations_fullpath))
+                for annotation in sorted(self.s3.ls(annotations_fullpath, refresh=not self.use_listings_cache))
                 if annotation.endswith(self.annotation_file_suffix)
                 and self.s3.isfile("s3://" + annotation)
             ]
