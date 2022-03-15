@@ -1,3 +1,7 @@
+# 0.3.9
+
+* Added S3_ENABLE_LISTINGS_CACHE variable (See README.md)
+
 # 0.3.8
 
 * Fixed bug #57 affecting deeply nested subdirectory listing
