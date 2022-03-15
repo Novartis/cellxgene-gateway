@@ -39,6 +39,7 @@ jobs:
           conda env create -f environment.yml
           eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
+          pip install markupsafe==2.0.1 # temporary workaround for jinja2-2.11.3 calling soft_unicode in markupsafe
           python setup.py install
 
       - name: Run tests
