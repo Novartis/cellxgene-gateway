@@ -24,7 +24,10 @@ class TestScanDirectory(unittest.TestCase):
         )
 
     @patch("s3fs.S3FileSystem")
-    def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(self, s3func):
+    @patch("flask.request")
+    def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(
+        self, requestMock, s3func
+    ):
         class S3Mock:
             def exists(path):
                 if path in [
@@ -38,7 +41,8 @@ class TestScanDirectory(unittest.TestCase):
                     return True
                 raise Exception("exists called with " + path)
 
-            def ls(path):
+            def ls(path, refresh):
+                assert refresh == True
                 if path == "s3://my-bucket/":
                     return [
                         "my-bucket/lvl1",
@@ -79,6 +83,7 @@ class TestScanDirectory(unittest.TestCase):
                 raise Exception("isfile called with " + path)
 
         s3func.return_value = S3Mock
+        requestMock.args.get.return_value = "true"
         source = S3ItemSource("my-bucket")
         tree = source.scan_directory()
 

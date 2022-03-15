@@ -7,11 +7,12 @@
 # OR CONDITIONS OF ANY KIND, either express or implied. See the License for
 # the specific language governing permissions and limitations under the License.
 
+import os
 from os.path import basename, dirname
 from typing import List
 
+import flask
 import s3fs
-from flask import request
 
 from cellxgene_gateway import dir_util
 from cellxgene_gateway.items.item import ItemTree, ItemType
@@ -33,10 +34,9 @@ class S3ItemSource(ItemSource):
         annotation_file_suffix=".csv",
     ):
         self._name = name
-        disable_cache = os.environ.get("S3_DISABLE_LISTINGS_CACHE", "false").lower()
-        assert disable_cache in ['0', '1', 'false', 'true']
-        self.use_listings_cache = disable_cache.lower() not in ["0", "false"]
-
+        enable_cache = os.environ.get("S3_ENABLE_LISTINGS_CACHE", "false").lower()
+        assert enable_cache in ["0", "1", "false", "true"]
+        self.use_listings_cache = truthy(enable_cache)
         self.s3 = s3fs.S3FileSystem(use_listings_cache=self.use_listings_cache)
         if bucket.startswith("s3://"):
             raise Exception(
@@ -76,15 +76,22 @@ class S3ItemSource(ItemSource):
         item_tree = self.scan_directory("" if filter is None else filter)
         return item_tree
 
+    @property
+    def refresh(self):
+        return (
+            truthy(flask.request.args.get("refresh", default="false"))
+            or not self.use_listings_cache
+        )
+
     def scan_directory(self, directory_key="") -> dict:
         url = self.url(directory_key)
 
         if not self.s3.exists(url):
             raise Exception(f"S3 url '{url}' does not exist.")
-        refresh = truthy(request.args.get("refresh", default="false")) or not self.use_listings_cache
+
         s3key_map = dict(
             (self.remove_bucket(filepath), "s3://" + filepath)
-            for filepath in sorted(self.s3.ls(url, refresh=refresh))
+            for filepath in sorted(self.s3.ls(url, refresh=self.refresh))
         )
 
         def is_annotation_dir(dir_s3key):
@@ -175,7 +182,9 @@ class S3ItemSource(ItemSource):
                 self.make_s3item_from_key(
                     basename(annotation), self.remove_bucket(annotation), True
                 )
-                for annotation in sorted(self.s3.ls(annotations_fullpath, refresh=not self.use_listings_cache))
+                for annotation in sorted(
+                    self.s3.ls(annotations_fullpath, refresh=self.refresh)
+                )
                 if annotation.endswith(self.annotation_file_suffix)
                 and self.s3.isfile("s3://" + annotation)
             ]
