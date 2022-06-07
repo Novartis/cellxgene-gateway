@@ -87,6 +87,33 @@ If any of the following optional variables are set, [ProxyFix](https://werkzeug.
 
 The defaults should be fine if you set up a venv and cellxgene_data folder as above.
 
+## Running cellxgene-gateway with Docker
+
+First, build Docker image:
+
+```bash
+docker build -t cellxgene-gateway .
+```
+
+Then, cellxgene-gateway can be launched as such:
+
+```bash
+docker run -it --rm \
+-v <local_data_dir>:/cellxgene-data \
+-p 5005:5005 \
+cellxgene-gateway
+```
+
+Additional environment variables can be provided with the `-e` parameter:
+
+```bash
+docker run -it --rm \
+-v <local_data_dir>:/cellxgene-data \
+-e GATEWAY_PORT=8080 \
+-p 8080:8080 \
+cellxgene-gateway
+```
+
 # Customization
 
 The current paradigm for customization is to modify files during a build or deployment phase:
