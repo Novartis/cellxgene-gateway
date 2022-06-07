@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
+from cellxgene_gateway.gateway import app
 from cellxgene_gateway.items.item import ItemType
 from cellxgene_gateway.items.s3.s3item import S3Item
 from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
@@ -24,10 +25,7 @@ class TestScanDirectory(unittest.TestCase):
         )
 
     @patch("s3fs.S3FileSystem")
-    @patch("flask.request")
-    def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(
-        self, requestMock, s3func
-    ):
+    def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(self, s3func):
         class S3Mock:
             def exists(path):
                 if path in [
@@ -83,9 +81,9 @@ class TestScanDirectory(unittest.TestCase):
                 raise Exception("isfile called with " + path)
 
         s3func.return_value = S3Mock
-        requestMock.args.get.return_value = "true"
         source = S3ItemSource("my-bucket")
-        tree = source.scan_directory()
+        with app.test_request_context(query_string="refresh=true") as test_context:
+            tree = source.scan_directory()
 
         def s3item_compare(i1, i2, msg=""):
             self.assertEqual(i1.name, i2.name, "name equals")
