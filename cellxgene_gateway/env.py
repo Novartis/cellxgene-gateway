@@ -9,7 +9,6 @@
 
 import logging
 import os
-import socket
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
@@ -33,6 +32,7 @@ enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in
     "true",
     "1",
 ]
+log_level = logging.getLevelName(os.environ.get("GATEWAY_LOG_LEVEL", "INFO"))
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
@@ -53,6 +53,7 @@ optional_env_vars = {
     "GATEWAY_TTL": ttl,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
+    "GATEWAY_LOG_LEVEL": log_level,
     "CELLXGENE_ARGS": cellxgene_args,
     "CELLXGENE_DATA": cellxgene_data,
     "PROXY_FIX_FOR": proxy_fix_for,
