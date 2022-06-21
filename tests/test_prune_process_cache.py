@@ -15,7 +15,7 @@ key = CacheKey(
 
 class TestPruneProcessCache(unittest.TestCase):
     @patch("cellxgene_gateway.util.current_time_stamp", new=lambda: 0)
-    @patch("cellxgene_gateway.env.ttl", new="10")
+    @patch("cellxgene_gateway.env.expire_seconds", new=10)
     @patch("cellxgene_gateway.cache_entry.CacheEntry")
     @patch("cellxgene_gateway.cache_entry.CacheEntry")
     def test_GIVEN_one_old_one_new_THEN_prune_old(self, old, new):

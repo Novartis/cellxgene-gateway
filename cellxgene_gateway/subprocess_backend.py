@@ -17,6 +17,8 @@ from cellxgene_gateway.dir_util import make_annotations
 from cellxgene_gateway.env import cellxgene_args, enable_annotations, enable_backed_mode
 from cellxgene_gateway.process_exception import ProcessException
 
+logger = logging.getLogger(__name__)
+
 
 class SubprocessBackend:
     def __init__(self):
@@ -55,7 +57,7 @@ class SubprocessBackend:
             scripts,
             cache_entry.key.annotation_file_path,
         )
-        logging.getLogger("cellxgene_gateway").info(f"launching {cmd}")
+        logger.info(f"launching {cmd}")
         process = subprocess.Popen(
             [cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
@@ -84,5 +86,6 @@ class SubprocessBackend:
                 cache_entry.append_output(output)
 
         cache_entry.set_loaded(process.pid)
-
-        return
+        for output in process.communicate():
+            logger.debug(f"cellxgene:{output}")
+        logger.info(f"exiting {cmd}")

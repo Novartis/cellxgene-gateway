@@ -9,7 +9,6 @@
 import datetime
 import logging
 import re
-import urllib.parse
 from enum import Enum
 
 import psutil
@@ -21,6 +20,8 @@ from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 from cellxgene_gateway.flask_util import querystring
 from cellxgene_gateway.util import current_time_stamp
+
+logger = logging.getLogger(__name__)
 
 
 class CacheEntryStatus(Enum):
@@ -111,7 +112,7 @@ class CacheEntry:
             except psutil.NoSuchProcess:
                 pass
 
-            logging.getLogger("cellxgene_gateway").info(f"terminated {terminated}")
+            logger.info(f"terminated {terminated}")
         self.status = CacheEntryStatus.terminated
 
     def rewrite_text_content(self, cellxgene_content):
@@ -169,38 +170,43 @@ class CacheEntry:
 
         full_path = self.cellxgene_basepath() + subpath + querystring()
 
-        if request.method in ["GET", "HEAD", "OPTIONS"]:
-            cellxgene_response = get(full_path, headers=headers)
-        elif request.method == "PUT":
-            cellxgene_response = put(
-                full_path,
-                headers=headers,
-                data=request.data,
-            )
-        elif request.method == "POST":
-            cellxgene_response = post(
-                full_path,
-                headers=headers,
-                data=request.data,
-            )
-        else:
-            raise CellxgeneException(f"Unexpected method {request.method}", 400)
-        content_type = cellxgene_response.headers["content-type"]
-        if "text" in content_type:
-            gateway_content = self.rewrite_text_content(
-                cellxgene_response.content.decode()
-            )
-        else:
-            gateway_content = cellxgene_response.content
+        try:
+            cellxgene_response = None
+            if request.method in ["GET", "HEAD", "OPTIONS"]:
+                cellxgene_response = get(full_path, headers=headers)
+            elif request.method == "PUT":
+                cellxgene_response = put(
+                    full_path,
+                    headers=headers,
+                    data=request.data,
+                )
+            elif request.method == "POST":
+                cellxgene_response = post(
+                    full_path,
+                    headers=headers,
+                    data=request.data,
+                )
+            else:
+                raise CellxgeneException(f"Unexpected method {request.method}", 400)
+            content_type = cellxgene_response.headers["content-type"]
+            if "text" in content_type:
+                gateway_content = self.rewrite_text_content(
+                    cellxgene_response.content.decode()
+                )
+            else:
+                gateway_content = cellxgene_response.content
 
-        resp_headers = {}
-        for h in copy_headers:
-            if h in cellxgene_response.headers:
-                resp_headers[h] = cellxgene_response.headers[h]
+            resp_headers = {}
+            for h in copy_headers:
+                if h in cellxgene_response.headers:
+                    resp_headers[h] = cellxgene_response.headers[h]
 
-        gateway_response = make_response(
-            gateway_content,
-            cellxgene_response.status_code,
-            resp_headers,
-        )
+            gateway_response = make_response(
+                gateway_content,
+                cellxgene_response.status_code,
+                resp_headers,
+            )
+        finally:
+            if cellxgene_response is not None:
+                cellxgene_response.close()
         return gateway_response

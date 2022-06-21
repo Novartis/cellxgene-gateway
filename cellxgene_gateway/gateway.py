@@ -299,7 +299,7 @@ def launch():
 
 def main():
     logging.basicConfig(
-        level=logging.INFO,
+        level=env.log_level,
         format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
     )
     cellxgene_data = os.environ.get("CELLXGENE_DATA", None)

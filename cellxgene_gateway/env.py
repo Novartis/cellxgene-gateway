@@ -9,7 +9,6 @@
 
 import logging
 import os
-import socket
 
 cellxgene_location = os.environ.get("CELLXGENE_LOCATION")
 cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
@@ -24,7 +23,9 @@ external_protocol = os.environ.get(
 )
 ip = os.environ.get("GATEWAY_IP")
 extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
-ttl = os.environ.get("GATEWAY_TTL")
+expire_seconds = int(
+    os.environ.get("GATEWAY_EXPIRE_SECONDS", os.environ.get("GATEWAY_TTL", "3600"))
+)
 enable_annotations = os.environ.get("GATEWAY_ENABLE_ANNOTATIONS", "").lower() in [
     "true",
     "1",
@@ -33,6 +34,7 @@ enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in
     "true",
     "1",
 ]
+log_level = logging.getLevelName(os.environ.get("GATEWAY_LOG_LEVEL", "INFO"))
 
 env_vars = {
     "CELLXGENE_LOCATION": cellxgene_location,
@@ -50,9 +52,10 @@ optional_env_vars = {
     "GATEWAY_IP": ip,
     "GATEWAY_PORT": gateway_port,
     "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
-    "GATEWAY_TTL": ttl,
+    "GATEWAY_EXPIRE_SECONDS": expire_seconds,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
+    "GATEWAY_LOG_LEVEL": log_level,
     "CELLXGENE_ARGS": cellxgene_args,
     "CELLXGENE_DATA": cellxgene_data,
     "PROXY_FIX_FOR": proxy_fix_for,
