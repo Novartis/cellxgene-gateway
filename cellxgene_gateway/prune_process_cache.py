@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class PruneProcessCache:
     def __init__(self, cache):
         self.cache = cache
-        self.expire_seconds = 3600 if env.ttl is None else int(env.ttl)
+        self.expire_seconds = env.expire_seconds
 
     def __call__(self):
         while True:
