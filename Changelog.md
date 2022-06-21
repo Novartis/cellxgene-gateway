@@ -1,3 +1,10 @@
+# 0.3.10
+
+* #65 Added GATEWAY_EXPIRE_SECONDS to set how long cellxgene servers can remain idle before being terminated.
+* Added GATEWAY_LOG_LEVEL to set the log level
+* #68 Close connections after reading response
+* #68 Background thread reads from output of cellxgene process until it exits
+
 # 0.3.9
 
 * Added S3_ENABLE_LISTINGS_CACHE variable (See README.md)
