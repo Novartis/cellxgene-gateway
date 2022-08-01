@@ -186,6 +186,21 @@ pip install isort flake8 black
 isort -rc . # rc means recursive, and was deprecated in dev version of isort
 black .
 ```
+## Dependency management
+
+We use the following files for dependency management:
+
+* environment.yml - specifies a conda environment sufficient to run the packages
+* setup.cfg - lists static dependency information, both minimal and extra dependencies
+* setup.py - dynamically generated package information
+* requirements.txt - simple wrapper invoking setup.py
+
+For more details, see the folloiwng links:
+
+* https://towardsdatascience.com/setuptools-python-571e7d5500f2
+* https://towardsdatascience.com/requirements-vs-setuptools-python-ae3ee66e28af
+
+
 
 # Getting Help
 

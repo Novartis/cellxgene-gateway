@@ -5,7 +5,7 @@ from flask import Flask
 from cellxgene_gateway import flask_util
 from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
 from cellxgene_gateway.cache_key import CacheKey
-from cellxgene_gateway.gateway import app
+from cellxgene_gateway.gateway_blueprint import gateway_blueprint
 from cellxgene_gateway.items.file.fileitem import FileItem
 from cellxgene_gateway.items.file.fileitem_source import FileItemSource
 from cellxgene_gateway.items.item import ItemType
@@ -18,7 +18,8 @@ key = CacheKey(
 
 class TestRenderEntry(unittest.TestCase):
     def setUp(self):
-        self.app = app
+        self.app = Flask(__name__)
+        self.app.register_blueprint(gateway_blueprint)
         self.app_context = self.app.test_request_context()
         self.app_context.push()
         self.client = self.app.test_client()

@@ -26,8 +26,8 @@ def url(endpoint, descriptor, source_name):
 
 
 def view_url(descriptor, source_name):
-    return url("do_view", descriptor, source_name)
+    return url("gateway_blueprint.do_view", descriptor, source_name)
 
 
 def relaunch_url(descriptor, source_name):
-    return url("do_relaunch", descriptor, source_name)
+    return url("gateway_blueprint.do_relaunch", descriptor, source_name)

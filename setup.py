@@ -61,9 +61,7 @@ setup(
     },
     data_files=[("", ["README.md", "LICENSE"])],
     install_requires=install_reqs,
-    entry_points={
-        "console_scripts": ["cellxgene-gateway=cellxgene_gateway.gateway:main"]
-    },
+    entry_points={"console_scripts": ["cellxgene-gateway=cellxgene_gateway.cli:run"]},
     classifiers=["Topic :: Scientific/Engineering :: Visualization"],
     python_requires=">=3.6",
 )

@@ -61,7 +61,7 @@
                     <td>
                          {% if entry.status.name == 'loaded' %}
                          <a
-                              href="{{ url_for('do_terminate', path=entry.key.descriptor, source_name=entry.key.source_name) }}">
+                              href="{{ url_for('gateway_blueprint.do_terminate', path=entry.key.descriptor, source_name=entry.key.source_name) }}">
                               terminate </a>
                          {% endif %}
                     </td>

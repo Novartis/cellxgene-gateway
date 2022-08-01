@@ -36,10 +36,10 @@
           Navigation:
      <ul>
      {% if path %}
-     <li><a href="{{ url_for('filecrawl') }}">top level</a></li>
+     <li><a href="{{ url_for('gateway_blueprint.filecrawl') }}">top level</a></li>
      {% else %}
      {% endif %}
-     <li><a href="{{ url_for('index') }}">homepage</a></li>
+     <li><a href="{{ url_for('gateway_blueprint.index') }}">homepage</a></li>
      </ul>
      </p>
      <script>

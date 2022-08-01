@@ -1,7 +1,9 @@
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
-from cellxgene_gateway.gateway import app
+from flask import Flask
+
+from cellxgene_gateway.gateway_blueprint import gateway_blueprint
 from cellxgene_gateway.items.item import ItemType
 from cellxgene_gateway.items.s3.s3item import S3Item
 from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
@@ -82,6 +84,8 @@ class TestScanDirectory(unittest.TestCase):
 
         s3func.return_value = S3Mock
         source = S3ItemSource("my-bucket")
+        app = Flask(__name__)
+        app.register_blueprint(gateway_blueprint)
         with app.test_request_context(query_string="refresh=true") as test_context:
             tree = source.scan_directory()
 
