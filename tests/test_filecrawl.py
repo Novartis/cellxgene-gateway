@@ -13,26 +13,76 @@ from cellxgene_gateway.items.item import ItemTree, ItemType
 source = FileItemSource("/tmp")
 
 
+def make_entry(subpath="somepath", annotations=None):
+    return FileItem(
+        subpath=subpath,
+        name="entry",
+        ext=".h5ad",
+        type=ItemType.h5ad,
+        annotations=annotations,
+    )
+
+
 class TestRenderEntry(unittest.TestCase):
     def test_GIVEN_path_both_slash_THEN_view_has_single_slash(self):
-        entry = FileItem(subpath="/somepath/", name="entry", type=ItemType.h5ad)
+        entry = make_entry(subpath="/somepath/")
         rendered = render_item(entry, source)
-        self.assertIn("view/somepath/entry/'", rendered)
+        self.assertIn("view/somepath/entry.h5ad/'", rendered)
 
     def test_GIVEN_path_starts_slash_THEN_view_has_single_slash(self):
-        entry = FileItem(subpath="/somepath", name="entry", type=ItemType.h5ad)
+        entry = make_entry(subpath="/somepath")
         rendered = render_item(entry, source)
-        self.assertIn("view/somepath/entry/'", rendered)
+        self.assertIn("view/somepath/entry.h5ad/'", rendered)
 
     def test_GIVEN_path_ends_slash_THEN_view_has_single_slash(self):
-        entry = FileItem(subpath="somepath/", name="entry", type=ItemType.h5ad)
+        entry = make_entry(subpath="somepath/")
         rendered = render_item(entry, source)
-        self.assertIn("view/somepath/entry/'", rendered)
+        self.assertIn("view/somepath/entry.h5ad/'", rendered)
 
     def test_GIVEN_path_no_slash_THEN_view_has_single_slash(self):
-        entry = FileItem(subpath="somepath", name="entry", type=ItemType.h5ad)
+        entry = make_entry(subpath="somepath")
         rendered = render_item(entry, source)
-        self.assertIn("view/somepath/entry/'", rendered)
+        self.assertIn("view/somepath/entry.h5ad/'", rendered)
+
+
+class TestRenderAnnotation(unittest.TestCase):
+    def test_GIVEN_no_annotation_THEN_new_alone(self):
+        entry = make_entry(annotations=None)
+        rendered = render_item(entry, source)
+        self.assertIn(
+            "> | annotations: <a class='new' href='/source/Files:/tmp/view/somepath/entry_annotations'>new</a></li>",
+            rendered,
+        )
+
+    def test_GIVEN_annotation_THEN_new_before(self):
+        annotation = FileItem(
+            subpath="somepath/entry_annotations",
+            name="annot",
+            ext=".csv",
+            type=ItemType.annotation,
+        )
+        entry = make_entry(annotations=[annotation])
+        rendered = render_item(entry, source)
+        self.assertIn(
+            "> | annotations: <a class='new' href='/source/Files:/tmp/view/somepath/entry_annotations'>new</a>,"
+            " <a href='/source/Files:/tmp/view/somepath/entry_annotations/annot.csv/'>annot</a></li>",
+            rendered,
+        )
+
+    def test_GIVEN_annotation_THEN_escaped(self):
+        annotation = FileItem(
+            subpath="somepath/entry_annotations",
+            name="hot&cold",
+            ext=".csv",
+            type=ItemType.annotation,
+        )
+        entry = make_entry(annotations=[annotation])
+        rendered = render_item(entry, source)
+        self.assertIn(
+            "> | annotations: <a class='new' href='/source/Files:/tmp/view/somepath/entry_annotations'>new</a>,"
+            " <a href='/source/Files:/tmp/view/somepath/entry_annotations/hot%26cold.csv/'>hot&amp;cold</a></li>",
+            rendered,
+        )
 
 
 class TestRenderItemSource(unittest.TestCase):
