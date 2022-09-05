@@ -1,8 +1,9 @@
-cellxgene
-flask
-flask-api
-werkzeug
-psutil
-requests
-prometheus-flask-exporter
-typer
+ # requirements.txt
+ #
+ # installs dependencies from ./setup.py, and the package itself,
+ # in editable mode
+ -e .[prometheus]
+
+ # (the -e above is optional). you could also just install the package
+ # normally with just the line below (after uncommenting)
+ # .
