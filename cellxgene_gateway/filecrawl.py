@@ -60,8 +60,8 @@ def render_item_tree(item_tree, item_source):
         return html
 
 
-def render_item_source(item_source, filter=None):
-    item_tree = item_source.list_items(filter)
-    filterpart = "" if filter is None else ":" + filter
-    heading = f"<h6><a href='/filecrawl.html?source={urllib.parse.quote_plus(item_source.name)}'>{item_source.name}</a>{filterpart}</h6>"
+def render_item_source(item_source, path=None):
+    item_tree = item_source.list_items(path)
+    path_part = "" if path is None else ":" + path
+    heading = f"<h6><a href='/filecrawl.html?source={urllib.parse.quote_plus(item_source.name)}'>{item_source.name}</a>{path_part}</h6>"
     return heading + render_item_tree(item_tree, item_source)
