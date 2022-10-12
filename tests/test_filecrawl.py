@@ -57,9 +57,16 @@ class TestRenderItemTree(unittest.TestCase):
     @patch("cellxgene_gateway.items.file.fileitem_source.FileItemSource")
     def test_GIVEN_deep_nested_dirs_THEN_includes_dirs_in_output(self, item_source):
         item_source.name = "FakeSource"
-        item_tree = ItemTree("foo/bar/baz", [], [])
+        item_source.get_annotations_subpath = lambda _: "FakeAnnotations"
+        file_item = FileItem(
+            subpath="foo/bar/baz", name="file.h5ad", type=ItemType.h5ad
+        )
+        item_tree = ItemTree("foo/bar/baz", [file_item], [])
         rendered = render_item_tree(item_tree, item_source)
         self.assertEqual(
             rendered,
-            "<li><a href='/filecrawl/foo/bar/baz?source=FakeSource'>baz</a><ul></ul></li>",
+            "<li><a href='/filecrawl/foo/bar/baz?source=FakeSource'>baz</a><ul>"
+            "<li> <a href='/source/FakeSource/view/foo/bar/baz/file.h5ad/'>file.h5ad</a>"
+            "  | annotations: <a class='new' href='/source/FakeSource/view/FakeAnnotations'>new</a>"
+            "</li></ul></li>",
         )
