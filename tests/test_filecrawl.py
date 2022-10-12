@@ -1,4 +1,5 @@
 import unittest
+from collections import defaultdict
 from unittest.mock import MagicMock, patch
 
 from cellxgene_gateway.filecrawl import (
@@ -69,4 +70,19 @@ class TestRenderItemTree(unittest.TestCase):
             "<li> <a href='/source/FakeSource/view/foo/bar/baz/file.h5ad/'>file.h5ad</a>"
             "  | annotations: <a class='new' href='/source/FakeSource/view/FakeAnnotations'>new</a>"
             "</li></ul></li>",
+        )
+
+    @patch("os.listdir", side_effect=lambda parent: defaultdict(list, {"tmp": ["foo"], "tmp/foo": ["bar"]})[parent])
+    @patch("os.path.exists", return_value=True)
+    def test_GIVEN_dirs_without_h5ad_THEN_excludes_dirs_in_output(self, listdir, exists):
+        # Directories:
+        # - tmp
+        #   - foo
+        #     - bar (no h5ad files)
+        item_source = FileItemSource("tmp", name="local")
+        item_tree = item_source.list_items("foo")
+        rendered = render_item_tree(item_tree, item_source)
+        self.assertEqual(
+            rendered,
+            "<li><a href='/filecrawl/foo?source=local'>foo</a><ul></ul></li>",
         )
