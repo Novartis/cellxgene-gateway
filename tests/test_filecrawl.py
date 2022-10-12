@@ -48,6 +48,12 @@ class TestRenderItemSource(unittest.TestCase):
 
 
 class TestRenderItemTree(unittest.TestCase):
+    def setUp(self):
+        from cellxgene_gateway.gateway import app
+        self.app = app
+        self.app_context = self.app.test_request_context()
+        self.app_context.push()
+
     @patch("cellxgene_gateway.items.file.fileitem_source.FileItemSource")
     def test_GIVEN_deep_nested_dirs_THEN_includes_dirs_in_output(self, item_source):
         item_source.name = "FakeSource"
