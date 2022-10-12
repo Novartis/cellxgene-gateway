@@ -116,6 +116,7 @@ class S3ItemSource(ItemSource):
         branches = None
         if len(subdir_keys) > 0:
             branches = [self.scan_directory(key) for key in subdir_keys]
+            branches = [branch for branch in branches if branch.items or branch.branches]
 
         return ItemTree(directory_key, items, branches)
 
