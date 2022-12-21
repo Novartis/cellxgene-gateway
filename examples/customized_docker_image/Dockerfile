@@ -9,4 +9,6 @@ ENV CELLXGENE_DATA=/cellxgene-data
 ENV CELLXGENE_LOCATION=/usr/local/bin/cellxgene
 EXPOSE 5005
 
+RUN mkdir /cellxgene-data
+
 CMD ["cellxgene-gateway"]

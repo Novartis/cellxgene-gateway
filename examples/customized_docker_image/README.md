@@ -6,7 +6,8 @@ This is a simple example of how to make a small script to customize the UI of ce
 
 ```
 docker build -t cellxgene_custom .
-docker run -p 5005:5005 cellxgene_custom
+CELLXGENE_DATA=`pwd`/../../../cellxgene_data
+docker run -p 5005:5005 --mount src=$CELLXGENE_DATA,target=/cellxgene-data,type=bind cellxgene_custom
 ```
 
 If you now open http://localhost:5005 you should see a green cellxgene gateway header.
