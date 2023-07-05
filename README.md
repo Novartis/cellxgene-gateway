@@ -76,6 +76,7 @@ Optional environment variables:
 * `GATEWAY_EXPIRE_SECONDS` - time in seconds that a cellxgene process will remain idle before being terminated. Defaults to 3600 (one hour)
 * `GATEWAY_EXTRA_SCRIPTS` - JSON array of script paths, will be embedded into each page and forwarded with `--scripts` to cellxgene server
 * `GATEWAY_ENABLE_ANNOTATIONS` - Set to `true` or to `1` to enable cellxgene annotations. 
+* `GATEWAY_ENABLE_GENE_SETS` - Set to `true` or to `1` to enable cellxgene gene sets. Also enables `GATEWAY_ENABLE_ANNOTATIONS`.
 * `GATEWAY_ENABLE_BACKED_MODE` - Set to `true` or to `1` to load AnnData in file-backed mode. This saves memory and speeds up launch time but may reduce overall performance.
 * `GATEWAY_LOG_LEVEL` - default is `INFO`. set to `DEBUG` to increase logging and to `WARNING` to decrease logging.
 * `S3_ENABLE_LISTINGS_CACHE` - Set to `true` or to `1` to cache listings of S3 folders for performance. If the cache becomes stale, set `filecrawl.html?refresh=true` query parameter to refresh the cache.
