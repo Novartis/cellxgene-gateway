@@ -20,15 +20,23 @@ def render_annotations(item, item_source):
         item_source.get_annotations_subpath(item), item_source.name
     )
     new_annotation = f"<a class='new' href='{url}'>new</a>"
+    non_gene_set_files = []
+    if item.annotations is not None:
+        # Do not also display files to store gene_sets. These should be loaded
+        # by clicking on the associated annotations file (i.e.  without the
+        # appended "_gene_sets")
+        for a in item.annotations:
+            if (len(a.name) < 10) or (a.name[-10:] != "_gene_sets"):
+                non_gene_set_files.append(a)
     annotations = (
         ", ".join(
             [
                 f"<a href='{CacheKey(item, item_source, a).view_url}/'>{a.name}</a>"
-                for a in item.annotations
+                for a in non_gene_set_files
             ]
         )
         + ", "
-        if item.annotations
+        if non_gene_set_files
         else ""
     )
     return " | annotations: " + annotations + new_annotation
