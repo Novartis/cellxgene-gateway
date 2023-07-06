@@ -6,7 +6,7 @@ on: [push, pull_request]
 
 jobs:
   black:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         name: Checkout repository
@@ -25,7 +25,7 @@ jobs:
           black . --check
   # This job is copied over from `deploy.yaml`
   run-tests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
