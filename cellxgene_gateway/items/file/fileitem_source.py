@@ -35,8 +35,11 @@ class FileItemSource(ItemSource):
     def name(self):
         return self._name or f"Files:{self.base_path}"
 
-    def is_gene_set(self, path:str) -> bool:
-        return ('_gene_sets' in path or '-gene-sets' in path) and path.endswith(self.annotation_file_suffix)
+    def is_gene_set(self, path: str) -> bool:
+        return ("_gene_sets" in path or "-gene-sets" in path) and path.endswith(
+            self.annotation_file_suffix
+        )
+
     def is_h5ad_file(self, path: str) -> bool:
         return path.endswith(self.h5ad_suffix) and os.path.isfile(path)
 

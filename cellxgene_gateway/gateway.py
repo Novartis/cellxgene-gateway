@@ -80,7 +80,6 @@ cache = BackendCache()
 
 @app.errorhandler(CellxgeneException)
 def handle_invalid_usage(error):
-
     message = f"{error.http_status} Error : {error.message}"
 
     return (
@@ -95,7 +94,6 @@ def handle_invalid_usage(error):
 
 @app.errorhandler(ProcessException)
 def handle_invalid_process(error):
-
     message = []
 
     message.append(error.message)

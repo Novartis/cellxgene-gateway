@@ -1,6 +1,6 @@
 # 0.3.11
 
-* #81 added support for gene sets via GATEWAY_ENABLE_GENE_SETS
+* #81 added support for gene sets
 
 # 0.3.10
 

@@ -18,7 +18,6 @@ from cellxgene_gateway.env import (
     cellxgene_args,
     enable_annotations,
     enable_backed_mode,
-    enable_gene_sets,
 )
 from cellxgene_gateway.process_exception import ProcessException
 
@@ -35,17 +34,10 @@ class SubprocessBackend:
                 extra_args = f" --annotations-dir {make_annotations(file_path)}"
             else:
                 extra_args = f" --annotations-file {annotation_file_path}"
-        else:
-            extra_args = " --disable-annotations"
-        if enable_gene_sets and not annotation_file_path is None:
-            if annotation_file_path == "":
-                raise Exception(
-                    "GATEWAY_ENABLE_GENE_SETS is true but --annotation_file_path not set"
-                )
-            else:
                 gene_sets_file_path = annotation_file_path[:-4] + "_gene_sets.csv"
                 extra_args += f" --gene-sets-file {gene_sets_file_path}"
         else:
+            extra_args = " --disable-annotations"
             extra_args += " --disable-gene-sets-save"
         if enable_backed_mode:
             extra_args += " --backed"

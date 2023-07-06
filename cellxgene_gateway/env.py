@@ -26,16 +26,10 @@ extra_scripts = os.environ.get("GATEWAY_EXTRA_SCRIPTS")
 expire_seconds = int(
     os.environ.get("GATEWAY_EXPIRE_SECONDS", os.environ.get("GATEWAY_TTL", "3600"))
 )
-enable_gene_sets = os.environ.get("GATEWAY_ENABLE_GENE_SETS", "").lower() in [
-    "true",
-    "1",
-]
 enable_annotations = os.environ.get("GATEWAY_ENABLE_ANNOTATIONS", "").lower() in [
     "true",
     "1",
 ]
-# Enable annotations if gene sets are enabled:
-enable_annotations = enable_annotations or enable_gene_sets
 enable_backed_mode = os.environ.get("GATEWAY_ENABLE_BACKED_MODE", "").lower() in [
     "true",
     "1",
@@ -60,7 +54,6 @@ optional_env_vars = {
     "GATEWAY_EXTRA_SCRIPTS": extra_scripts,
     "GATEWAY_EXPIRE_SECONDS": expire_seconds,
     "GATEWAY_ENABLE_ANNOTATIONS": enable_annotations,
-    "GATEWAY_ENABLE_GENE_SETS": enable_gene_sets,
     "GATEWAY_ENABLE_BACKED_MODE": enable_backed_mode,
     "GATEWAY_LOG_LEVEL": log_level,
     "CELLXGENE_ARGS": cellxgene_args,
