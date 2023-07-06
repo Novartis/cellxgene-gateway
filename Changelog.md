@@ -1,3 +1,7 @@
+# 0.3.11
+
+* #81 added support for gene sets via GATEWAY_ENABLE_GENE_SETS
+
 # 0.3.10
 
 * #65 Added GATEWAY_EXPIRE_SECONDS to set how long cellxgene servers can remain idle before being terminated.
