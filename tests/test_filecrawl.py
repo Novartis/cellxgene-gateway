@@ -51,6 +51,7 @@ class TestRenderItemSource(unittest.TestCase):
 class TestRenderItemTree(unittest.TestCase):
     def setUp(self):
         from cellxgene_gateway.gateway import app
+
         self.app = app
         self.app_context = self.app.test_request_context()
         self.app_context.push()
@@ -72,9 +73,16 @@ class TestRenderItemTree(unittest.TestCase):
             "</li></ul></li>",
         )
 
-    @patch("os.listdir", side_effect=lambda parent: defaultdict(list, {"tmp": ["foo"], "tmp/foo": ["bar"]})[parent])
+    @patch(
+        "os.listdir",
+        side_effect=lambda parent: defaultdict(
+            list, {"tmp": ["foo"], "tmp/foo": ["bar"]}
+        )[parent],
+    )
     @patch("os.path.exists", return_value=True)
-    def test_GIVEN_dirs_without_h5ad_THEN_excludes_dirs_in_output(self, listdir, exists):
+    def test_GIVEN_dirs_without_h5ad_THEN_excludes_dirs_in_output(
+        self, listdir, exists
+    ):
         # Directories:
         # - tmp
         #   - foo

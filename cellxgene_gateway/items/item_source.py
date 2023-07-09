@@ -21,7 +21,7 @@ class LookupResult:
 
 class ItemSource(ABC):
     @abstractmethod
-    def list_items(self, subpath: str = None) -> List[Item]:
+    def list_items(self, filter: str = None) -> List[Item]:
         raise Exception('"list_items" unimplemented')
 
     @abstractmethod

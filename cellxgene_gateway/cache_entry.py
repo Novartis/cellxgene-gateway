@@ -58,7 +58,6 @@ class CacheEntry:
 
     @classmethod
     def for_key(cls, key, port):
-
         return cls(
             None,
             key,

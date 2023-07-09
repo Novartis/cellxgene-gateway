@@ -50,8 +50,8 @@ class FileItemSource(ItemSource):
     def get_annotations_subpath(self, item) -> str:
         return self.convert_h5ad_path_to_annotation(item.descriptor)
 
-    def list_items(self, subpath: str = None) -> ItemTree:
-        item_tree = self.scan_directory("" if subpath is None else subpath)
+    def list_items(self, filter: str = None) -> ItemTree:
+        item_tree = self.scan_directory("" if filter is None else filter)
 
         """def get_items(dir):
             if dir.branches:
@@ -102,7 +102,9 @@ class FileItemSource(ItemSource):
             ]
             # Exclude branches without files as leaves. Since traversal is applied pre-order,
             # branch.branches has already been processed and we don't need to check deeper nesting.
-            branches = [branch for branch in branches if branch.items or branch.branches]
+            branches = [
+                branch for branch in branches if branch.items or branch.branches
+            ]
 
         return ItemTree(subpath, items, branches)
 

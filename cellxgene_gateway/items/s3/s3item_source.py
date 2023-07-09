@@ -72,8 +72,8 @@ class S3ItemSource(ItemSource):
     def get_annotations_subpath(self, item) -> str:
         return self.convert_h5ad_key_to_annotation(item.descriptor)
 
-    def list_items(self, subpath: str = None) -> ItemTree:
-        item_tree = self.scan_directory("" if subpath is None else subpath)
+    def list_items(self, filter: str = None) -> ItemTree:
+        item_tree = self.scan_directory("" if filter is None else filter)
         return item_tree
 
     @property
@@ -116,7 +116,9 @@ class S3ItemSource(ItemSource):
         branches = None
         if len(subdir_keys) > 0:
             branches = [self.scan_directory(key) for key in subdir_keys]
-            branches = [branch for branch in branches if branch.items or branch.branches]
+            branches = [
+                branch for branch in branches if branch.items or branch.branches
+            ]
 
         return ItemTree(directory_key, items, branches)
 
