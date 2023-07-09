@@ -1,6 +1,8 @@
 # 0.3.11
 
 * #81 added support for gene sets
+* #79 added example for cellxgene-gateway customized docker image
+* #78 prune directories that do not contain h5ad files
 
 # 0.3.10
 
