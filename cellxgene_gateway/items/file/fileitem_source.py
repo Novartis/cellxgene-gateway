@@ -68,7 +68,7 @@ class FileItemSource(ItemSource):
 
         return item_tree
 
-    def scan_directory(self, subpath="") -> dict:
+    def scan_directory(self, subpath: str = "") -> ItemTree:
         base_path = os.path.join(self.base_path, subpath)
 
         if not os.path.exists(base_path):
@@ -104,6 +104,11 @@ class FileItemSource(ItemSource):
         if len(subdirs) > 0:
             branches = [
                 self.scan_directory(os.path.join(subpath, subdir)) for subdir in subdirs
+            ]
+            # Exclude branches without files as leaves. Since traversal is applied pre-order,
+            # branch.branches has already been processed and we don't need to check deeper nesting.
+            branches = [
+                branch for branch in branches if branch.items or branch.branches
             ]
 
         return ItemTree(subpath, items, branches)
