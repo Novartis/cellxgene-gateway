@@ -197,13 +197,18 @@ class FileItemSource(ItemSource):
 
             # Catch gene sets without accompanying [annotations].csv
             gene_sets_files = [
-                self.make_fileitem_from_path(annotation[:-len(self.gene_set_file_suffix)] + ".csv", annotations_subpath, True)
+                self.make_fileitem_from_path(
+                    annotation[: -len(self.gene_set_file_suffix)] + ".csv",
+                    annotations_subpath,
+                    True,
+                )
                 for annotation in sorted_files
                 if self.is_gene_set(annotation)
-                and annotation[:-len(self.gene_set_file_suffix)] not in [a.name for a in annotation_files]
+                and annotation[: -len(self.gene_set_file_suffix)]
+                not in [a.name for a in annotation_files]
                 and os.path.isfile(os.path.join(annotations_fullpath, annotation))
             ]
 
-            return sorted(annotation_files + gene_sets_files, key = lambda x: x.name)
+            return sorted(annotation_files + gene_sets_files, key=lambda x: x.name)
         else:
             return None
