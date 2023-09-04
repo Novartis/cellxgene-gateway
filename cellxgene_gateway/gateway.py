@@ -23,6 +23,7 @@ from flask import (
     url_for,
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
+from prometheus_flask_exporter import PrometheusMetrics
 
 from cellxgene_gateway import env, flask_util
 from cellxgene_gateway.backend_cache import BackendCache
@@ -34,8 +35,12 @@ from cellxgene_gateway.filecrawl import render_item_source
 from cellxgene_gateway.process_exception import ProcessException
 from cellxgene_gateway.prune_process_cache import PruneProcessCache
 from cellxgene_gateway.util import current_time_stamp
+from cellxgene_gateway import __version__
 
 app = Flask(__name__)
+
+metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Application info', version=__version__)
 
 item_sources = []
 default_item_source = None
