@@ -24,21 +24,21 @@ class FileItemSource(ItemSource):
         h5ad_suffix=dir_util.h5ad_suffix,
         annotation_dir_suffix=dir_util.annotations_suffix,
         annotation_file_suffix=".csv",
+        gene_set_file_suffix="_gene_sets.csv",
     ):
         self._name = name
         self.base_path = base_path
         self.h5ad_suffix = h5ad_suffix
         self.annotation_dir_suffix = annotation_dir_suffix
         self.annotation_file_suffix = annotation_file_suffix
+        self.gene_set_file_suffix = gene_set_file_suffix
 
     @property
     def name(self):
         return self._name or f"Files:{self.base_path}"
 
     def is_gene_set(self, path: str) -> bool:
-        return ("_gene_sets" in path or "-gene-sets" in path) and path.endswith(
-            self.annotation_file_suffix
-        )
+        return path.endswith(self.gene_set_file_suffix)
 
     def is_h5ad_file(self, path: str) -> bool:
         return path.endswith(self.h5ad_suffix) and os.path.isfile(path)
@@ -186,12 +186,29 @@ class FileItemSource(ItemSource):
         annotations_subpath = self.get_annotations_subpath(item)
         annotations_fullpath = self.full_path(annotations_subpath)
         if os.path.isdir(annotations_fullpath):
-            return [
+            sorted_files = sorted(os.listdir(annotations_fullpath))
+            annotation_files = [
                 self.make_fileitem_from_path(annotation, annotations_subpath, True)
-                for annotation in sorted(os.listdir(annotations_fullpath))
+                for annotation in sorted_files
                 if annotation.endswith(self.annotation_file_suffix)
                 and not self.is_gene_set(annotation)
                 and os.path.isfile(os.path.join(annotations_fullpath, annotation))
             ]
+
+            # Catch gene sets without accompanying [annotations].csv
+            gene_sets_files = [
+                self.make_fileitem_from_path(
+                    annotation[: -len(self.gene_set_file_suffix)] + ".csv",
+                    annotations_subpath,
+                    True,
+                )
+                for annotation in sorted_files
+                if self.is_gene_set(annotation)
+                and annotation[: -len(self.gene_set_file_suffix)]
+                not in [a.name for a in annotation_files]
+                and os.path.isfile(os.path.join(annotations_fullpath, annotation))
+            ]
+
+            return sorted(annotation_files + gene_sets_files, key=lambda x: x.name)
         else:
             return None
