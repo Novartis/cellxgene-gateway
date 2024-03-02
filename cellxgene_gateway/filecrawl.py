@@ -10,12 +10,15 @@
 import html
 import urllib.parse
 
-from cellxgene_gateway import env, flask_util
+from cellxgene_gateway import flask_util
 from cellxgene_gateway.cache_key import CacheKey
 from cellxgene_gateway.dir_util import annotations_suffix, make_annotations, make_h5ad
+from cellxgene_gateway.env import enable_annotations
 
 
 def render_annotations(item, item_source):
+    if not enable_annotations:
+        return ""
     url = flask_util.view_url(
         item_source.get_annotations_subpath(item), item_source.name
     )
