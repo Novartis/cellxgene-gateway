@@ -4,7 +4,7 @@ channels:
 dependencies:
 - python=3.9
 - requests
-- flask
+- flask==2.2.2
 - psutil
 - black
 - twine
@@ -14,5 +14,5 @@ dependencies:
 - pip:
   - pre_commit
   - flask-api
-  - werkzeug
+  - werkzeug==2.3.0
   - cellxgene
