@@ -1,6 +1,6 @@
 import unittest
 from collections import defaultdict
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from cellxgene_gateway.filecrawl import (
     render_item,
@@ -47,6 +47,7 @@ class TestRenderEntry(unittest.TestCase):
 
 
 class TestRenderAnnotation(unittest.TestCase):
+    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
     def test_GIVEN_no_annotation_THEN_new_alone(self):
         entry = make_entry(annotations=None)
         rendered = render_item(entry, source)
@@ -55,6 +56,7 @@ class TestRenderAnnotation(unittest.TestCase):
             rendered,
         )
 
+    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
     def test_GIVEN_annotation_THEN_new_before(self):
         annotation = FileItem(
             subpath="somepath/entry_annotations",
@@ -69,7 +71,8 @@ class TestRenderAnnotation(unittest.TestCase):
             " <a href='/source/Files:/tmp/view/somepath/entry_annotations/annot.csv/'>annot</a></li>",
             rendered,
         )
-
+    
+    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
     def test_GIVEN_annotation_THEN_escaped(self):
         annotation = FileItem(
             subpath="somepath/entry_annotations",
@@ -119,8 +122,7 @@ class TestRenderItemTree(unittest.TestCase):
             rendered,
             "<li><a href='/filecrawl/foo/bar/baz?source=FakeSource'>baz</a><ul>"
             "<li> <a href='/source/FakeSource/view/foo/bar/baz/file.h5ad/'>file.h5ad</a>"
-            " | annotations: <a class='new' href='/source/FakeSource/view/FakeAnnotations'>new</a>"
-            "</li></ul></li>",
+            " </li></ul></li>",
         )
 
     @patch(
