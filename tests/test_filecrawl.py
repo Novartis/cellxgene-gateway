@@ -81,7 +81,7 @@ class TestRenderAnnotation(unittest.TestCase):
         rendered = render_item(entry, source)
         self.assertIn(
             "> | annotations: <a class='new' href='/source/Files:/tmp/view/somepath/entry_annotations'>new</a>,"
-            " <a href='/source/Files:/tmp/view/somepath/entry_annotations/hot%26cold.csv/'>hot&amp;cold</a></li>",
+            " <a href='/source/Files:/tmp/view/somepath/entry_annotations/hot&cold.csv/'>hot&amp;cold</a></li>",
             rendered,
         )
 
@@ -119,7 +119,7 @@ class TestRenderItemTree(unittest.TestCase):
             rendered,
             "<li><a href='/filecrawl/foo/bar/baz?source=FakeSource'>baz</a><ul>"
             "<li> <a href='/source/FakeSource/view/foo/bar/baz/file.h5ad/'>file.h5ad</a>"
-            "  | annotations: <a class='new' href='/source/FakeSource/view/FakeAnnotations'>new</a>"
+            " | annotations: <a class='new' href='/source/FakeSource/view/FakeAnnotations'>new</a>"
             "</li></ul></li>",
         )
 
