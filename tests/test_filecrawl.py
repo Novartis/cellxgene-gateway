@@ -47,7 +47,7 @@ class TestRenderEntry(unittest.TestCase):
 
 
 class TestRenderAnnotation(unittest.TestCase):
-    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
+    @patch("cellxgene_gateway.filecrawl.enable_annotations", new=True)
     def test_GIVEN_no_annotation_THEN_new_alone(self):
         entry = make_entry(annotations=None)
         rendered = render_item(entry, source)
@@ -56,7 +56,7 @@ class TestRenderAnnotation(unittest.TestCase):
             rendered,
         )
 
-    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
+    @patch("cellxgene_gateway.filecrawl.enable_annotations", new=True)
     def test_GIVEN_annotation_THEN_new_before(self):
         annotation = FileItem(
             subpath="somepath/entry_annotations",
@@ -71,8 +71,8 @@ class TestRenderAnnotation(unittest.TestCase):
             " <a href='/source/Files:/tmp/view/somepath/entry_annotations/annot.csv/'>annot</a></li>",
             rendered,
         )
-    
-    @patch('cellxgene_gateway.filecrawl.enable_annotations', new=True)
+
+    @patch("cellxgene_gateway.filecrawl.enable_annotations", new=True)
     def test_GIVEN_annotation_THEN_escaped(self):
         annotation = FileItem(
             subpath="somepath/entry_annotations",
