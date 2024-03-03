@@ -1,3 +1,11 @@
+# 0.3.12
+
+* #81 List gene set annotations when cell annotations not present
+* #86 Upgrade pip within docker image
+* #73 Moved new link to front
+* #87 Temporarily pin versions of werkzeug and flask
+
+
 # 0.3.11
 
 * #81 added support for gene sets

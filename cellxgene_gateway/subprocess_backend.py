@@ -14,11 +14,7 @@ from flask_api import status
 
 from cellxgene_gateway.cache_entry import CacheEntryStatus
 from cellxgene_gateway.dir_util import make_annotations
-from cellxgene_gateway.env import (
-    cellxgene_args,
-    enable_annotations,
-    enable_backed_mode,
-)
+from cellxgene_gateway.env import cellxgene_args, enable_annotations, enable_backed_mode
 from cellxgene_gateway.process_exception import ProcessException
 
 logger = logging.getLogger(__name__)
