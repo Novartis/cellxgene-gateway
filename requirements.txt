@@ -1,6 +1,6 @@
 cellxgene
 flask==2.2.5
 flask-api
-werkzeug==2.3.0
+werkzeug==2.3.8
 psutil
 requests
