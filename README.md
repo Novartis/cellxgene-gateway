@@ -110,7 +110,7 @@ Additional environment variables can be provided with the `-e` parameter:
 
 ```bash
 docker run -it --rm \
--v <local_data_dir>:/cellxgene-data \
+-v ../cellxgene_data:/cellxgene-data \
 -e GATEWAY_PORT=8080 \
 -p 8080:8080 \
 cellxgene-gateway
@@ -190,6 +190,35 @@ black .
 # Getting Help
 
 If you need help for any reason, please make a github ticket. One of the contributors should help you out.
+
+# Releasing New Versions
+
+## How to prepare for release
+
+- Update Changelog.md and version number in __init__.py
+- Cut a release on github
+	- Go to your project homepage on GitHub
+	- On right side, you will see [Releases](https://github.com/Novartis/cellxgene-gateway/releases) link. Click on it.
+	- Click on Draft a new release
+	- Fill in all the details
+		- Tag version should be the version number of your package release
+		- Release Title can be anything you want, but we use v0.3.11 (the same as the tag to be created on publish)
+		- Description should be changelog
+	- Click Publish release at the bottom of the page
+	- Now under Releases you can view all of your releases.
+	- Copy the download link (tar.gz) and save it somewhere
+
+## How to publish to PyPI
+
+Make sure your `.pypirc` is set up for testpypi and pypi index servers.
+ 
+
+```bash
+rm -rf dist
+python setup.py sdist bdist_wheel
+python -m twine upload --repository testpypi dist/*
+python -m twine upload dist/*
+```
 
 # Contributors
 

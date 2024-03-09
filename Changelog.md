@@ -1,3 +1,8 @@
+# UNRELEASED
+
+* Removed dependency on flask-api enabling update of werkzeug
+* Updated dependencies (python 3.11, numpy 1.26, unpinned flask, werkzeug)
+
 # 0.3.12
 
 * #81 List gene set annotations when cell annotations not present

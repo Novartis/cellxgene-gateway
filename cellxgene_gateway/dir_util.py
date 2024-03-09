@@ -9,8 +9,6 @@
 
 import os
 
-from flask_api import status
-
 from cellxgene_gateway import env
 from cellxgene_gateway.cellxgene_exception import CellxgeneException
 

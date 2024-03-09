@@ -11,7 +11,7 @@ import time
 from threading import Thread
 from typing import List
 
-from flask_api import status
+from http import HTTPStatus
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
@@ -53,7 +53,7 @@ class BackendCache:
             return matches[0]
         else:
             raise CellxgeneException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 "Found " + str(len(matches)) + " for " + path,
             )
 
@@ -71,7 +71,7 @@ class BackendCache:
             return matches[0]
         else:
             raise CellxgeneException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                HTTPStatus.INTERNAL_SERVER_ERROR,
                 "Found " + str(len(matches)) + " for " + key.dataset,
             )
 
