@@ -9,7 +9,6 @@
 
 import logging
 import subprocess
-
 from http import HTTPStatus
 
 from cellxgene_gateway.cache_entry import CacheEntryStatus

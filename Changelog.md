@@ -1,7 +1,7 @@
-# UNRELEASED
+# 0.4.0
 
-* Removed dependency on flask-api enabling update of werkzeug
-* Updated dependencies (python 3.11, numpy 1.26, unpinned flask, werkzeug)
+* Removed dependency on flask-api
+* Updated dependencies (python 3.11, numpy, unpinned flask, werkzeug)
 
 # 0.3.12
 

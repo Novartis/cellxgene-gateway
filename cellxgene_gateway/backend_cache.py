@@ -8,10 +8,9 @@
 # the specific language governing permissions and limitations under the License.
 
 import time
+from http import HTTPStatus
 from threading import Thread
 from typing import List
-
-from http import HTTPStatus
 
 from cellxgene_gateway import env
 from cellxgene_gateway.cache_entry import CacheEntry, CacheEntryStatus
