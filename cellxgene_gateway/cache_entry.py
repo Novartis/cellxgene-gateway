@@ -148,7 +148,7 @@ class CacheEntry:
         headers = {}
         copy_headers = [
             "accept",
-            "accept-encoding",
+            # "accept-encoding" - removed: let requests library handle compression/decompression
             "accept-language",
             "cache-control",
             "connection",
