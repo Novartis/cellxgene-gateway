@@ -163,6 +163,97 @@ conda install -c conda-forge pre-commit
 pre-commit install
 ```
 
+## Dependency Management
+
+This project uses pinned dependencies to ensure reproducible installs and prevent version drift issues.
+
+### Conda Environment (Recommended for Development)
+
+* **`environment.yml`** - High-level conda and pip dependencies
+* **`conda-lock.yml`** - Fully locked conda environment for linux-64, osx-64, and osx-arm64 (committed to git)
+
+### Pure Pip Installation
+
+* **`requirements.in`** - High-level dependencies you directly use (cellxgene, flask, werkzeug, psutil, requests)
+* **`requirements.txt`** - Fully pinned transitive dependencies (generated from requirements.in)
+* **`uv.lock`** - Alternative lock file for [uv](https://github.com/astral-sh/uv) users (optional, faster installs)
+
+### Installing Dependencies
+
+**With conda (recommended for development):**
+```bash
+# Install conda-lock if you don't have it
+pip install conda-lock
+# or: conda install -c conda-forge conda-lock
+
+# Create environment from lock file
+conda-lock install --name cellxgene-gateway conda-lock.yml
+
+# Activate the environment
+conda activate cellxgene-gateway
+```
+
+**With pip only:**
+```bash
+# Standard pip (uses requirements.txt)
+pip install -r requirements.txt
+
+# uv (faster, uses uv.lock)
+uv pip install -r requirements.txt
+# or
+uv pip sync uv.lock
+```
+
+### Updating Dependencies
+
+**With conda-lock (recommended for development):**
+```bash
+pip install conda-lock
+
+# Update environment.yml with new package versions or add new packages
+# Then regenerate lock file for all platforms
+conda-lock lock -f environment.yml -p linux-64 -p osx-64 -p osx-arm64
+
+# Update your local environment
+conda-lock install --name cellxgene-gateway conda-lock.yml
+```
+
+**With pip-tools:**
+```bash
+pip install pip-tools
+
+# Update all dependencies to latest compatible versions
+pip-compile --upgrade requirements.in
+
+# Update a specific package only
+pip-compile --upgrade-package anndata requirements.in
+
+# After updating, regenerate uv.lock
+uv pip compile requirements.in --output-file uv.lock
+```
+
+**With uv (faster):**
+```bash
+# Update all dependencies
+uv pip compile --upgrade requirements.in -o requirements.txt
+uv pip compile requirements.in --output-file uv.lock
+
+# Update specific package
+uv pip compile --upgrade-package anndata requirements.in -o requirements.txt
+uv pip compile requirements.in --output-file uv.lock
+```
+
+**Adding new dependencies:**
+1. Add the package name to `requirements.in`
+2. Run `pip-compile requirements.in` or `uv pip compile requirements.in -o requirements.txt`
+3. Regenerate `uv.lock` with `uv pip compile requirements.in --output-file uv.lock`
+
+### Why Pinned Dependencies?
+
+Lock files (conda-lock.yml, requirements.txt, uv.lock) pin all transitive dependencies to prevent compatibility issues. For example, anndata 0.12.4 is currently locked - newer versions may have breaking changes. This ensures the environment that works today will work tomorrow, while the source files (environment.yml, requirements.in) provide flexibility for intentional updates.
+
+**Best practice:** Commit all lock files to git so everyone uses the same tested dependency versions.
+
 
 ## Running Tests
 
