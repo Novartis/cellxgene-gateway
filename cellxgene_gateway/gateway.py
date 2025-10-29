@@ -98,15 +98,17 @@ def initialize_data_sources():
     if cellxgene_bucket is not None:
         from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
 
-        item_sources.append(S3ItemSource(cellxgene_bucket, name="s3"))
-        default_item_source = "s3"
+        s3_source = S3ItemSource(cellxgene_bucket, name="s3")
+        item_sources.append(s3_source)
+        default_item_source = s3_source
         logger.info("Initialized S3 data source")
         logger.debug(f"S3 bucket: {cellxgene_bucket}")
     if cellxgene_data is not None:
         from cellxgene_gateway.items.file.fileitem_source import FileItemSource
 
-        item_sources.append(FileItemSource(cellxgene_data, name="local"))
-        default_item_source = "local"
+        file_source = FileItemSource(cellxgene_data, name="local")
+        item_sources.append(file_source)
+        default_item_source = file_source
         logger.info("Initialized local file data source")
         logger.debug(f"Data directory: {cellxgene_data}")
     if len(item_sources) == 0:
