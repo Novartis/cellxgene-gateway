@@ -332,10 +332,12 @@ def launch():
     app.launchtime = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
+
 # When using servers like Gunicorn or uWSGI, this file is imported rather than run directly.
 # As a result, the main() function is never called automatically.
 # Therefore, we must initialize the data sources at import time to ensure they are available.
 initialize_data_sources()
+
 
 def main():
     """CLI entry point for Flask development server."""
