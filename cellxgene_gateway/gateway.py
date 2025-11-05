@@ -78,6 +78,44 @@ if (
 cache = BackendCache()
 
 
+# Initialize data sources - this is defined later in the file but called here
+# to ensure initialization happens when WSGI servers (Gunicorn) import the module
+def initialize_data_sources():
+    """Initialize data sources from environment variables.
+    Called at module import time for WSGI server compatibility (Gunicorn).
+    Uses a guard flag to prevent double initialization within a process."""
+    global default_item_source
+
+    logging.basicConfig(
+        level=env.log_level,
+        format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
+    )
+    logger = logging.getLogger(__name__)
+
+    cellxgene_data = os.environ.get("CELLXGENE_DATA", None)
+    cellxgene_bucket = os.environ.get("CELLXGENE_BUCKET", None)
+
+    if cellxgene_bucket is not None:
+        from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
+
+        s3_source = S3ItemSource(cellxgene_bucket, name="s3")
+        item_sources.append(s3_source)
+        default_item_source = s3_source
+        logger.info("Initialized S3 data source")
+        logger.debug(f"S3 bucket: {cellxgene_bucket}")
+    if cellxgene_data is not None:
+        from cellxgene_gateway.items.file.fileitem_source import FileItemSource
+
+        file_source = FileItemSource(cellxgene_data, name="local")
+        item_sources.append(file_source)
+        default_item_source = file_source
+        logger.info("Initialized local file data source")
+        logger.debug(f"Data directory: {cellxgene_data}")
+    if len(item_sources) == 0:
+        raise Exception("Please specify CELLXGENE_DATA or CELLXGENE_BUCKET")
+    flask_util.include_source_in_url = len(item_sources) > 1
+
+
 @app.errorhandler(CellxgeneException)
 def handle_invalid_usage(error):
     message = f"{error.http_status} Error : {error.message}"
@@ -295,28 +333,14 @@ def launch():
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
 
+# When using servers like Gunicorn or uWSGI, this file is imported rather than run directly.
+# As a result, the main() function is never called automatically.
+# Therefore, we must initialize the data sources at import time to ensure they are available.
+initialize_data_sources()
+
+
 def main():
-    logging.basicConfig(
-        level=env.log_level,
-        format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
-    )
-    cellxgene_data = os.environ.get("CELLXGENE_DATA", None)
-    cellxgene_bucket = os.environ.get("CELLXGENE_BUCKET", None)
-
-    if cellxgene_bucket is not None:
-        from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
-
-        item_sources.append(S3ItemSource(cellxgene_bucket, name="s3"))
-        default_item_source = "s3"
-    if cellxgene_data is not None:
-        from cellxgene_gateway.items.file.fileitem_source import FileItemSource
-
-        item_sources.append(FileItemSource(cellxgene_data, name="local"))
-        default_item_source = "local"
-    if len(item_sources) == 0:
-        raise Exception("Please specify CELLXGENE_DATA or CELLXGENE_BUCKET")
-    flask_util.include_source_in_url = len(item_sources) > 1
-
+    """CLI entry point for Flask development server."""
     launch()
 
 

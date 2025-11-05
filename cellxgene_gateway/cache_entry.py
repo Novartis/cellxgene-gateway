@@ -148,7 +148,7 @@ class CacheEntry:
         headers = {}
         copy_headers = [
             "accept",
-            "accept-encoding",
+            # "accept-encoding" - removed: let requests library handle compression/decompression
             "accept-language",
             "cache-control",
             "connection",
@@ -168,9 +168,8 @@ class CacheEntry:
                 headers[h] = request.headers[h]
 
         full_path = self.cellxgene_basepath() + subpath + querystring()
-
+        cellxgene_response = None
         try:
-            cellxgene_response = None
             if request.method in ["GET", "HEAD", "OPTIONS"]:
                 cellxgene_response = get(full_path, headers=headers)
             elif request.method == "PUT":

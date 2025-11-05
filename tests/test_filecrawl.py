@@ -1,3 +1,6 @@
+import os
+import shutil
+import tempfile
 import unittest
 from collections import defaultdict
 from unittest.mock import patch
@@ -25,6 +28,25 @@ def make_entry(subpath="somepath", annotations=None):
 
 
 class TestRenderEntry(unittest.TestCase):
+    def setUp(self):
+        self._tmpdir = tempfile.mkdtemp()
+        self._cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
+        os.environ["CELLXGENE_DATA"] = self._tmpdir
+
+        from cellxgene_gateway.gateway import app
+
+        self.app = app
+        self.app_context = self.app.test_request_context()
+        self.app_context.push()
+
+    def tearDown(self):
+        self.app_context.pop()
+        if self._cellxgene_data:
+            os.environ["CELLXGENE_DATA"] = self._cellxgene_data
+        else:
+            del os.environ["CELLXGENE_DATA"]
+        shutil.rmtree(self._tmpdir)
+
     def test_GIVEN_path_both_slash_THEN_view_has_single_slash(self):
         entry = make_entry(subpath="/somepath/")
         rendered = render_item(entry, source)
@@ -47,6 +69,26 @@ class TestRenderEntry(unittest.TestCase):
 
 
 class TestRenderAnnotation(unittest.TestCase):
+
+    def setUp(self):
+        self._tmpdir = tempfile.mkdtemp()
+        self._cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
+        os.environ["CELLXGENE_DATA"] = self._tmpdir
+
+        from cellxgene_gateway.gateway import app
+
+        self.app = app
+        self.app_context = self.app.test_request_context()
+        self.app_context.push()
+
+    def tearDown(self):
+        self.app_context.pop()
+        if self._cellxgene_data:
+            os.environ["CELLXGENE_DATA"] = self._cellxgene_data
+        else:
+            del os.environ["CELLXGENE_DATA"]
+        shutil.rmtree(self._tmpdir)
+
     @patch("cellxgene_gateway.filecrawl.enable_annotations", new=True)
     def test_GIVEN_no_annotation_THEN_new_alone(self):
         entry = make_entry(annotations=None)
@@ -103,11 +145,23 @@ class TestRenderItemSource(unittest.TestCase):
 
 class TestRenderItemTree(unittest.TestCase):
     def setUp(self):
+        self._tmpdir = tempfile.mkdtemp()
+        self._cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
+        os.environ["CELLXGENE_DATA"] = self._tmpdir
+
         from cellxgene_gateway.gateway import app
 
         self.app = app
         self.app_context = self.app.test_request_context()
         self.app_context.push()
+
+    def tearDown(self):
+        self.app_context.pop()
+        if self._cellxgene_data:
+            os.environ["CELLXGENE_DATA"] = self._cellxgene_data
+        else:
+            del os.environ["CELLXGENE_DATA"]
+        shutil.rmtree(self._tmpdir)
 
     @patch("cellxgene_gateway.items.file.fileitem_source.FileItemSource")
     def test_GIVEN_deep_nested_dirs_THEN_includes_dirs_in_output(self, item_source):

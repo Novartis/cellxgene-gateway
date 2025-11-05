@@ -1,13 +1,32 @@
 import unittest
+import os
+import shutil
+import tempfile
+
 from unittest.mock import MagicMock, Mock, patch
 
-from cellxgene_gateway.gateway import app
 from cellxgene_gateway.items.item import ItemType
 from cellxgene_gateway.items.s3.s3item import S3Item
 from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
 
 
 class TestScanDirectory(unittest.TestCase):
+    def setUp(self):
+        self._tmpdir = tempfile.mkdtemp()
+        self._cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
+        os.environ["CELLXGENE_DATA"] = self._tmpdir
+
+        from cellxgene_gateway.gateway import app
+
+        self.app = app
+
+    def tearDown(self):
+        if self._cellxgene_data:
+            os.environ["CELLXGENE_DATA"] = self._cellxgene_data
+        else:
+            del os.environ["CELLXGENE_DATA"]
+        shutil.rmtree(self._tmpdir)
+
     @patch("s3fs.S3FileSystem")
     def test_GIVEN_invalid_bucket_THEN_throws_error(self, s3func):
         class S3Mock:
@@ -26,6 +45,7 @@ class TestScanDirectory(unittest.TestCase):
 
     @patch("s3fs.S3FileSystem")
     def test__GIVEN_multilevel_bucket_THEN_properly_recurses_suburls(self, s3func):
+
         class S3Mock:
             def exists(path):
                 if path in [
@@ -82,7 +102,7 @@ class TestScanDirectory(unittest.TestCase):
 
         s3func.return_value = S3Mock
         source = S3ItemSource("my-bucket")
-        with app.test_request_context(query_string="refresh=true") as test_context:
+        with self.app.test_request_context(query_string="refresh=true") as test_context:
             tree = source.scan_directory()
 
         def s3item_compare(i1, i2, msg=""):
