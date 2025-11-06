@@ -174,11 +174,21 @@ This project uses pinned dependencies to ensure reproducible installs and preven
 
 ### Pure Pip Installation
 
-* **`requirements.in`** - High-level dependencies you directly use (cellxgene, flask, werkzeug, psutil, requests)
-* **`requirements.txt`** - Fully pinned transitive dependencies (generated from requirements.in)
-* **`uv.lock`** - Alternative lock file for [uv](https://github.com/astral-sh/uv) users (optional, faster installs)
+* **`requirements.in`** - High-level dependencies used by setup.py for package installation
+* **`requirements.txt`** - Fully pinned lock file for reproducible development environments (generated from requirements.in, committed to git)
+* **`uv.lock`** - Alternative lock file for [uv](https://github.com/astral-sh/uv) users (generated from requirements.in, committed to git)
 
 ### Installing Dependencies
+
+**For package installation (end users):**
+```bash
+# setup.py reads requirements.in for flexible dependency resolution
+pip install .
+# or from PyPI:
+pip install cellxgene-gateway
+```
+
+**For development with reproducible locked dependencies:**
 
 **With conda (recommended for development):**
 ```bash
@@ -195,7 +205,7 @@ conda activate cellxgene-gateway
 
 **With pip only:**
 ```bash
-# Standard pip (uses requirements.txt)
+# Standard pip (uses pinned requirements.txt)
 pip install -r requirements.txt
 
 # uv (faster, uses uv.lock)
@@ -248,11 +258,17 @@ uv pip compile requirements.in --output-file uv.lock
 2. Run `pip-compile requirements.in` or `uv pip compile requirements.in -o requirements.txt`
 3. Regenerate `uv.lock` with `uv pip compile requirements.in --output-file uv.lock`
 
-### Why Pinned Dependencies?
+### Why Lock Files?
 
-Lock files (conda-lock.yml, requirements.txt, uv.lock) pin all transitive dependencies to prevent compatibility issues. For example, anndata 0.12.4 is currently locked - newer versions may have breaking changes. This ensures the environment that works today will work tomorrow, while the source files (environment.yml, requirements.in) provide flexibility for intentional updates.
+This project uses a two-tier dependency approach:
 
-**Best practice:** Commit all lock files to git so everyone uses the same tested dependency versions.
+1. **`requirements.in`** (used by setup.py) - Specifies high-level dependencies with flexible version constraints. This allows pip to resolve dependencies when installing the package, avoiding over-constraining for end users.
+
+2. **Lock files** (conda-lock.yml, requirements.txt, uv.lock) - Pin all transitive dependencies to exact versions for reproducible development environments. For example, anndata 0.12.4 is currently locked - newer versions may have breaking changes. This ensures the environment that works today will work tomorrow.
+
+**For contributors:** Always commit lock files (conda-lock.yml, requirements.txt, uv.lock) to git and install from them during development. This ensures everyone tests against the same dependency versions.
+
+**For end users:** The package installation (`pip install cellxgene-gateway`) uses `requirements.in` to allow pip's dependency resolver flexibility.
 
 
 ## Running Tests
