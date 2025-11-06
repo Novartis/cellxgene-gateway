@@ -40,6 +40,12 @@ app = Flask(__name__)
 item_sources = []
 default_item_source = None
 
+# Guard for lazy initialization so tests can import this module without
+# triggering environment-dependent side effects. initialize_data_sources()
+# will set this to True when it has run.
+data_sources_initialized = False
+data_sources_init_lock = Lock()
+
 
 def _force_https(app):
     def wrapper(environ, start_response):
@@ -74,6 +80,30 @@ if (
         x_port=env.proxy_fix_port,
         x_prefix=env.proxy_fix_prefix,
     )
+
+
+# WSGI middleware to ensure data sources are initialized before the first
+# WSGI request is handled. This guarantees initialization works under
+# Gunicorn/uWSGI (which import the module but don't call main()). The
+# initialize_data_sources() function is idempotent-protected by
+# data_sources_initialized and data_sources_init_lock.
+def _init_on_first_wsgi_request(wsgi_app):
+    def middleware(environ, start_response):
+        global data_sources_initialized
+        if not data_sources_initialized:
+            with data_sources_init_lock:
+                if not data_sources_initialized:
+                    initialize_data_sources()
+                    data_sources_initialized = True
+        return wsgi_app(environ, start_response)
+
+    return middleware
+
+
+# Wrap the WSGI app so Gunicorn/uWSGI will trigger initialization when the
+# first request comes in. Tests that need initialization can call
+# initialize_data_sources() directly.
+app.wsgi_app = _init_on_first_wsgi_request(app.wsgi_app)
 
 cache = BackendCache()
 
@@ -331,12 +361,6 @@ def launch():
 
     app.launchtime = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
-
-
-# When using servers like Gunicorn or uWSGI, this file is imported rather than run directly.
-# As a result, the main() function is never called automatically.
-# Therefore, we must initialize the data sources at import time to ensure they are available.
-initialize_data_sources()
 
 
 def main():
