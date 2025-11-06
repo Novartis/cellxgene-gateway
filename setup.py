@@ -25,7 +25,7 @@ def get_version(rel_path):
 
 def parse_requirements():
     reqs = []
-    with open("requirements.txt", "r") as f:
+    with open("requirements.in", "r") as f:
         for line in f.readlines():
             reqs.append(line.strip("\n"))
     return reqs
