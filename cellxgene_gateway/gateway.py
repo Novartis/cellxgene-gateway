@@ -92,8 +92,19 @@ def _init_on_first_wsgi_request(wsgi_app):
         global data_sources_initialized
         if not data_sources_initialized:
             with data_sources_init_lock:
+                if not app.launchtime:
+                    app.launchtime = current_time_stamp()
                 if not data_sources_initialized:
                     initialize_data_sources()
+
+                    env.validate()
+                    if not item_sources or not len(item_sources):
+                        raise Exception("No data sources specified for Cellxgene Gateway")
+
+                    global default_item_source
+                    if default_item_source is None:
+                        default_item_source = item_sources[0]
+
                     data_sources_initialized = True
         return wsgi_app(environ, start_response)
 
@@ -344,24 +355,20 @@ def ip_address():
     resp = make_response(env.ip)
     return set_no_cache(resp)
 
-
-def launch():
-    env.validate()
-    if not item_sources or not len(item_sources):
-        raise Exception("No data sources specified for Cellxgene Gateway")
-
-    global default_item_source
-    if default_item_source is None:
-        default_item_source = item_sources[0]
-
+def start_pruner_thread():
     pruner = PruneProcessCache(cache)
 
     background_thread = Thread(target=pruner)
     background_thread.start()
 
+
+def launch():
+    start_pruner_thread()
+
     app.launchtime = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
+app.launchtime = None
 
 def main():
     """CLI entry point for Flask development server."""
