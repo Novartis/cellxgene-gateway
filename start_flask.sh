@@ -38,4 +38,4 @@ if [ -z "$CELLXGENE_DATA" ] && [ -z "$CELLXGENE_BUCKET" ]; then
     exit 1
 fi
 
-cellxgene-gateway
+exec cellxgene-gateway

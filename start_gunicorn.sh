@@ -76,7 +76,7 @@ cd "$SCRIPT_DIR"
 # Additional options you can add via environment variables:
 # - GUNICORN_MAX_REQUESTS: Restart worker after N requests (prevents memory leaks)
 # - GUNICORN_MAX_REQUESTS_JITTER: Add randomness to max-requests
-gunicorn cellxgene_gateway.gateway:app \
+exec gunicorn cellxgene_gateway.gateway:app \
     --workers "$WORKERS" \
     --worker-class "$WORKER_CLASS" \
     --bind "$BIND" \

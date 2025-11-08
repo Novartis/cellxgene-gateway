@@ -53,6 +53,7 @@ export GATEWAY_ENABLE_BACKED_MODE=${GATEWAY_ENABLE_BACKED_MODE:-true}
 # Check if uwsgi is installed
 if ! command -v uwsgi &> /dev/null; then
     echo "Error: uwsgi not found. Install with: pip install uwsgi"
+    exit 1
 else
     # Display configuration
     echo "Starting Cellxgene Gateway with uWSGI..."
@@ -70,7 +71,7 @@ else
     # Start uWSGI with optimized settings
     # Additional options you can add via environment variables:
     # - UWSGI_MAX_REQUESTS: Restart worker after N requests (prevents memory leaks)
-    uwsgi \
+    exec uwsgi \
         --http "$HOST:$PORT" \
         --module cellxgene_gateway.gateway:app \
         --workers "$WORKERS" \
