@@ -4,7 +4,7 @@
 #
 # PREREQUISITES:
 # - Gunicorn installed (included with cellxgene 1.3.0, or: pip install gunicorn)
-# - Virtual environment activated or .venv present
+# - Virtual environment activated
 # - .env file with CELLXGENE_LOCATION and CELLXGENE_DATA (or CELLXGENE_BUCKET)
 #
 # USAGE:

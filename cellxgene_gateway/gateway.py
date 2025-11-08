@@ -378,8 +378,10 @@ def ip_address():
 
 def start_pruner_thread():
     pruner = PruneProcessCache(cache)
-
-    background_thread = Thread(target=pruner)
+    # Run the pruner as a daemon thread so it won't block interpreter
+    # shutdown (for example when Ctrl-C is used in the main thread).
+    # This avoids "Exception ignored in: <module 'threading'...>" at exit.
+    background_thread = Thread(target=pruner, daemon=True)
     background_thread.start()
 
 

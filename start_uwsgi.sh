@@ -4,7 +4,7 @@
 #
 # PREREQUISITES:
 # - uWSGI installed (pip install uwsgi)
-# - Virtual environment activated or .venv present
+# - Virtual environment activated
 # - .env file with CELLXGENE_LOCATION and CELLXGENE_DATA (or CELLXGENE_BUCKET)
 #
 # USAGE:
