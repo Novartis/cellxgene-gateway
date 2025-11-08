@@ -93,14 +93,18 @@ def _init_on_first_wsgi_request(wsgi_app):
         if not data_sources_initialized:
             with data_sources_init_lock:
                 if not app.extensions.get("cellxgene_gateway", {}).get("launchtime"):
-                    app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = current_time_stamp()
+                    app.extensions.setdefault("cellxgene_gateway", {})[
+                        "launchtime"
+                    ] = current_time_stamp()
 
                 if not data_sources_initialized:
                     initialize_data_sources()
 
                     env.validate()
                     if not item_sources or not len(item_sources):
-                        raise Exception("No data sources specified for Cellxgene Gateway")
+                        raise Exception(
+                            "No data sources specified for Cellxgene Gateway"
+                        )
 
                     global default_item_source
                     if default_item_source is None:
@@ -318,23 +322,20 @@ def do_GET_status_json():
         dataset = entry.key.h5ad_item.descriptor
         annotation_file = entry.key.annotation_descriptor
         return {
-                    "dataset": dataset,
-                    "annotation_file": annotation_file,
-                    "launchtime": entry.launchtime,
-                    "last_access": entry.timestamp,
-                    "status": entry.status.name,
-                }
-        
+            "dataset": dataset,
+            "annotation_file": annotation_file,
+            "launchtime": entry.launchtime,
+            "last_access": entry.timestamp,
+            "status": entry.status.name,
+        }
 
     return json.dumps(
         {
             "launchtime": app.extensions.get("cellxgene_gateway", {}).get("launchtime"),
-            "entry_list": [
-                map_entry(entry)
-                for entry in cache.entry_list
-            ],
+            "entry_list": [map_entry(entry) for entry in cache.entry_list],
         }
     )
+
 
 def get_cache_key(path):
     if request.args.get("source_name"):
@@ -374,6 +375,7 @@ def ip_address():
     resp = make_response(env.ip)
     return set_no_cache(resp)
 
+
 def start_pruner_thread():
     pruner = PruneProcessCache(cache)
 
@@ -384,10 +386,14 @@ def start_pruner_thread():
 def launch():
     start_pruner_thread()
 
-    app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = current_time_stamp()
+    app.extensions.setdefault("cellxgene_gateway", {})[
+        "launchtime"
+    ] = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
+
 app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = None
+
 
 def main():
     """CLI entry point for Flask development server."""

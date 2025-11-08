@@ -27,7 +27,7 @@ class TestRenderEntry(unittest.TestCase):
 
     def tearDown(self):
         self.app_context.pop()
-        
+
     def test_GIVEN_key_and_port_THEN_returns_loading_CacheEntry(self):
         entry = CacheEntry.for_key("some-key", 1)
         self.assertEqual(entry.status, CacheEntryStatus.loading)

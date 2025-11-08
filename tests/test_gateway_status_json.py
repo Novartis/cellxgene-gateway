@@ -10,7 +10,10 @@ class TestGatewayStatusJson(unittest.TestCase):
     def test_do_GET_status_json_returns_expected_structure(self):
         # Create a minimal fake key with required attributes
         h5ad_item = SimpleNamespace(descriptor="somedir/dataset.h5ad")
-        key = SimpleNamespace(h5ad_item=h5ad_item, annotation_descriptor="somedir/dataset_annotations/foo.csv")
+        key = SimpleNamespace(
+            h5ad_item=h5ad_item,
+            annotation_descriptor="somedir/dataset_annotations/foo.csv",
+        )
 
         # Create a CacheEntry with known launchtime/timestamp/status
         entry = CacheEntry(
