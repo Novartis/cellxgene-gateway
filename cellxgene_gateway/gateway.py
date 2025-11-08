@@ -92,8 +92,9 @@ def _init_on_first_wsgi_request(wsgi_app):
         global data_sources_initialized
         if not data_sources_initialized:
             with data_sources_init_lock:
-                if not app.launchtime:
-                    app.launchtime = current_time_stamp()
+                if not app.extensions.get("cellxgene_gateway", {}).get("launchtime"):
+                    app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = current_time_stamp()
+
                 if not data_sources_initialized:
                     initialize_data_sources()
 
@@ -248,7 +249,7 @@ entry_lock = Lock()
 
 
 def matching_source(source_name):
-    if source_name is None:
+    if source_name is None and default_item_source is not None:
         source_name = default_item_source.name
     matching = [i for i in item_sources if i.name == source_name]
     if len(matching) != 1:
@@ -295,6 +296,11 @@ def do_view(path, source_name=None):
             raise CellxgeneException("User not authorized to access this data", 403)
     elif match.status == CacheEntryStatus.error:
         raise ProcessException.from_cache_entry(match)
+    else:
+        raise CellxgeneException(
+            f"Unexpected cache entry status {match.status} for key {match.key.descriptor}",
+            500,
+        )
 
 
 @app.route("/cache_status", methods=["GET"])
@@ -310,7 +316,7 @@ def do_GET_status():
 def do_GET_status_json():
     return json.dumps(
         {
-            "launchtime": app.launchtime,
+            "launchtime": app.extensions.get("cellxgene_gateway", {}).get("launchtime"),
             "entry_list": [
                 {
                     "dataset": entry.key.dataset,
@@ -324,12 +330,21 @@ def do_GET_status_json():
         }
     )
 
+def get_cache_key(path):
+    if request.args.get("source_name"):
+        source_name = request.args.get("source_name")
+    elif default_item_source:
+        source_name = default_item_source.name
+    else:
+        source_name = None
+    source = matching_source(source_name)
+    key = CacheKey.for_lookup(source, source.lookup(path))
+    return key
+
 
 @app.route("/relaunch/<path:path>", methods=["GET"])
 def do_relaunch(path):
-    source_name = request.args.get("source_name") or default_item_source.name
-    source = matching_source(source_name)
-    key = CacheKey.for_lookup(source, source.lookup(path))
+    key = get_cache_key(path)
     match = cache.check_entry(key)
     if not match is None:
         match.terminate()
@@ -341,9 +356,7 @@ def do_relaunch(path):
 
 @app.route("/terminate/<path:path>", methods=["GET"])
 def do_terminate(path):
-    source_name = request.args.get("source_name") or default_item_source.name
-    source = matching_source(source_name)
-    key = CacheKey.for_lookup(source, source.lookup(path))
+    key = get_cache_key(path)
     match = cache.check_entry(key)
     if not match is None:
         match.terminate()
@@ -365,10 +378,10 @@ def start_pruner_thread():
 def launch():
     start_pruner_thread()
 
-    app.launchtime = current_time_stamp()
+    app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = current_time_stamp()
     app.run(host="0.0.0.0", port=env.gateway_port, debug=False)
 
-app.launchtime = None
+app.extensions.setdefault("cellxgene_gateway", {})["launchtime"] = None
 
 def main():
     """CLI entry point for Flask development server."""
