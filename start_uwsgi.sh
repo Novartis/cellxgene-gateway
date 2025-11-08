@@ -53,36 +53,36 @@ export GATEWAY_ENABLE_BACKED_MODE=${GATEWAY_ENABLE_BACKED_MODE:-true}
 # Check if uwsgi is installed
 if ! command -v uwsgi &> /dev/null; then
     echo "Error: uwsgi not found. Install with: pip install uwsgi"
-    exit 1
+else
+    # Display configuration
+    echo "Starting Cellxgene Gateway with uWSGI..."
+    echo "Configuration:"
+    echo "  Data source: ${CELLXGENE_DATA:-$CELLXGENE_BUCKET}"
+    echo "  Binding to: $HOST:$PORT"
+    echo "  Workers: $WORKERS"
+    echo "  Threads: $THREADS"
+    echo "  Timeout: ${TIMEOUT}s"
+    echo "  Backed mode: ${GATEWAY_ENABLE_BACKED_MODE}"
+    echo ""
+
+    cd "$SCRIPT_DIR"
+
+    # Start uWSGI with optimized settings
+    # Additional options you can add via environment variables:
+    # - UWSGI_MAX_REQUESTS: Restart worker after N requests (prevents memory leaks)
+    uwsgi \
+        --http "$HOST:$PORT" \
+        --module cellxgene_gateway.gateway:app \
+        --workers "$WORKERS" \
+        --threads "$THREADS" \
+        --harakiri "$TIMEOUT" \
+        --master \
+        --enable-threads \
+        --single-interpreter \
+        --need-app \
+        --die-on-term \
+        --log-x-forwarded-for \
+        ${UWSGI_MAX_REQUESTS:+--max-requests "$UWSGI_MAX_REQUESTS"} \
+        "$@"
 fi
 
-# Display configuration
-echo "Starting Cellxgene Gateway with uWSGI..."
-echo "Configuration:"
-echo "  Data source: ${CELLXGENE_DATA:-$CELLXGENE_BUCKET}"
-echo "  Binding to: $HOST:$PORT"
-echo "  Workers: $WORKERS"
-echo "  Threads: $THREADS"
-echo "  Timeout: ${TIMEOUT}s"
-echo "  Backed mode: ${GATEWAY_ENABLE_BACKED_MODE}"
-echo ""
-
-cd "$SCRIPT_DIR"
-
-# Start uWSGI with optimized settings
-# Additional options you can add via environment variables:
-# - UWSGI_MAX_REQUESTS: Restart worker after N requests (prevents memory leaks)
-exec uwsgi \
-    --http "$HOST:$PORT" \
-    --module cellxgene_gateway.gateway:app \
-    --workers "$WORKERS" \
-    --threads "$THREADS" \
-    --harakiri "$TIMEOUT" \
-    --master \
-    --enable-threads \
-    --single-interpreter \
-    --need-app \
-    --die-on-term \
-    --log-x-forwarded-for \
-    ${UWSGI_MAX_REQUESTS:+--max-requests "$UWSGI_MAX_REQUESTS"} \
-    "$@"

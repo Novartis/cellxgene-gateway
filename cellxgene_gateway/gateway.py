@@ -314,17 +314,23 @@ def do_GET_status():
 
 @app.route("/cache_status.json", methods=["GET"])
 def do_GET_status_json():
+    def map_entry(entry):
+        dataset = entry.key.h5ad_item.descriptor
+        annotation_file = entry.key.annotation_descriptor
+        return {
+                    "dataset": dataset,
+                    "annotation_file": annotation_file,
+                    "launchtime": entry.launchtime,
+                    "last_access": entry.timestamp,
+                    "status": entry.status.name,
+                }
+        
+
     return json.dumps(
         {
             "launchtime": app.extensions.get("cellxgene_gateway", {}).get("launchtime"),
             "entry_list": [
-                {
-                    "dataset": entry.key.dataset,
-                    "annotation_file": entry.key.annotation_file,
-                    "launchtime": entry.launchtime,
-                    "last_access": entry.timestamp,
-                    "status": entry.status,
-                }
+                map_entry(entry)
                 for entry in cache.entry_list
             ],
         }
