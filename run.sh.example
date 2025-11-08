@@ -1,6 +1,0 @@
-export CELLXGENE_LOCATION=$(pwd)/.cellxgene-gateway/bin/cellxgene
-export CELLXGENE_DATA=../cellxgene_data
-export GATEWAY_IP=127.0.0.1
-
-#Once these are set, you run like a normal Flask app
-cellxgene-gateway
