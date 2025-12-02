@@ -178,6 +178,113 @@ conda install -c conda-forge pre-commit
 pre-commit install
 ```
 
+## Dependency Management
+
+This project uses pinned dependencies to ensure reproducible installs and prevent version drift issues.
+
+### Conda Environment (Recommended for Development)
+
+* **`environment.yml`** - High-level conda and pip dependencies
+* **`conda-lock.yml`** - Fully locked conda environment for linux-64, osx-64, and osx-arm64 (committed to git)
+
+### Pure Pip Installation
+
+* **`requirements.in`** - High-level dependencies used by setup.py for package installation
+* **`requirements.txt`** - Fully pinned lock file for reproducible development environments (generated from requirements.in, committed to git)
+* **`uv.lock`** - Alternative lock file for [uv](https://github.com/astral-sh/uv) users (generated from requirements.in, committed to git)
+
+### Installing Dependencies
+
+**For package installation (end users):**
+```bash
+# setup.py reads requirements.in for flexible dependency resolution
+pip install .
+# or from PyPI:
+pip install cellxgene-gateway
+```
+
+**For development with reproducible locked dependencies:**
+
+**With conda (recommended for development):**
+```bash
+# Install conda-lock if you don't have it
+pip install conda-lock
+# or: conda install -c conda-forge conda-lock
+
+# Create environment from lock file
+conda-lock install --name cellxgene-gateway conda-lock.yml
+
+# Activate the environment
+conda activate cellxgene-gateway
+```
+
+**With pip only:**
+```bash
+# Standard pip (uses pinned requirements.txt)
+pip install -r requirements.txt
+
+# uv (faster, uses uv.lock)
+uv pip install -r requirements.txt
+# or
+uv pip sync uv.lock
+```
+
+### Updating Dependencies
+
+**With conda-lock (recommended for development):**
+```bash
+pip install conda-lock
+
+# Update environment.yml with new package versions or add new packages
+# Then regenerate lock file for all platforms
+conda-lock lock -f environment.yml -p linux-64 -p osx-64 -p osx-arm64
+
+# Update your local environment
+conda-lock install --name cellxgene-gateway conda-lock.yml
+```
+
+**With pip-tools:**
+```bash
+pip install pip-tools
+
+# Update all dependencies to latest compatible versions
+pip-compile --upgrade requirements.in
+
+# Update a specific package only
+pip-compile --upgrade-package anndata requirements.in
+
+# After updating, regenerate uv.lock
+uv pip compile requirements.in --output-file uv.lock
+```
+
+**With uv (faster):**
+```bash
+# Update all dependencies
+uv pip compile --upgrade requirements.in -o requirements.txt
+uv pip compile requirements.in --output-file uv.lock
+
+# Update specific package
+uv pip compile --upgrade-package anndata requirements.in -o requirements.txt
+uv pip compile requirements.in --output-file uv.lock
+```
+
+**Adding new dependencies:**
+1. Add the package name to `requirements.in`
+2. Run `pip-compile requirements.in` or `uv pip compile requirements.in -o requirements.txt`
+3. Regenerate `uv.lock` with `uv pip compile requirements.in --output-file uv.lock`
+
+### Why Lock Files?
+
+This project uses a two-tier dependency approach:
+
+1. **`requirements.in`** (used by setup.py) - Specifies high-level dependencies with flexible version constraints. This allows pip to resolve dependencies when installing the package, avoiding over-constraining for end users.
+
+2. **Lock files** (conda-lock.yml, requirements.txt, uv.lock) - Pin all transitive dependencies to exact versions for reproducible development environments. For example, anndata 0.12.4 is currently locked - newer versions may have breaking changes. This ensures the environment that works today will work tomorrow.
+
+**For contributors:** Always commit lock files (conda-lock.yml, requirements.txt, uv.lock) to git and install from them during development. This ensures everyone tests against the same dependency versions.
+
+**For end users:** The package installation (`pip install cellxgene-gateway`) uses `requirements.in` to allow pip's dependency resolver flexibility.
+
 
 ## Running Tests
 
