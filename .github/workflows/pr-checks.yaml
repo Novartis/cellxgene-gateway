@@ -40,6 +40,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
           python setup.py install
+          pip install -r requirements-test.txt
 
       - name: Run tests
         run: |
