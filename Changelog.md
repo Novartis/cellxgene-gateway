@@ -1,3 +1,15 @@
+# 0.4.1
+
+* Fix UnicodeDecodeError when viewing compressed datasets
+* Fix WSGI server initialization by extracting data source setup
+* Fix AttributeError by storing ItemSource objects in default_item_source
+* Delay itemsource initialization until first request is served
+* Set default_item_source and start pruner thread
+* Added start scripts for flask, gunicorn and uwsgi
+* Made pruner a daemon thread
+* Updated start scripts to run in subshells
+* Fixed bug in status.json
+
 # 0.4.0
 
 * Removed dependency on flask-api
