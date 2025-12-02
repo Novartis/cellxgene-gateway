@@ -3,3 +3,4 @@ flask
 werkzeug
 psutil
 requests
+prometheus-flask-exporter
