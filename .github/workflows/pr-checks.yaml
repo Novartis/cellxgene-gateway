@@ -40,6 +40,7 @@ jobs:
           eval "$(conda shell.bash hook)"
           conda activate cellxgene-gateway
           python setup.py install
+          pip install -r requirements-test.txt
 
       - name: Run tests
         run: |
@@ -76,15 +77,15 @@ jobs:
           name: coverage-summary
           path: coverage.txt
           retention-days: 30
-      # - name: "Upload coverage to Codecov"
-      #   if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     files: ./coverage.xml
-      #     flags: unittests
-      #     env_vars: OS,PYTHON
-      #     name: codecov-umbrella
-      #     fail_ci_if_error: true
-      #     path_to_write_report: ./codecov_report.txt
-      #     verbose: true
+      - name: "Upload coverage to Codecov"
+        if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: true
+          path_to_write_report: ./codecov_report.txt
+          verbose: true
