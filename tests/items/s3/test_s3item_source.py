@@ -8,24 +8,16 @@ from unittest.mock import MagicMock, Mock, patch
 from cellxgene_gateway.items.item import ItemType
 from cellxgene_gateway.items.s3.s3item import S3Item
 from cellxgene_gateway.items.s3.s3item_source import S3ItemSource
+from cellxgene_gateway.gateway import app
 
 
 class TestScanDirectory(unittest.TestCase):
     def setUp(self):
-        self._tmpdir = tempfile.mkdtemp()
-        self._cellxgene_data = os.environ.get("CELLXGENE_DATA", "")
-        os.environ["CELLXGENE_DATA"] = self._tmpdir
-
-        from cellxgene_gateway.gateway import app
 
         self.app = app
 
     def tearDown(self):
-        if self._cellxgene_data:
-            os.environ["CELLXGENE_DATA"] = self._cellxgene_data
-        else:
-            del os.environ["CELLXGENE_DATA"]
-        shutil.rmtree(self._tmpdir)
+        pass
 
     @patch("s3fs.S3FileSystem")
     def test_GIVEN_invalid_bucket_THEN_throws_error(self, s3func):

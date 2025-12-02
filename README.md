@@ -115,6 +115,21 @@ docker run -it --rm \
 -p 8080:8080 \
 cellxgene-gateway
 ```
+## Running cellxgene gateway with start scripts
+
+For your convenience, we provide start scripts for flask, gunicorn and uwsgi.
+
+First, set up a .env
+```bash
+cp env_example .env
+# edit .env
+open .env
+```
+
+Then run the scripts in a subshell
+```bash
+( ./start_flask.sh )
+```
 
 # Customization
 
