@@ -1,3 +1,7 @@
+# 0.4.2
+
+* update package name
+
 # 0.4.1
 
 * Fix UnicodeDecodeError when viewing compressed datasets

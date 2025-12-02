@@ -38,7 +38,7 @@ install_reqs = parse_requirements()
 
 setup(
     # mandatory
-    name="cellxgene-gateway",
+    name="cellxgene_gateway",
     # mandatory
     version=get_version("cellxgene_gateway/__init__.py"),
     # mandatory
