@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from http import HTTPStatus
 from unittest.mock import MagicMock, Mock, patch, call
 from freezegun import freeze_time
@@ -360,3 +361,132 @@ class TestBackendCachePrune(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             cache.prune(entry_mock)
+
+
+@pytest.fixture(autouse=True)
+def connect_mock():
+    with patch("socket.socket") as socketMock:
+        connectMock = socketMock()
+        connectMock.__enter__.return_value = connectMock
+        connectMock.connect_ex.return_value = 1  # Port not in use by default
+        yield connectMock
+
+
+@pytest.fixture(autouse=True)
+def process_backend_mock():
+    with patch("cellxgene_gateway.backend_cache.process_backend") as mock:
+        yield mock
+
+
+@pytest.fixture(autouse=True)
+def sleep_mock():
+    from time import sleep
+
+    with patch("cellxgene_gateway.backend_cache.time.sleep") as mock:
+        mock.side_effect = lambda x: sleep(0.01)  # short sleep
+        yield mock
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_empty_cache_THEN_create_entry_uses_starting_port(process_backend_mock):
+    """create_entry should use port 8000 when cache is empty and port is free."""
+    key = Mock()
+    scripts = ["script1", "script2"]
+
+    cache = BackendCache()
+    result = cache.create_entry(key, scripts)
+
+    # Verify port 8000 was used
+    assert result.port == 8000
+
+    # Verify entry was added to list
+    assert result in cache.entry_list
+    # Verify thread was started
+    process_backend_mock.launch.assert_called_once()
+
+    # Verify CacheEntry was created with correct key
+    assert result.key is key
+    assert result.status == CacheEntryStatus.loading
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_port_in_use_THEN_create_entry_finds_next_available_port(connect_mock):
+    """create_entry should increment port until finding one that's free."""
+    # Ports 8000 and 8001 are in use, 8002 is free
+    connect_mock.connect_ex.side_effect = [0, 0, 1]
+
+    key = Mock()
+    scripts = []
+
+    cache = BackendCache()
+    result = cache.create_entry(key, scripts)
+
+    # Verify port 8002 was used (after skipping 8000 and 8001)
+    assert result.port == 8002
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_port_exists_in_cache_THEN_create_entry_skips_it():
+    """create_entry should skip ports already in the cache."""
+    key = Mock()
+    scripts = []
+
+    # Pre-populate cache with port 8000
+    existing_entry = Mock()
+    existing_entry.port = 8000
+
+    cache = BackendCache()
+    cache.entry_list = [existing_entry]
+
+    result = cache.create_entry(key, scripts)
+
+    # Verify port 8001 was used (skipping the existing 8000)
+    assert result.port == 8001
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_create_entry_THEN_background_thread_is_started(process_backend_mock):
+    """create_entry should start a background thread with correct args."""
+    key = Mock()
+    scripts = ["script1"]
+
+    with patch("cellxgene_gateway.backend_cache.env") as env_mock:
+        env_mock.cellxgene_location = "/path/to/cellxgene"
+
+        cache = BackendCache()
+        result = cache.create_entry(key, scripts)
+
+    # Verify Thread was created with correct target and args
+    process_backend_mock.launch.assert_called_once()
+    call_kwargs = process_backend_mock.launch.call_args[0]
+    assert call_kwargs == ("/path/to/cellxgene", ["script1"], result)
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_create_entry_THEN_entry_is_added_to_cache():
+    """create_entry should add the created entry to the cache list."""
+    key = Mock()
+    scripts = []
+
+    cache = BackendCache()
+    initial_count = len(cache.entry_list)
+
+    result = cache.create_entry(key, scripts)
+
+    # Verify entry was added
+    assert len(cache.entry_list) == initial_count + 1
+    assert result in cache.entry_list
+
+
+@freeze_time("2025-12-01 10:00:00")
+def test_GIVEN_create_entry_THEN_returns_created_entry():
+    """create_entry should return the created entry."""
+    key = Mock()
+    scripts = []
+
+    cache = BackendCache()
+    result = cache.create_entry(key, scripts)
+
+    # Verify the result is a CacheEntry instance
+    assert isinstance(result, CacheEntry)
+    assert result.status == CacheEntryStatus.loading
